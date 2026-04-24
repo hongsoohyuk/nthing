@@ -13,6 +13,12 @@ interface SplitRepository : JpaRepository<SplitRequest, Long> {
     fun findByAuthorId(userId: Long): List<SplitRequest>
     fun findByAuthorId(userId: Long, pageable: Pageable): Page<SplitRequest>
 
+    @Query(
+        value = "SELECT p.splitRequest FROM SplitParticipant p WHERE p.user.id = :userId ORDER BY p.joinedAt DESC",
+        countQuery = "SELECT COUNT(p) FROM SplitParticipant p WHERE p.user.id = :userId"
+    )
+    fun findByParticipantUserId(@Param("userId") userId: Long, pageable: Pageable): Page<SplitRequest>
+
     override fun findAll(pageable: Pageable): Page<SplitRequest>
 
     @Query(

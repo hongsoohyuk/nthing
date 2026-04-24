@@ -44,7 +44,7 @@ class SplitController(
         return splitService.create(dto, userId)
     }
 
-    // GET /api/splits/my?page=0&size=20
+    // GET /api/splits/my?page=0&size=20  (내가 등록한 나눠사기)
     @GetMapping("/my")
     fun getMy(
         authentication: Authentication,
@@ -54,6 +54,18 @@ class SplitController(
         val userId = authentication.principal as Long
         val pageable = PageRequest.of(page, size)
         return PageResponse.from(splitService.findByAuthorId(userId, pageable))
+    }
+
+    // GET /api/splits/participated?page=0&size=20  (내가 참여한 나눠사기)
+    @GetMapping("/participated")
+    fun getParticipated(
+        authentication: Authentication,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int
+    ): PageResponse<SplitResponse> {
+        val userId = authentication.principal as Long
+        val pageable = PageRequest.of(page, size)
+        return PageResponse.from(splitService.findByParticipantUserId(userId, pageable))
     }
 
     // POST /api/splits/{id}/join

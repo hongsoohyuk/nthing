@@ -49,6 +49,9 @@ class SplitService(
     fun findByAuthorId(userId: Long, pageable: Pageable): Page<SplitResponse> =
         splitRepository.findByAuthorId(userId, pageable).map { toResponse(it) }
 
+    fun findByParticipantUserId(userId: Long, pageable: Pageable): Page<SplitResponse> =
+        splitRepository.findByParticipantUserId(userId, pageable).map { toResponse(it) }
+
     fun findNearby(lat: Double, lng: Double, radiusKm: Double = 3.0, pageable: Pageable): Page<SplitResponse> {
         val page = splitLocationQuery.findNearby(lat, lng, radiusKm, pageable)
         val responses = page.content.map { entity ->

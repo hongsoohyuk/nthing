@@ -36,7 +36,10 @@ dependencies {
 	implementation("org.flywaydb:flyway-database-postgresql")
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.postgresql:postgresql")
+	implementation(platform("software.amazon.awssdk:bom:2.27.21"))
+	implementation("software.amazon.awssdk:s3")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

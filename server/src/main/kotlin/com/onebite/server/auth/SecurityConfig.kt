@@ -26,7 +26,7 @@ class SecurityConfig(
             .authorizeHttpRequests {
                 it
                     .requestMatchers("/api/auth/**").permitAll()   // 인증 없이 접근 가능
-                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/splits/my").authenticated() // /my는 인증 필요 ({id}보다 먼저 매칭)
+                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/splits/my", "/api/splits/participated").authenticated() // /my, /participated 는 인증 필요 ({id}보다 먼저 매칭)
                     .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/splits", "/api/splits/{id}").permitAll() // 둘러보기
                     .requestMatchers("/actuator/health").permitAll() // 헬스체크
                     .requestMatchers("/h2-console/**").permitAll() // 개발용 H2 콘솔
