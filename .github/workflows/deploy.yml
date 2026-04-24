@@ -14,7 +14,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}/server
   AWS_REGION: ap-northeast-2
-  EC2_INSTANCE_ID: i-00fedbf43668c090b
+  EC2_INSTANCE_ID: i-0dc428aa2f2c4a522
 
 permissions:
   contents: read

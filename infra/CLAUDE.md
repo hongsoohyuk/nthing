@@ -247,7 +247,7 @@ GitHub Actions가 main 브랜치 푸시 시 자동으로 배포합니다. 수동
 - 실제 값은 각 개발자 콘솔(카카오/네이버/Google GCP/Apple Developer)에만 있고, 이전 AWS 인스턴스의 .env는 OCI 이주 때 소실됨
 
 ### 3) `deploy.yml`의 EC2 인스턴스 ID 하드코딩
-- `.github/workflows/deploy.yml`의 `env.EC2_INSTANCE_ID: i-00fedbf43668c090b`
+- `.github/workflows/deploy.yml`의 `env.EC2_INSTANCE_ID: i-0dc428aa2f2c4a522`
 - 인스턴스를 재생성하면 이 값도 같이 수정해야 함
 - 대안: `aws_iam_role_policy.github_actions_ssm`에 `ec2:DescribeInstances` 권한 추가 + deploy 스크립트에서 태그(`Name=onebite-server`) 기반 조회
 
