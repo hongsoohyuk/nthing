@@ -49,6 +49,7 @@
 | EBS gp3 | 30GB | ~$2.4 |
 | Elastic IP | 인스턴스 연결 중 무료, 분리 시 시간당 $0.005 | - |
 | Egress | 100GB/월 무료 이후 $0.126/GB | - |
+| S3 (uploads) | 사용량 기반 (저장 $0.023/GB·월, PUT $0.005/1k, GET $0.0004/1k) | ~$0-1/월 (MVP 규모) |
 | **합계** | | **~$17-20/월** |
 
 Default VPC/Subnet을 사용해 네트워크 리소스는 직접 생성하지 않음.
@@ -160,6 +161,36 @@ APPLE_CLIENT_ID
 
 ### 인스턴스 ID 하드코딩
 `deploy.yml`의 `env.EC2_INSTANCE_ID`는 현재 인스턴스 ID로 하드코딩되어 있습니다. 인스턴스를 재생성하면 이 값도 같이 업데이트해야 합니다.
+
+## S3 이미지 업로드
+
+유저가 등록하는 나눠사기 상품 사진은 S3에 직접 업로드합니다 (서버는 presigned PUT URL만 발급).
+
+### Terraform 리소스
+- `aws_s3_bucket.uploads` — 기본 이름 `onebite-uploads` (전역 중복 시 `uploads_bucket_name` 변수로 오버라이드)
+- `aws_s3_bucket_ownership_controls` — `BucketOwnerEnforced` (ACL 사용 안 함)
+- `aws_s3_bucket_public_access_block` — `block_public_policy=false` (splits/* public read 허용)
+- `aws_s3_bucket_policy` — `splits/*` prefix만 public GET 허용, 나머지는 private
+- `aws_s3_bucket_cors_configuration` — 모바일 클라이언트 PUT 허용 (`PUT`, `GET`, `*` origin)
+- `aws_iam_role_policy.ec2_s3_uploads` — 기존 `ec2_ssm` role에 `s3:PutObject/GetObject/DeleteObject` 권한 연결 (presigned URL 서명에 필수)
+
+### 업로드 플로우
+1. 모바일이 `POST /api/uploads/sign` → 서버가 presigned PUT URL + 최종 public URL 반환
+2. 모바일이 `PUT <presigned URL>` 로 이미지 바이트 직접 업로드 (서버 경유 X)
+3. 모바일이 `POST /api/splits` 의 `imageUrl` 필드에 public URL 포함하여 등록
+
+### 배포 후 환경변수 설정
+```bash
+cd infra/terraform && terraform apply
+BUCKET=$(terraform output -raw uploads_bucket_name)
+URLBASE=$(terraform output -raw uploads_public_url_base)
+# infra/.env 에 반영 후 EC2로 재배포
+# S3_BUCKET=$BUCKET
+# S3_PUBLIC_URL_BASE=$URLBASE
+# AWS_REGION=ap-northeast-2
+```
+
+로컬 개발에서는 AWS 크레덴셜이 없어도 서버는 기동됨 — `/api/uploads/sign` 호출 시에만 실패합니다. 로컬에서 업로드까지 테스트하려면 `aws configure` 프로필 설정 필요.
 
 ## 운영 배포 절차
 
@@ -286,7 +317,7 @@ GitHub Actions가 main 브랜치 푸시 시 자동으로 배포합니다. 수동
 - [x] Makefile 편의 명령어
 - [x] 환경변수 템플릿 (.env.example)
 - [x] Spring 프로필 분리 (default/prod)
-- [x] AWS Terraform (Default VPC + SG + Key Pair + EC2 t4g.small + EIP)
+- [x] AWS Terraform (Default VPC + SG + Key Pair + EC2 t4g.small + EIP + S3 uploads bucket)
 - [x] GitHub Actions 배포 파이프라인 (GHCR + SSH)
 - [x] Nginx 리버스 프록시 설정
 - [x] Let's Encrypt 발급 스크립트 (init-ssl.sh)

@@ -1,23 +1,3 @@
-terraform {
-  required_version = ">= 1.0"
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-    tls = {
-      source  = "hashicorp/tls"
-      version = "~> 4.0"
-    }
-  }
-}
-
-provider "aws" {
-  profile = var.aws_profile
-  region  = var.aws_region
-}
-
 # --- Default VPC ---
 data "aws_vpc" "default" {
   default = true
@@ -47,7 +27,7 @@ data "aws_ami" "al2023" {
 }
 
 # --- Security Group ---
-resource "aws_security_group" "onebite" {
+resource "aws_security_group" "main" {
   name        = "${var.project_name}-sg"
   description = "Security group for One Bite server"
   vpc_id      = data.aws_vpc.default.id
@@ -97,23 +77,21 @@ resource "aws_security_group" "onebite" {
   }
 
   tags = {
-    Name    = "${var.project_name}-sg"
-    Project = var.project_name
+    Name = "${var.project_name}-sg"
   }
 }
 
 # --- SSH Key Pair ---
-resource "tls_private_key" "onebite" {
+resource "tls_private_key" "main" {
   algorithm = "ED25519"
 }
 
-resource "aws_key_pair" "onebite" {
+resource "aws_key_pair" "main" {
   key_name   = "${var.project_name}-key"
-  public_key = tls_private_key.onebite.public_key_openssh
+  public_key = tls_private_key.main.public_key_openssh
 
   tags = {
-    Name    = "${var.project_name}-key"
-    Project = var.project_name
+    Name = "${var.project_name}-key"
   }
 }
 
@@ -134,8 +112,7 @@ resource "aws_iam_role" "ec2_ssm" {
   assume_role_policy = data.aws_iam_policy_document.ec2_assume_role.json
 
   tags = {
-    Name    = "${var.project_name}-ec2-ssm-role"
-    Project = var.project_name
+    Name = "${var.project_name}-ec2-ssm-role"
   }
 }
 
@@ -149,8 +126,7 @@ resource "aws_iam_instance_profile" "ec2_ssm" {
   role = aws_iam_role.ec2_ssm.name
 
   tags = {
-    Name    = "${var.project_name}-ec2-ssm-profile"
-    Project = var.project_name
+    Name = "${var.project_name}-ec2-ssm-profile"
   }
 }
 
@@ -164,8 +140,7 @@ resource "aws_iam_openid_connect_provider" "github" {
   ]
 
   tags = {
-    Name    = "${var.project_name}-github-oidc"
-    Project = var.project_name
+    Name = "${var.project_name}-github-oidc"
   }
 }
 
@@ -199,8 +174,7 @@ resource "aws_iam_role" "github_actions" {
   assume_role_policy = data.aws_iam_policy_document.github_actions_assume.json
 
   tags = {
-    Name    = "${var.project_name}-github-actions-role"
-    Project = var.project_name
+    Name = "${var.project_name}-github-actions-role"
   }
 }
 
@@ -223,11 +197,11 @@ resource "aws_iam_role_policy" "github_actions_ssm" {
 }
 
 # --- EC2 Instance ---
-resource "aws_instance" "onebite" {
+resource "aws_instance" "main" {
   ami                    = data.aws_ami.al2023.id
   instance_type          = var.instance_type
-  key_name               = aws_key_pair.onebite.key_name
-  vpc_security_group_ids = [aws_security_group.onebite.id]
+  key_name               = aws_key_pair.main.key_name
+  vpc_security_group_ids = [aws_security_group.main.id]
   subnet_id              = data.aws_subnets.default.ids[0]
   iam_instance_profile   = aws_iam_instance_profile.ec2_ssm.name
 
@@ -236,20 +210,109 @@ resource "aws_instance" "onebite" {
   root_block_device {
     volume_size = 30
     volume_type = "gp3"
+    encrypted   = true
   }
 
   tags = {
-    Name    = "${var.project_name}-server"
-    Project = var.project_name
+    Name = "${var.project_name}-server"
   }
 }
 
 # --- Elastic IP ---
-resource "aws_eip" "onebite" {
-  instance = aws_instance.onebite.id
+resource "aws_eip" "main" {
+  instance = aws_instance.main.id
 
   tags = {
-    Name    = "${var.project_name}-eip"
-    Project = var.project_name
+    Name = "${var.project_name}-eip"
   }
+}
+
+# --- S3 Bucket for user uploads (split images) ---
+resource "aws_s3_bucket" "uploads" {
+  bucket = local.uploads_bucket_name
+
+  tags = {
+    Name = local.uploads_bucket_name
+  }
+}
+
+# Server-side encryption (AES256) for all objects
+resource "aws_s3_bucket_server_side_encryption_configuration" "uploads" {
+  bucket = aws_s3_bucket.uploads.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+# Disable ACLs entirely — we use bucket policy for public read
+resource "aws_s3_bucket_ownership_controls" "uploads" {
+  bucket = aws_s3_bucket.uploads.id
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+# Allow public bucket policy (for splits/ prefix), block public ACLs
+resource "aws_s3_bucket_public_access_block" "uploads" {
+  bucket                  = aws_s3_bucket.uploads.id
+  block_public_acls       = true
+  ignore_public_acls      = true
+  block_public_policy     = false
+  restrict_public_buckets = false
+}
+
+# Public read on splits/* only (other prefixes remain private)
+data "aws_iam_policy_document" "uploads_bucket_policy" {
+  statement {
+    sid     = "PublicReadSplits"
+    effect  = "Allow"
+    actions = ["s3:GetObject"]
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+    resources = ["${aws_s3_bucket.uploads.arn}/splits/*"]
+  }
+}
+
+resource "aws_s3_bucket_policy" "uploads" {
+  bucket = aws_s3_bucket.uploads.id
+  policy = data.aws_iam_policy_document.uploads_bucket_policy.json
+
+  depends_on = [aws_s3_bucket_public_access_block.uploads]
+}
+
+# CORS: mobile clients PUT directly to presigned URLs
+resource "aws_s3_bucket_cors_configuration" "uploads" {
+  bucket = aws_s3_bucket.uploads.id
+
+  cors_rule {
+    allowed_methods = ["PUT", "GET"]
+    allowed_origins = ["*"]
+    allowed_headers = ["*"]
+    expose_headers  = ["ETag"]
+    max_age_seconds = 3000
+  }
+}
+
+# EC2 role needs s3:PutObject/GetObject on this bucket to generate valid presigned URLs
+data "aws_iam_policy_document" "ec2_s3_uploads" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:DeleteObject",
+    ]
+    resources = ["${aws_s3_bucket.uploads.arn}/*"]
+  }
+}
+
+resource "aws_iam_role_policy" "ec2_s3_uploads" {
+  name   = "${var.project_name}-ec2-s3-uploads"
+  role   = aws_iam_role.ec2_ssm.id
+  policy = data.aws_iam_policy_document.ec2_s3_uploads.json
 }

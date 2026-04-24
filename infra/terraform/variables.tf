@@ -26,3 +26,9 @@ variable "project_name" {
   type        = string
   default     = "onebite"
 }
+
+variable "uploads_bucket_name" {
+  description = "S3 bucket name for user uploads. If null, defaults to <project_name>-uploads (must be globally unique)."
+  type        = string
+  default     = null
+}
