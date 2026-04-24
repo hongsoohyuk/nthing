@@ -1,0 +1,6 @@
+{
+  "enabledPlugins": {
+    "terraform-code-generation@hashicorp": true,
+    "terraform-provider-development@hashicorp": true
+  }
+}
