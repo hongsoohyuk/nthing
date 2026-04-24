@@ -96,15 +96,30 @@ cd server
 
 ## 핵심 기능 분류
 
-### MVP (Phase 1) - 핵심 루프 검증
+### MVP (Phase 1) - 핵심 루프 검증 — ✅ 기능 구현 완료 (2026-04-24)
+
+**서버**
 - [x] 상품(Split) CRUD API
-- [x] 카카오 소셜 로그인 + JWT 인증 구조
-- [x] 유저-상품 연결 (누가 등록했는지)
-- [x] 위치 기반 조회 (반경 N km)
-- [x] 나눠사기 참여(join) API
+- [x] 카카오/네이버/구글/애플 소셜 로그인 + JWT
 - [x] 유저 프로필 API (GET/PATCH /users/me)
-- [ ] 모바일 앱 (로그인, 지도, 등록, 상세)
-- [ ] 푸시 알림
+- [x] 위치 기반 조회 (Haversine / PostGIS 전략 패턴)
+- [x] 나눠사기 참여(join) + 자동 매칭 + 취소(cancel)
+- [x] 내 나눠사기 / 참여한 나눠사기 (GET /splits/my, /splits/participated)
+- [x] S3 presigned 이미지 업로드 (POST /uploads/sign)
+
+**모바일**
+- [x] 로그인 / 홈 / 지도 / 프로필 / 등록 / 상세 / 내/참여 나눠사기 (Android + iOS 컴파일 통과)
+- [x] GPS 위치 캡처, Kakao Map 연동, 카메라/갤러리, S3 직접 PUT 업로드
+- [x] 소셜 로그인 (Android 3종 + iOS 애플), Keychain/EncryptedSharedPrefs 토큰 저장
+
+**인프라**
+- [x] AWS Terraform (EC2 + EIP + S3 + IAM)
+- [x] GitHub Actions 자동 배포 (GHCR + SSM + 자동 bootstrap)
+
+**남은 것** (코드 아닌 운영/테스트)
+- [ ] 실기기 E2E 스모크
+- [ ] 도메인 확보 → HTTPS / OAuth 실값 / 모바일 BASE_URL 교체 (`infra/CLAUDE.md` 체크리스트)
+- [ ] 푸시 알림 → Phase 2 로 이동
 
 ### Phase 2 - 신뢰와 편의성
 - [ ] 인앱 채팅
@@ -144,6 +159,7 @@ cd server
 | 2026-02-21 | Spring Boot (Kotlin) | 언어 통일, 검증된 프레임워크 | Node.js, Firebase |
 | 2026-02-21 | MVP에서 예치금 제외 | 전자금융업 등록 요건(20억) | PG 에스크로 연동 |
 | 2026-02-21 | 소셜 로그인 우선 | 가입 허들 최소화 | 이메일/비밀번호 |
+| 2026-04-24 | 이미지 저장: S3 + presigned URL (당근마켓식) | EC2 재기동 시 로컬 파일 소실 리스크, t4g.small 대역폭 절약, 프로덕션 표준 | 로컬 파일 (MVP 후 마이그레이션 부담 큼), S3+서버 프록시 (대역폭 낭비) |
 
 ---
 
