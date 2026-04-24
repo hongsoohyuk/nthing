@@ -155,12 +155,21 @@ APPLE_CLIENT_ID
 2. Docker 이미지 **linux/arm64**로 빌드 → GHCR(`ghcr.io/<owner>/onebite/server:latest`) 푸시
 3. **GitHub OIDC**로 AWS IAM role 가정 (`onebite-github-actions-role`)
 4. **AWS SSM Run Command**로 EC2에 배포 스크립트 실행
-   - `git pull` → `docker login ghcr.io` → `docker compose --env-file ./infra/.env pull/up -d` → `docker image prune`
+   - **bootstrap**: `/opt/onebite`가 없으면 `git clone` → 항상 `ONEBITE_ENV_B64` Secret을 풀어 `/opt/onebite/infra/.env`로 저장 (overwrite) → chown/chmod
+   - **deploy**: `git fetch && git reset --hard origin/main` → `docker login ghcr.io` → `docker compose --env-file ./infra/.env pull/up -d` → `docker image prune`
 5. `/actuator/health` 재시도 헬스체크 (HTTP 80, nginx 경유)
 
 ### GitHub Secrets
 - `AWS_ROLE_TO_ASSUME` — `arn:aws:iam::<account>:role/onebite-github-actions-role`
 - `EC2_HOST` — Elastic IP (health check 및 로그 보고용)
+- `ONEBITE_ENV_B64` — `infra/.env` 파일 전체 내용을 base64로 인코딩한 값. **이게 EC2의 `/opt/onebite/infra/.env` 원본**. 값 수정 시:
+  ```bash
+  # 로컬에서 infra/.env 수정 → 다시 base64
+  base64 -i infra/.env | tr -d '\n' | pbcopy
+  # GitHub → Settings → Secrets → ONEBITE_ENV_B64 편집
+  # Actions 탭에서 "Deploy to AWS" 워크플로우 Re-run
+  ```
+  배포 워크플로우가 줄바꿈 자동 제거는 해주지만, 생성 시 `tr -d '\n'` 걸어두면 안전.
 - (GHCR 인증은 GitHub 기본 토큰 사용)
 
 ### GitHub Actions → AWS 인증 흐름
@@ -220,24 +229,25 @@ aws ssm start-session --target $(terraform output -raw instance_id) --profile pe
 ```
 
 ### 최초 1회 (저장소 bootstrap)
-```bash
-# 로컬에서
-scp -i onebite-key.pem infra/.env ec2-user@<eip>:/tmp/onebite.env
 
-# 서버 안에서
-sudo git clone https://github.com/hongsoohyuk/one-bite.git /opt/onebite
-sudo chown -R ec2-user:ec2-user /opt/onebite
-sudo mv /tmp/onebite.env /opt/onebite/infra/.env
-sudo chown ec2-user:ec2-user /opt/onebite/infra/.env
-sudo chmod 600 /opt/onebite/infra/.env
-```
+**수동 작업 필요 없음.** GitHub Secret `ONEBITE_ENV_B64`만 등록되어 있으면 배포 워크플로우가 EC2에서 자동으로 다음을 수행:
+
+- `/opt/onebite`가 없으면 `git clone` + chown
+- `ONEBITE_ENV_B64`를 디코드하여 `/opt/onebite/infra/.env`로 저장 (매 배포마다 덮어쓰기, Secret = 단일 소스 of truth)
+
+즉, 새 인스턴스 만들면:
+1. Terraform으로 인스턴스 생성
+2. `.github/workflows/deploy.yml` 의 `EC2_INSTANCE_ID`를 새 값으로 업데이트 후 push
+3. Actions가 알아서 bootstrap + deploy
+
+`.env` 값 변경 시에도 동일: Secret 편집 → 수동 "Re-run workflow".
 
 ### 최초 1회 (SSL 발급, 도메인 준비 후)
 현재는 HTTP-only nginx 구성. 도메인이 준비되면:
 1. `infra/nginx/nginx.conf`에 443 server 블록과 80→443 redirect 복원
 2. 서버에서 `./infra/scripts/init-ssl.sh <도메인>` 실행
 3. OAuth provider 콘솔에서 redirect URI를 HTTPS/도메인 기반으로 업데이트
-4. `infra/.env`의 `*_REDIRECT_URI`도 같이 업데이트 후 재배포
+4. `infra/.env`의 `*_REDIRECT_URI`도 같이 업데이트 → `base64 -i infra/.env | tr -d '\n'` → `ONEBITE_ENV_B64` Secret 덮어쓰기 → Actions "Re-run"
 
 ### 일상 배포
 GitHub Actions가 main 브랜치 푸시 시 자동으로 배포합니다. 수동 롤아웃은 Actions 탭에서 `Deploy to AWS` 워크플로우를 재실행.
@@ -304,9 +314,8 @@ GitHub Actions가 main 브랜치 푸시 시 자동으로 배포합니다. 수동
 ### 5) `infra/.env` 업데이트 + 재배포
 - [ ] 각 콘솔에서 실제 `CLIENT_SECRET` 복사 → 로컬 `infra/.env`에 반영 (`KAKAO_CLIENT_SECRET`, `NAVER_CLIENT_SECRET`, `GOOGLE_CLIENT_SECRET`)
 - [ ] `KAKAO_REDIRECT_URI`, `GOOGLE_REDIRECT_URI`를 `https://<domain>/...`로 변경
-- [ ] `scp -i infra/terraform/onebite-key.pem infra/.env ec2-user@43.200.206.239:/tmp/onebite.env`
-- [ ] 서버에서 `sudo mv /tmp/onebite.env /opt/onebite/infra/.env && sudo chown ec2-user:ec2-user /opt/onebite/infra/.env && sudo chmod 600 /opt/onebite/infra/.env`
-- [ ] `sudo -u ec2-user docker compose --env-file ./infra/.env -f docker-compose.prod.yml up -d --force-recreate server`
+- [ ] `base64 -i infra/.env | tr -d '\n' | pbcopy` → GitHub Settings에서 `ONEBITE_ENV_B64` Secret 덮어쓰기
+- [ ] GitHub Actions → "Deploy to AWS" → **Re-run workflow** 클릭 (bootstrap step이 EC2의 `.env`를 덮어쓰고 컨테이너 재시작까지 처리)
 
 ### 6) 모바일 클라이언트 base URL 전환
 - [ ] 위 "모바일 클라이언트 / 문서의 서버 IP 하드코딩" 섹션의 5개 파일을 `https://<domain>` (포트 없음)으로 일괄 수정

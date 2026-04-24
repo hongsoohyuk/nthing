@@ -73,22 +73,45 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Deploy via SSM Run Command
+        env:
+          ONEBITE_ENV_B64: ${{ secrets.ONEBITE_ENV_B64 }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_ACTOR: ${{ github.actor }}
+          COMMIT_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
+
+          # Secret을 Actions UI에서 줄바꿈 포함해 붙여넣었을 수 있어 방어적으로 제거
+          ENV_B64=$(printf '%s' "$ONEBITE_ENV_B64" | tr -d '\n\r')
+          if [ -z "$ENV_B64" ]; then
+            echo "ERROR: ONEBITE_ENV_B64 secret is empty" >&2
+            exit 1
+          fi
+
+          # SSM --parameters 는 JSON 파일로 넘겨야 따옴표/길이 이슈가 없음
+          cat > /tmp/ssm-params.json <<JSON
+          {
+            "commands": [
+              "set -eux",
+              "if [ ! -d /opt/onebite ]; then sudo git clone https://github.com/hongsoohyuk/one-bite.git /opt/onebite && sudo chown -R ec2-user:ec2-user /opt/onebite; fi",
+              "cd /opt/onebite",
+              "sudo -u ec2-user git fetch origin main && sudo -u ec2-user git reset --hard origin/main",
+              "echo '$ENV_B64' | base64 -d | sudo tee /opt/onebite/infra/.env > /dev/null",
+              "sudo chown ec2-user:ec2-user /opt/onebite/infra/.env",
+              "sudo chmod 600 /opt/onebite/infra/.env",
+              "echo '$GH_TOKEN' | sudo -u ec2-user docker login ghcr.io -u '$GH_ACTOR' --password-stdin",
+              "sudo -u ec2-user docker compose --env-file ./infra/.env -f docker-compose.prod.yml pull server",
+              "sudo -u ec2-user docker compose --env-file ./infra/.env -f docker-compose.prod.yml up -d",
+              "sudo -u ec2-user docker image prune -f"
+            ]
+          }
+          JSON
 
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids "$EC2_INSTANCE_ID" \
             --document-name "AWS-RunShellScript" \
-            --comment "deploy ${{ github.sha }}" \
-            --parameters commands='[
-              "set -eux",
-              "cd /opt/onebite",
-              "sudo -u ec2-user git pull origin main",
-              "echo \"${{ secrets.GITHUB_TOKEN }}\" | sudo -u ec2-user docker login ghcr.io -u ${{ github.actor }} --password-stdin",
-              "sudo -u ec2-user docker compose --env-file ./infra/.env -f docker-compose.prod.yml pull server",
-              "sudo -u ec2-user docker compose --env-file ./infra/.env -f docker-compose.prod.yml up -d",
-              "sudo -u ec2-user docker image prune -f"
-            ]' \
+            --comment "deploy $COMMIT_SHA" \
+            --parameters file:///tmp/ssm-params.json \
             --output text \
             --query "Command.CommandId")
 
