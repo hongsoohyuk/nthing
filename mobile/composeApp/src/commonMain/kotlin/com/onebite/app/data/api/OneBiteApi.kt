@@ -7,6 +7,7 @@ import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
@@ -62,6 +63,11 @@ object OneBiteApi {
                 header("Authorization", "Bearer $token")
             }
         }
+    }
+
+    // S3 presigned URL에 직접 PUT 업로드용 (Bearer 토큰 / baseURL 없음)
+    private val uploadClient = HttpClient {
+        install(Logging) { level = LogLevel.INFO }
     }
 
     // 토큰 저장 함수
@@ -137,10 +143,42 @@ object OneBiteApi {
         return client.post("splits/$id/join").body()
     }
 
-    // 나눠사기 취소 (등록자 본인)
-    // React: await api.delete(`/splits/${id}`)
-    suspend fun cancelSplit(id: Long) {
-        client.delete("splits/$id")
+    // 나눠사기 취소 (등록자 본인, WAITING 상태만)
+    // 서버 매핑: PATCH /splits/{id}/cancel
+    suspend fun cancelSplit(id: Long): SplitItem =
+        client.patch("splits/$id/cancel").body()
+
+    // 내가 등록한 나눠사기 목록
+    suspend fun getMySplits(page: Int = 0, size: Int = 20): PageResponse<SplitItem> =
+        client.get("splits/my") {
+            parameter("page", page)
+            parameter("size", size)
+        }.body()
+
+    // 내가 참여한 나눠사기 목록
+    suspend fun getParticipatedSplits(page: Int = 0, size: Int = 20): PageResponse<SplitItem> =
+        client.get("splits/participated") {
+            parameter("page", page)
+            parameter("size", size)
+        }.body()
+
+    // ===== Upload API =====
+
+    // presigned PUT URL 발급
+    suspend fun signUpload(contentType: String, size: Long): PresignUploadResponse =
+        client.post("uploads/sign") {
+            setBody(PresignUploadRequest(contentType = contentType, size = size))
+        }.body()
+
+    // S3 presigned URL에 직접 PUT. 성공 시 2xx.
+    suspend fun uploadToS3(uploadUrl: String, bytes: ByteArray, contentType: String) {
+        val response = uploadClient.put(uploadUrl) {
+            this.contentType(ContentType.parse(contentType))
+            setBody(bytes)
+        }
+        if (!response.status.isSuccess()) {
+            throw IllegalStateException("S3 업로드 실패: ${response.status}")
+        }
     }
 
     // ===== User API =====

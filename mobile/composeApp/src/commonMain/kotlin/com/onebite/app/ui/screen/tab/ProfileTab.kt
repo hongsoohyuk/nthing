@@ -23,7 +23,9 @@ private sealed interface ProfileUiState {
 
 @Composable
 fun ProfileTab(
-    onLogout: () -> Unit = {}
+    onMySplits: () -> Unit = {},
+    onParticipatedSplits: () -> Unit = {},
+    onLogout: () -> Unit = {},
 ) {
     var uiState by remember { mutableStateOf<ProfileUiState>(ProfileUiState.Loading) }
     val coroutineScope = rememberCoroutineScope()
@@ -107,9 +109,22 @@ fun ProfileTab(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // 메뉴 항목들
-                ProfileMenuItem(title = "내 나눠사기", subtitle = "등록한 상품 목록")
-                ProfileMenuItem(title = "참여한 나눠사기", subtitle = "참여 요청한 상품 목록")
-                ProfileMenuItem(title = "설정", subtitle = "알림, 위치, 계정 관리")
+                ProfileMenuItem(
+                    title = "내 나눠사기",
+                    subtitle = "등록한 상품 목록",
+                    onClick = onMySplits,
+                )
+                ProfileMenuItem(
+                    title = "참여한 나눠사기",
+                    subtitle = "참여 요청한 상품 목록",
+                    onClick = onParticipatedSplits,
+                )
+                ProfileMenuItem(
+                    title = "설정",
+                    subtitle = "알림, 위치, 계정 관리",
+                    onClick = {},
+                    enabled = false,
+                )
 
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -134,15 +149,27 @@ fun ProfileTab(
 }
 
 @Composable
-private fun ProfileMenuItem(title: String, subtitle: String) {
+private fun ProfileMenuItem(
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        onClick = { /* TODO */ }
+        onClick = onClick,
+        enabled = enabled,
     ) {
         Column(
             modifier = Modifier.padding(vertical = 12.dp)
         ) {
-            Text(text = title, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            Text(
+                text = title,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = if (enabled) MaterialTheme.colorScheme.onSurface
+                else MaterialTheme.colorScheme.outline,
+            )
             Text(
                 text = subtitle,
                 fontSize = 13.sp,

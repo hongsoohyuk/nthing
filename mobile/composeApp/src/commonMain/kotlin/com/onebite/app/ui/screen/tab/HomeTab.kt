@@ -1,22 +1,18 @@
 package com.onebite.app.ui.screen.tab
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.onebite.app.data.api.OneBiteApi
 import com.onebite.app.data.model.SplitItem
 import com.onebite.app.ui.component.EmptyContent
 import com.onebite.app.ui.component.ErrorContent
 import com.onebite.app.ui.component.LoadingContent
-import com.onebite.app.ui.component.formatPrice
+import com.onebite.app.ui.component.SplitCard
 import kotlinx.coroutines.launch
 
 // HomeTab.kt - 홈 탭 (나눠사기 목록)
@@ -97,102 +93,5 @@ fun HomeTab(
                 }
             }
         }
-    }
-}
-
-// SplitCard - 나눠사기 아이템 카드 컴포넌트
-@Composable
-private fun SplitCard(
-    split: SplitItem,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            // 상품명 + 상태 배지
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = split.productName,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                StatusBadge(status = split.status)
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // 위치 정보
-            Text(
-                text = split.address,
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // 등록 시간
-            split.createdAt?.let { createdAt ->
-                Text(
-                    text = createdAt,
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.outline
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            } ?: Spacer(modifier = Modifier.height(8.dp))
-
-            // 가격 정보
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "1인당 ${split.pricePerPerson.formatPrice()}",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = "${split.splitCount}명이서 나누기",
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-    }
-}
-
-// StatusBadge - 상태 표시 배지
-@Composable
-private fun StatusBadge(status: String) {
-    val (text, color) = when (status) {
-        "WAITING" -> "대기중" to MaterialTheme.colorScheme.primary
-        "MATCHED" -> "매칭됨" to MaterialTheme.colorScheme.tertiary
-        "COMPLETED" -> "완료" to MaterialTheme.colorScheme.outline
-        "CANCELLED" -> "취소됨" to MaterialTheme.colorScheme.error
-        else -> status to MaterialTheme.colorScheme.outline
-    }
-    Surface(
-        color = color.copy(alpha = 0.12f),
-        shape = MaterialTheme.shapes.small
-    ) {
-        Text(
-            text = text,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            fontSize = 12.sp,
-            color = color,
-            fontWeight = FontWeight.Medium
-        )
     }
 }

@@ -375,11 +375,26 @@ fun CreateSplitScreen(
                         isSubmitting = true
                         errorMessage = null
                         try {
+                            // 사진이 있으면 S3 presigned URL 발급 → 바이너리 PUT → publicUrl 사용
+                            val imageUrl = pickedImage?.let { image ->
+                                val presign = OneBiteApi.signUpload(
+                                    contentType = "image/jpeg",
+                                    size = image.bytes.size.toLong(),
+                                )
+                                OneBiteApi.uploadToS3(
+                                    uploadUrl = presign.uploadUrl,
+                                    bytes = image.bytes,
+                                    contentType = "image/jpeg",
+                                )
+                                presign.publicUrl
+                            }
+
                             val request = CreateSplitRequest(
                                 productName = productName.trim(),
                                 totalPrice = totalPriceInt!!,
                                 totalQty = totalQtyInt!!,
                                 splitCount = splitCountInt!!,
+                                imageUrl = imageUrl,
                                 latitude = currentLocation?.latitude ?: 0.0,
                                 longitude = currentLocation?.longitude ?: 0.0,
                                 address = address.trim()

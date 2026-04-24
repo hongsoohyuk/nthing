@@ -1,12 +1,15 @@
 package com.onebite.app.media
 
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.refTo
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.NSData
 import platform.UIKit.*
 import platform.darwin.NSObject
+import platform.posix.memcpy
 import kotlin.coroutines.resume
+import kotlin.random.Random
 
 actual object ImagePicker {
     private var rootViewController: UIViewController? = null
@@ -37,7 +40,7 @@ actual object ImagePicker {
                     val data = UIImageJPEGRepresentation(image, 0.85)
                     if (data != null) {
                         val bytes = data.toByteArray()
-                        cont.resume(PickedImage(bytes, "photo_${platform.Foundation.NSDate().timeIntervalSince1970.toLong()}.jpg"))
+                        cont.resume(PickedImage(bytes, "photo_${Random.nextLong()}.jpg"))
                     } else {
                         cont.resume(null)
                     }
@@ -60,11 +63,12 @@ actual object ImagePicker {
 @OptIn(ExperimentalForeignApi::class)
 private fun NSData.toByteArray(): ByteArray {
     val size = this.length.toInt()
-    val bytes = ByteArray(size)
-    if (size > 0) {
-        this.getBytes(bytes.refTo(0), size.toULong())
+    val result = ByteArray(size)
+    if (size == 0) return result
+    result.usePinned { pinned ->
+        memcpy(pinned.addressOf(0), this.bytes, this.length)
     }
-    return bytes
+    return result
 }
 
 private class ImagePickerDelegate(

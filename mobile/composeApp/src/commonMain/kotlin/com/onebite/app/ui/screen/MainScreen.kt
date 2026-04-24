@@ -22,6 +22,8 @@ data class TabItem(
 fun MainScreen(
     onSplitClick: (Long) -> Unit,
     onCreateSplit: () -> Unit,
+    onMySplits: () -> Unit,
+    onParticipatedSplits: () -> Unit,
     onLogout: () -> Unit
 ) {
     var selectedTab by remember { mutableStateOf(0) }
@@ -69,7 +71,11 @@ fun MainScreen(
             when (selectedTab) {
                 0 -> HomeTab(onSplitClick = onSplitClick)
                 1 -> MapTab(onSplitClick = onSplitClick)
-                2 -> ProfileTab(onLogout = onLogout)
+                2 -> ProfileTab(
+                    onMySplits = onMySplits,
+                    onParticipatedSplits = onParticipatedSplits,
+                    onLogout = onLogout,
+                )
             }
         }
     }
