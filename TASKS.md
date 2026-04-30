@@ -1,6 +1,6 @@
 # One Bite - 전체 TODO 관리
 
-> 최종 업데이트: 2026-04-24
+> 최종 업데이트: 2026-04-30
 
 각 영역별 상세는 `server/CLAUDE.md`, `mobile/CLAUDE.md`, `infra/CLAUDE.md` 참조.
 
@@ -8,7 +8,7 @@
 
 ## Phase 1 (MVP) — ✅ 기능 구현 완료
 
-코드 작업 체크리스트는 모두 끝났고, 실기기 E2E 테스트 + OAuth 실값만 남은 상태.
+코드 + 배포는 끝, 남은 건 **Google 도메인 의존 + 실기기 풀 플로우 검증**.
 
 ### 서버 (`server/`) — ✅ 기능 완료
 
@@ -19,27 +19,29 @@
 - [x] 유저 프로필 (GET/PATCH /users/me)
 - [x] 페이지네이션 (PageResponse, page/size)
 - [x] Flyway 마이그레이션
-- [x] **S3 presigned URL 업로드 (POST /uploads/sign)** — 2026-04-24
-- [x] **내가 등록/참여한 나눠사기 (GET /splits/my, /splits/participated)** — 2026-04-24
+- [x] S3 presigned URL 업로드 (POST /uploads/sign) — 2026-04-24
+- [x] 내가 등록/참여한 나눠사기 (GET /splits/my, /splits/participated) — 2026-04-24
 - [x] docs/api-spec.md 최신
 - [x] EC2 + PostgreSQL 배포 (Docker Compose)
 - [x] GET /api/splits 비인증 둘러보기 허용
+- [x] OAuth callback이 `com.onebite.app://oauth/{provider}` 로 code 릴레이 — 2026-04-30
 
 ### 모바일 (`mobile/`) — ✅ 기능 완료 (Android + iOS 컴파일 통과)
 
 - [x] KMP 프로젝트 (Android + iOS 타겟)
 - [x] Ktor 클라이언트 (모든 서버 API 연동)
 - [x] 소셜 로그인 (Android: 카카오/네이버/구글, iOS: 애플)
-- [x] 토큰 저장 (Android: EncryptedSharedPreferences, iOS: Keychain)
+- [x] 토큰 저장 (Android: EncryptedSharedPreferences, iOS: ⚠️ NSUserDefaults stop-gap)
 - [x] 자동 로그인
 - [x] 전체 화면 (로그인 / 메인 3탭 / 상세 / 등록 / 내 나눠사기 / 참여한 나눠사기)
-- [x] **GPS 위치 캡처** (FusedLocation / CLLocationManager expect/actual)
-- [x] **Kakao Map 연동** (MapTab에 핀 + 현재위치)
-- [x] **카메라/갤러리** (ImagePicker expect/actual)
-- [x] **이미지 S3 presigned PUT 업로드 플로우** — 2026-04-24 (이전엔 pickedImage가 서버로 안 감)
-- [x] **프로필 메뉴 → 내 나눠사기 / 참여한 나눠사기 스크린** — 2026-04-24
-- [x] Material3 테마 + 공통 UI (LoadingContent, ErrorContent, EmptyContent, SplitCard)
-- [x] 네비게이션 (6 라우트: LOGIN, MAIN, SPLIT_DETAIL, CREATE_SPLIT, MY_SPLITS, PARTICIPATED_SPLITS)
+- [x] GPS 위치 캡처 (FusedLocation / CLLocationManager expect/actual)
+- [x] Kakao Map 연동 (MapTab에 핀 + 현재위치)
+- [x] 카메라/갤러리 (ImagePicker expect/actual)
+- [x] 이미지 S3 presigned PUT 업로드 플로우 — 2026-04-24
+- [x] 프로필 메뉴 → 내 나눠사기 / 참여한 나눠사기 스크린 — 2026-04-24
+- [x] Material3 테마 + 공통 UI
+- [x] 네비게이션 (6 라우트)
+- [x] ProfileTab 게스트 모드 분기 (둘러보기 시 401 방지) — 2026-04-30
 
 ### 인프라 (`infra/`) — ✅ AWS 배포 + CI/CD 자동화 완료
 
@@ -47,26 +49,39 @@
 - [x] 멀티스테이지 Dockerfile + HEALTHCHECK
 - [x] AWS Terraform: Default VPC + SG + KeyPair + EC2 t4g.small + EIP
 - [x] IAM: EC2 SSM instance profile, GitHub Actions OIDC role
-- [x] **S3 uploads 버킷 + bucket policy (splits/* public read) + CORS + EC2 role s3:PutObject** — 2026-04-24
-- [x] **GitHub Actions 자동 배포** (GHCR 빌드 + SSM Run Command)
-- [x] **배포 워크플로우 bootstrap** — /opt/onebite 자동 git clone + `ONEBITE_ENV_B64` Secret 에서 .env 복원 (수동 scp 불필요) — 2026-04-24
+- [x] S3 uploads 버킷 + bucket policy + CORS — 2026-04-24
+- [x] GitHub Actions 자동 배포 (GHCR + SSM Run Command)
+- [x] /opt/onebite 자동 git clone + .env 복원 — 2026-04-24
 - [x] Nginx 리버스 프록시 (HTTP-only 임시)
 
 ---
 
-## MVP 남은 것 (코드 아닌 운영/테스트)
+## MVP 남은 것
 
-**배포 & 검증**
-- [ ] `feature/mvp` 브랜치 → main merge → Actions 자동 배포
-- [ ] `curl http://43.200.206.239/actuator/health` 확인
-- [ ] 실기기 E2E 스모크: 로그인 → 상품 등록(위치 캡처 + 사진 업로드) → 지도에서 핀 확인 → 참여
-- [ ] 모바일에서 `GET /splits/mine` / `/participated` 정상 호출 확인
+### 운영/검증
 
-**보류 중 (도메인 확보 후 일괄 처리 — `infra/CLAUDE.md` 도메인 체크리스트 참조)**
-- [ ] OAuth 콘솔에서 실제 CLIENT_ID / CLIENT_SECRET 발급 + Secret 업데이트
-- [ ] HTTPS 활성화 (Let's Encrypt)
-- [ ] 모바일 Base URL을 도메인 기반으로 전환 (현재 5개 파일에 EIP 하드코딩)
-- [ ] nginx.conf 443 블록 복원
+- [ ] **실기기 E2E 스모크**: 로그인은 iOS Kakao + Android Kakao 확인됨 / 등록 → 지도 핀 → 참여까지 풀 플로우 미검증
+- [ ] 모바일에서 `GET /splits/my`, `/splits/participated` 정상 호출 확인 (현재는 화면 진입 가능, 데이터는 로그인 후 첫 등록 전이라 빈 상태)
+
+### OAuth 상태
+
+| Provider | Android | iOS | 비고 |
+|---|---|---|---|
+| Kakao | ✅ 확인 | ✅ 확인 | 실 키 적용 + 로그인 통과 |
+| Naver | 🟡 미확인 | 🟡 미확인 | .env 실 키 적용 (실제 로그인 미테스트) |
+| Apple | — | ❌ 비활성 | `OAuthHandler.ios.kt:isAvailable()` 가 APPLE→false. iOS 정식 지원하려면 활성화 필요 |
+| Google | 🟡 미확인 | ❌ 차단 | **Google Console이 IP redirect_uri 거절** → 도메인 확보 후에야 진행 가능 |
+
+### 도메인 + HTTPS (Google + 정식 출시 트리거)
+
+`infra/CLAUDE.md`의 "도메인 준비 시 체크리스트" 한꺼번에 진행:
+- [ ] 도메인 구매 (Cloudflare 추천: `onebite.app` / `hanip.app` ~$13/년)
+- [ ] DNS A 레코드 → EIP 43.200.206.239
+- [ ] Let's Encrypt HTTPS 활성화 + nginx.conf 443 블록 복원
+- [ ] OAuth 4종 콘솔 redirect URI 도메인 기반으로 갱신
+- [ ] EC2 `.env`의 `*_REDIRECT_URI` 도메인 기반으로 갱신
+- [ ] 모바일 BASE_URL 5개 파일 일괄 교체 (도메인)
+- [ ] iOS `Info.plist` `NSExceptionDomains` 정리 (HTTPS 되면 삭제 가능)
 
 ---
 
@@ -74,14 +89,17 @@
 
 **서버**
 - [ ] Apple SignIn 서명 검증 (현재 idToken 디코딩만)
-- [ ] 테스트 코드 확충 (현재 contextLoads + 기존 Controller 통합테스트)
+- [ ] 테스트 코드 확충
 - [ ] Rate limiting
 - [ ] Swagger/OpenAPI 자동 생성
 
 **모바일**
-- [ ] iOS OAuth SDK 통합 (카카오/네이버/구글 CocoaPods 또는 SPM) — 현재 Apple만
-- [ ] OAuth 키를 local.properties 로 완전 분리 (MainActivity 하드코딩 남아있음)
-- [ ] iOS Base URL 분리 (현재 Android 에뮬레이터 전용 `10.0.2.2` OR EIP)
+- [ ] **iOS TokenStorage Keychain 재구현** (현재 NSUserDefaults 평문 stop-gap. CFStringRef 캐스팅 이슈로 직전 시도 런타임 크래시. Swift 헬퍼 클래스 또는 CFDictionaryCreate 직접 사용 방향)
+- [ ] iOS OAuth SDK 통합 (카카오/네이버/구글 — 현재 iOS는 Apple만 + 웹 OAuth)
+- [ ] iOS `OAuthHandler.isAvailable(APPLE)` true로 변경 + 동작 검증
+- [ ] OAuth 키를 `local.properties` 로 완전 분리 (MainActivity 하드코딩 잔존)
+- [ ] `GOOGLE_CLIENT_ID_ANDROID` 변수명 → `GOOGLE_SERVER_CLIENT_ID` (실제로는 Web Client ID라 헷갈림)
+- [ ] Ktor 클라이언트 `expectSuccess = true` 또는 HttpResponseValidator → 5xx 응답 시 깔끔한 에러 처리 (현재는 LoginResponse 파싱 실패로 표시됨)
 - [ ] 토큰 만료 감지 → 자동 로그아웃
 - [ ] Pull-to-refresh (홈/지도/내 나눠사기)
 - [ ] 페이지네이션 무한 스크롤
@@ -90,7 +108,8 @@
 - [ ] 모니터링 (Prometheus + Grafana 또는 CloudWatch)
 - [ ] 로그 집계 (Loki 또는 CloudWatch Logs)
 - [ ] PostgreSQL 자동 백업
-- [ ] EC2 인스턴스 ID 태그 기반 조회로 deploy.yml 하드코딩 제거
+- [ ] EC2 인스턴스 ID 태그 기반 조회로 `deploy.yml` 하드코딩 제거
+- [ ] AMI drift 방지 (`data "aws_ami" "al2023"`의 `most_recent = true` 때문에 AMI 갱신 시 인스턴스 교체. `lifecycle.ignore_changes = [ami]` 또는 AMI 핀)
 
 ---
 
