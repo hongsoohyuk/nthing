@@ -26,7 +26,7 @@ actual object OAuthHandler {
     // 웹 OAuth 콜백 대기용
     private var pendingOAuthResult: CompletableDeferred<OAuthResult>? = null
 
-    private const val SERVER_BASE = "http://43.200.206.239:8080"
+    private const val SERVER_BASE = "http://43.200.206.239"
     private const val NAVER_REDIRECT_URI = "$SERVER_BASE/api/auth/callback/naver"
 
     fun initialize(

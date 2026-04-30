@@ -31,7 +31,7 @@ import kotlinx.serialization.json.Json
 object OneBiteApi {
 
     // 서버 Base URL (EC2)
-    private const val BASE_URL = "http://43.200.206.239:8080/api/"
+    private const val BASE_URL = "http://43.200.206.239/api/"
 
     // JWT 토큰 저장 (추후 보안 저장소로 교체 예정)
     // React에서 localStorage.setItem("token", token)과 비슷

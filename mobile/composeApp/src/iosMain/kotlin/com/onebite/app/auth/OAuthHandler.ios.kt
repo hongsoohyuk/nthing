@@ -22,7 +22,7 @@ actual object OAuthHandler {
 
     private const val CALLBACK_SCHEME = "com.onebite.app"
     // 서버 OAuth redirect relay — 서버가 커스텀 스킴으로 리다이렉트해줌
-    private const val SERVER_BASE = "http://43.200.206.239:8080"
+    private const val SERVER_BASE = "http://43.200.206.239"
     private const val KAKAO_REDIRECT_URI = "$SERVER_BASE/api/auth/callback/kakao"
     private const val NAVER_REDIRECT_URI = "$SERVER_BASE/api/auth/callback/naver"
     private const val GOOGLE_REDIRECT_URI = "$SERVER_BASE/api/auth/callback/google"
