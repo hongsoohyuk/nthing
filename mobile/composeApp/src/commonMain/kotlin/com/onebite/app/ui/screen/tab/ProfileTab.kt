@@ -16,6 +16,7 @@ import com.onebite.app.ui.component.LoadingContent
 import kotlinx.coroutines.launch
 
 private sealed interface ProfileUiState {
+    data object Guest : ProfileUiState
     data object Loading : ProfileUiState
     data class Success(val profile: UserProfile) : ProfileUiState
     data class Error(val message: String) : ProfileUiState
@@ -27,7 +28,11 @@ fun ProfileTab(
     onParticipatedSplits: () -> Unit = {},
     onLogout: () -> Unit = {},
 ) {
-    var uiState by remember { mutableStateOf<ProfileUiState>(ProfileUiState.Loading) }
+    var uiState by remember {
+        mutableStateOf<ProfileUiState>(
+            if (AuthManager.isLoggedIn()) ProfileUiState.Loading else ProfileUiState.Guest
+        )
+    }
     val coroutineScope = rememberCoroutineScope()
 
     fun loadProfile() {
@@ -42,6 +47,7 @@ fun ProfileTab(
     }
 
     LaunchedEffect(Unit) {
+        if (!AuthManager.isLoggedIn()) return@LaunchedEffect
         uiState = try {
             ProfileUiState.Success(OneBiteApi.getMyProfile())
         } catch (e: Exception) {
@@ -50,6 +56,8 @@ fun ProfileTab(
     }
 
     when (val state = uiState) {
+        is ProfileUiState.Guest -> GuestProfile(onLogin = onLogout)
+
         is ProfileUiState.Loading -> LoadingContent(message = "프로필 불러오는 중...")
 
         is ProfileUiState.Error -> ErrorContent(
@@ -144,6 +152,36 @@ fun ProfileTab(
 
                 Spacer(modifier = Modifier.height(16.dp))
             }
+        }
+    }
+}
+
+@Composable
+private fun GuestProfile(onLogin: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(
+            text = "둘러보기 모드",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "프로필과 내 나눠사기를 보려면 로그인하세요.",
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(
+            onClick = onLogin,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text("로그인하기")
         }
     }
 }
