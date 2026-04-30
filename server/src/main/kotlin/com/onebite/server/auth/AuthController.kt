@@ -18,17 +18,18 @@ class AuthController(
         @RequestParam error: String?,
         response: HttpServletResponse
     ) {
-        val scheme = "onebite://auth/callback"
+        val scheme = "com.onebite.app://oauth/$provider"
         if (error != null || code == null) {
             response.sendRedirect("$scheme?error=${error ?: "no_code"}")
             return
         }
-        try {
-            val authResponse = authService.oauthCallbackLogin(provider, code, state)
-            response.sendRedirect("$scheme?token=${authResponse.token}&userId=${authResponse.userId}&isNewUser=${authResponse.isNewUser}")
-        } catch (e: Exception) {
-            response.sendRedirect("$scheme?error=${java.net.URLEncoder.encode(e.message ?: "login_failed", "UTF-8")}")
+        val params = buildString {
+            append("code=").append(java.net.URLEncoder.encode(code, "UTF-8"))
+            if (state != null) {
+                append("&state=").append(java.net.URLEncoder.encode(state, "UTF-8"))
+            }
         }
+        response.sendRedirect("$scheme?$params")
     }
 
     // POST /api/auth/kakao — 카카오 로그인 (인가코드 or 액세스토큰)
