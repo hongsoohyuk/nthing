@@ -16,6 +16,14 @@ Phase 1.1 Foundation 완료 상태. 다음 plan들에서 디자인 시스템 컴
 pnpm install
 ```
 
+### Android 빌드 사전 조건
+Capacitor 8은 **Java 21**을 요구합니다. macOS 기준:
+```bash
+brew install openjdk@21
+export JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
+```
+(shell profile에 `JAVA_HOME` export 추가 권장. `java -version`은 11/17 그대로 둬도 무방 — Gradle은 `JAVA_HOME` 우선.)
+
 ## Scripts
 ```bash
 pnpm dev            # Vite dev 서버 (브라우저)
