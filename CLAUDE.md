@@ -1,13 +1,17 @@
-# One Bite (한입) - 벌크 상품 나눠사기 플랫폼
+# Nthing (엔띵) - N분의 1로 나눠사는 위치 기반 소셜 커머스
 
 ## 프로젝트 개요
 
-"아 이거 한입만 먹고싶다" - 벌크/묶음 상품을 근처 사람과 나눠 구매하는 위치 기반 소셜 커머스 앱.
+"반띵하자" - 벌크/묶음 상품을 근처 사람과 N분의 1로 나눠 구매하는 위치 기반 소셜 커머스 앱.
+
+**브랜드명**: Nthing (영문) / 엔띵 (한글) — `N + thing` (N분의 1로 나눈 것). 한국어 "반띵하자"와 일맥상통.
+
+> 기존 이름 "한입 (One Bite)"는 음식에 한정되는 느낌이 있어 2026-05-18 리브랜딩. 비음식 벌크 상품(휴지·세제·원두 등)에도 자연스러운 "Nthing/반띵" 컨셉으로 변경.
 
 ### 핵심 시나리오
 1. 유저 A가 매장에서 두쫀쿠 4개입(2만원)을 발견 → 2개만 원함
 2. 앱에서 상품 등록 (위치, 상품명, 사진, 가격, 나눌 수량)
-3. 근처 유저 B에게 푸시 알림: "~~님이 ~m 근처에서 두쫀쿠 4개를 반씩 나눠갖길 원해요"
+3. 근처 유저 B에게 푸시 알림: "~~님이 ~m 근처에서 두쫀쿠 4개를 반띵하길 원해요"
 4. 유저 B가 수락 → 만나서 상품과 금액 교환
 
 ---
@@ -16,18 +20,21 @@
 
 ### 영역 1: 백엔드 서버 (`server/`)
 - 기술: Kotlin + Spring Boot 3.5 + H2(개발)/PostgreSQL(운영)
-- 담당: REST API, 인증(JWT + 카카오 OAuth), DB
+- 담당: REST API, 인증(JWT + 소셜 OAuth 4종), DB
 - API 명세: `docs/api-spec.md` 참고
-- 현재 상태: Split CRUD API 완성, 카카오 인증 구조 완성 (빌드 OK)
+- 현재 상태: Split CRUD API 완성, OAuth 4종 구조 완성 (빌드 OK)
+- 서버 패키지 `com.onebite.server`는 그대로 유지 (외부 노출 X, 동작 안정성 우선)
 
-### 영역 2: 모바일 클라이언트 (`mobile/` - 미생성)
-- 기술: KMP + Compose Multiplatform
-- 담당: UI, 네이티브 연동 (카메라, 위치, 푸시)
-- API 연동: `docs/api-spec.md` 기준으로 서버와 독립 개발 가능
-- 선행 조건: API 명세 확정
+### 영역 2: 모바일 클라이언트 (`mobile/`) — 마이그레이션 진행 중
+- 기술: **Vite + React + Capacitor 6** (마이그레이션 결정 2026-05-18)
+- App id: `co.nthing.app`
+- 담당: UI, 네이티브 연동 (Capacitor Plugin: Camera/Geolocation/Preferences/Browser/Push)
+- API 연동: `docs/api-spec.md` 기준으로 서버와 독립 개발
+- 마이그레이션 spec: `docs/superpowers/specs/2026-05-18-client-rewrite-design.md`
+- 기존 KMP 코드는 `mobile-kmp/`로 아카이브 (참고용, 마이그레이션 완료 후 삭제)
 
-### 영역 3: 인프라 (`infra/` - 미생성)
-- 기술: Docker, CI/CD, AWS/GCP
+### 영역 3: 인프라 (`infra/`)
+- 기술: Docker, Terraform (AWS), GitHub Actions
 - 담당: 배포, 모니터링
 
 ---
@@ -36,49 +43,53 @@
 
 | 영역 | 기술 | 비고 |
 |------|------|------|
-| 모바일 | KMP + Compose Multiplatform | iOS + Android 동시 |
+| 모바일 | **Vite + React + Capacitor 6** | iOS + Android + Web (PWA) |
+| 모바일 UI | Tailwind CSS + Pretendard | 디자인 토큰 `tailwind.config.ts` |
+| 모바일 상태 | Zustand + TanStack Query | |
 | 서버 | Kotlin + Spring Boot 3.5 | |
 | DB (개발) | H2 in-memory | |
 | DB (운영) | PostgreSQL + PostGIS | 위치 기반 쿼리 |
-| 인증 | 카카오 OAuth + JWT | |
-| 푸시 | FCM + APNs | |
-| 이미지 저장 | S3/Cloud Storage | |
+| 인증 | 소셜 OAuth (카카오/네이버/구글/애플) + JWT | 모바일은 웹 redirect (Capacitor Browser) |
+| 푸시 | FCM + APNs (Phase 2) | Capacitor Push Notifications |
+| 이미지 저장 | S3 + presigned URL | |
+| 패키지 매니저 (클라) | pnpm | |
 
 ---
 
 ## 프로젝트 구조
 
 ```
-one-bite/
-├── CLAUDE.md                 # 이 문서 (프로젝트 전체 컨텍스트)
+one-bite/                        # 디렉토리·repo 이름은 그대로 (git history 보존)
+├── CLAUDE.md                    # 이 문서 (프로젝트 전체 컨텍스트)
 ├── docs/
-│   ├── api-spec.md           # API 명세 (서버-클라이언트 계약)
+│   ├── api-spec.md              # API 명세 (서버-클라이언트 계약)
+│   ├── design/
+│   │   ├── claude-design-brief.md
+│   │   └── mockups/
+│   ├── superpowers/
+│   │   ├── specs/
+│   │   │   └── 2026-05-18-client-rewrite-design.md   # 마이그레이션 spec
+│   │   └── plans/
 │   └── kotlin-learning-roadmap.md
-├── server/                   # Spring Boot 백엔드
+├── server/                      # Spring Boot 백엔드 (com.onebite.server 패키지 유지)
 │   └── src/main/kotlin/com/onebite/server/
-│       ├── OneBiteServerApplication.kt
-│       ├── auth/             # 인증 (JWT, 카카오, Security)
-│       │   ├── AuthController.kt
-│       │   ├── AuthService.kt
-│       │   ├── JwtProvider.kt
-│       │   ├── JwtFilter.kt
-│       │   ├── KakaoClient.kt
-│       │   └── SecurityConfig.kt
-│       ├── split/            # 나눠사기 핵심 도메인
-│       │   ├── SplitController.kt
-│       │   ├── SplitService.kt
-│       │   ├── SplitRepository.kt
-│       │   ├── SplitRequest.kt   # Entity
-│       │   └── SplitDto.kt
-│       └── user/             # 유저
-│           ├── User.kt           # Entity
-│           ├── UserRepository.kt
-│           ├── UserController.kt
-│           ├── UserService.kt
-│           └── UserDto.kt
-├── mobile/                   # KMP (미생성)
-├── learn/                    # Kotlin 학습 자료
-└── infra/                    # 인프라 (미생성)
+│       ├── NthingServerApplication.kt   # 후속 리네임 가능 (지금은 OneBiteServerApplication)
+│       ├── auth/                # JWT + 소셜 OAuth + Security
+│       ├── split/               # 나눠사기 핵심 도메인
+│       └── user/                # 유저
+├── mobile/                      # 새 Vite + React + Capacitor 클라이언트 (마이그레이션 진행)
+│   ├── android/                 # Capacitor Android 셸
+│   ├── ios/                     # Capacitor iOS 셸
+│   ├── src/
+│   │   ├── routes/              # 페이지 컴포넌트
+│   │   ├── features/            # 도메인별 (auth/splits/map/upload/profile)
+│   │   └── shared/              # api, components, hooks, stores, lib
+│   ├── tailwind.config.ts
+│   ├── capacitor.config.ts
+│   └── vite.config.ts
+├── mobile-kmp/                  # 기존 KMP 아카이브 (참고용, 후속 삭제 예정)
+├── learn/                       # Kotlin 학습 자료
+└── infra/                       # Terraform + AWS
 ```
 
 ---
@@ -92,13 +103,23 @@ cd server
 # H2 콘솔: http://localhost:8080/h2-console (JDBC URL: jdbc:h2:mem:onebite)
 ```
 
+## 모바일 실행 방법 (마이그레이션 후)
+
+```bash
+cd mobile
+pnpm install
+pnpm dev                          # 브라우저 (개발 빠른 반복)
+npx cap sync && npx cap open ios  # iOS Xcode
+npx cap sync && npx cap open android  # Android Studio
+```
+
 ---
 
 ## 핵심 기능 분류
 
-### MVP (Phase 1) - 핵심 루프 검증 — ✅ 기능 구현 완료 (2026-04-24)
+### MVP (Phase 1) - 핵심 루프 검증 — ✅ 서버/KMP 기능 완성 (2026-04-24) / 🚧 React 마이그레이션 진행 중 (2026-05-18~)
 
-**서버**
+**서버** (변경 없음)
 - [x] 상품(Split) CRUD API
 - [x] 카카오/네이버/구글/애플 소셜 로그인 + JWT
 - [x] 유저 프로필 API (GET/PATCH /users/me)
@@ -107,21 +128,32 @@ cd server
 - [x] 내 나눠사기 / 참여한 나눠사기 (GET /splits/my, /splits/participated)
 - [x] S3 presigned 이미지 업로드 (POST /uploads/sign)
 
-**모바일**
-- [x] 로그인 / 홈 / 지도 / 프로필 / 등록 / 상세 / 내/참여 나눠사기 (Android + iOS 컴파일 통과)
-- [x] GPS 위치 캡처, Kakao Map 연동, 카메라/갤러리, S3 직접 PUT 업로드
-- [x] 소셜 로그인 (Android 3종 + iOS 애플), Keychain/EncryptedSharedPrefs 토큰 저장
+**모바일 (KMP — 아카이브)**
+- [x] 7화면 + OAuth 3+1종 + 카카오맵 + S3 업로드 + GPS — `mobile-kmp/`에 보존
+
+**모바일 (Vite + React + Capacitor — 마이그레이션 Phase 1)**
+- [ ] Vite 프로젝트 scaffold + Capacitor 셸
+- [ ] Tailwind + 디자인 토큰 + Pretendard
+- [ ] API 클라이언트 + Zustand stores + TanStack Query
+- [ ] 7화면 React 이식 (Login/Home/Map/Profile/Create/Detail/List)
+- [ ] OAuth 4종 (웹 redirect + deep link)
+- [ ] 카카오맵 JS SDK
+- [ ] Capacitor Plugins (Camera/Geolocation/Preferences/Browser/App)
+- [ ] iOS/Android 빌드 + 실기기 스모크
 
 **인프라**
 - [x] AWS Terraform (EC2 + EIP + S3 + IAM)
 - [x] GitHub Actions 자동 배포 (GHCR + SSM + 자동 bootstrap)
 
 **남은 것** (코드 아닌 운영/테스트)
-- [ ] 실기기 E2E 스모크
+- [ ] 실기기 E2E 스모크 (React 마이그레이션 후)
 - [ ] 도메인 확보 → HTTPS / OAuth 실값 / 모바일 BASE_URL 교체 (`infra/CLAUDE.md` 체크리스트)
+  - 도메인 후보: nthing.co / nthing.co.kr (예정)
 - [ ] 푸시 알림 → Phase 2 로 이동
 
 ### Phase 2 - 신뢰와 편의성
+- [ ] 푸시 알림 (Capacitor Push + 서버 FCM/APNs 전송)
+- [ ] 위치 기반 트리거 알림 ("근처 N미터 내 새 반띵")
 - [ ] 인앱 채팅
 - [ ] PG 에스크로 연동 (안전거래)
 - [ ] 거래 완료 인증
@@ -129,7 +161,8 @@ cd server
 - [ ] 상품 카테고리 & 검색
 
 ### Phase 3 - 성장
-- [ ] 단골 매장 & 정기 나눠사기
+- [ ] 백그라운드 위치 추적 (지나가다가 알림)
+- [ ] 단골 매장 & 정기 반띵
 - [ ] 커뮤니티
 - [ ] 통계/분석
 
@@ -160,6 +193,9 @@ cd server
 | 2026-02-21 | MVP에서 예치금 제외 | 전자금융업 등록 요건(20억) | PG 에스크로 연동 |
 | 2026-02-21 | 소셜 로그인 우선 | 가입 허들 최소화 | 이메일/비밀번호 |
 | 2026-04-24 | 이미지 저장: S3 + presigned URL (당근마켓식) | EC2 재기동 시 로컬 파일 소실 리스크, t4g.small 대역폭 절약, 프로덕션 표준 | 로컬 파일 (MVP 후 마이그레이션 부담 큼), S3+서버 프록시 (대역폭 낭비) |
+| 2026-05-18 | 브랜드 리브랜딩 한입 → Nthing/엔띵 | "반띵하자" 컨셉이 비음식 벌크 상품(휴지/세제/원두 등)까지 자연스럽게 포괄, 글로벌 확장 친화 | 한입 유지 |
+| 2026-05-18 | 디자인 컬러 한입 오렌지(#FF6B35) → 딥 그린(#16A34A) | 당근마켓과 동일 톤 회피, 신선/안전 어소시에이션 | 테라코타, 인디고 |
+| 2026-05-18 | 클라이언트 마이그레이션 KMP → Vite + React + Capacitor | KMP 학습/유지보수 부담, 디자인 mockup이 HTML 기반이라 React 이식 유리, iOS PWA 푸시 한계 → Capacitor 셸 필요 | KMP 유지, RN, Flutter, 수동 WebView Bridge |
 
 ---
 
@@ -169,4 +205,28 @@ cd server
 - 코드 리뷰: Claude가 기술 리뷰 역할 수행
 - 문서: 주요 결정은 이 파일의 "기술적 의사결정 로그"에 기록
 - 서버 패키지 구조: 도메인별 분리 (auth/, split/, user/)
+- 모바일 패키지 id: `co.nthing.app`
+- 모바일 클라이언트 구조: features/ (도메인별) + shared/ (공용)
 - API 명세 우선: `docs/api-spec.md`를 먼저 합의 → 서버/클라이언트 독립 개발
+
+---
+
+## 카피톤 (UI 텍스트 컨벤션)
+
+브랜드 리브랜딩 이후 표준화된 카피.
+
+| 영역 | 카피 |
+|------|------|
+| 워드마크 (영문) | **Nthing** |
+| 워드마크 (한글) | **엔띵** |
+| 슬로건 | "반띵하자" |
+| 서브카피 (Login) | "근처에서 N분의 1, 같이 사요" |
+| 메인 액션 (CTA, 참여) | "반띵할게요" |
+| 등록 액션 | "반띵 등록하기" / "내 반띵 올리기" |
+| 화면 타이틀 (홈) | "근처 반띵" |
+| 게시물 단위 명사 | "반띵" 또는 "나눠사기" (둘 다 사용 가능, UI 컨텍스트에 맞게) |
+| Empty 상태 | "아직 반띵이 없어요" / "첫 반띵을 올려보세요" |
+| 마감 상태 | "마감된 반띵" |
+| 프로필 헤더 | "나의 반띵" |
+
+3명 이상 N분의 1도 "반띵" 동사로 통일 (서브텍스트로 "N명이서 나누기" 정보 보조).
