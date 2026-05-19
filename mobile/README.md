@@ -1,73 +1,56 @@
-# React + TypeScript + Vite
+# mobile/ — Nthing 클라이언트 (Vite + React + Capacitor)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Phase 1.1 Foundation 완료 상태. 다음 plan들에서 디자인 시스템 컴포넌트 / API / 화면 / 카카오맵 등 추가.
 
-Currently, two official plugins are available:
+## Stack
+- Vite 8 + React 19 + TypeScript 6 (strict)
+- Tailwind CSS 3.4 + Pretendard
+- Zustand 5 + TanStack Query 5
+- React Router 7
+- Capacitor 8 (iOS + Android, SPM 사용 — CocoaPods 불필요)
+- Vitest 4 + React Testing Library 16
+- ESLint 10 (flat config)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Setup
+```bash
+pnpm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Scripts
+```bash
+pnpm dev            # Vite dev 서버 (브라우저)
+pnpm build          # 정적 빌드 → dist/
+pnpm preview        # 빌드 결과 미리보기
+pnpm lint           # ESLint
+pnpm format         # Prettier 적용
+pnpm format:check   # Prettier 검사
+pnpm test           # Vitest watch
+pnpm test:run       # Vitest 1회
 ```
+
+## Mobile (Capacitor)
+```bash
+pnpm build && npx cap sync           # 모든 플랫폼 동기화
+npx cap open ios                     # Xcode 열기
+npx cap open android                 # Android Studio 열기
+```
+
+## Environment Variables (다음 plan에서 채워질 .env)
+- `VITE_API_BASE_URL` — 서버 base URL (예: http://<EIP>/api 또는 https://api.nthing.co)
+- `VITE_KAKAO_JS_KEY`
+- `VITE_KAKAO_REST_KEY`
+- `VITE_NAVER_CLIENT_ID`
+- `VITE_NAVER_REDIRECT_URI`
+- `VITE_GOOGLE_CLIENT_ID`
+- `VITE_APPLE_CLIENT_ID`
+- `VITE_KAKAOMAP_APP_KEY`
+
+(.env는 .gitignore에 포함. 로컬에서는 `mobile/.env`로 관리.)
+
+## Deep link scheme
+- `nthing://` — OAuth 콜백 등에 사용 (Info.plist + AndroidManifest 셋업됨)
+
+## Reference
+- 마이그레이션 spec: `docs/superpowers/specs/2026-05-18-client-rewrite-design.md`
+- Phase 1.1 plan: `docs/superpowers/plans/2026-05-19-nthing-phase1-foundation.md`
+- 디자인 brief: `docs/design/claude-design-brief.md`
