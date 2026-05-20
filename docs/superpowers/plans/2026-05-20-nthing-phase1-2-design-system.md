@@ -1454,24 +1454,26 @@ export function Catalog() {
       <Section title="Cards">
         <Variant label="default / md padding">
           <Card>
-            <p className="text-h2 text-gray-900 dark:text-gray-50">두쫀쿠 4개입</p>
-            <p className="text-caption text-gray-500 dark:text-gray-400">
-              역삼동 GS25 · 320m · 5분 전
-            </p>
-            <p className="mt-2 text-body-em text-brand dark:text-brand-dark-adj">
-              1인당 ₩10,000
-            </p>
+            <p className="text-body text-gray-900 dark:text-gray-50">기본 카드 — md padding, shadow-card</p>
           </Card>
         </Variant>
-        <Variant label="interactive (hover)">
-          <Card interactive>
-            <p className="text-h2 text-gray-900 dark:text-gray-50">코스트코 휴지 30롤</p>
-            <p className="text-caption text-gray-500 dark:text-gray-400">
-              양재동 · 1.2km · 12분 전
-            </p>
+        <Variant label="sm padding">
+          <Card padding="sm">
+            <p className="text-body text-gray-900 dark:text-gray-50">컴팩트 — sm padding</p>
+          </Card>
+        </Variant>
+        <Variant label="lg padding">
+          <Card padding="lg">
+            <p className="text-body text-gray-900 dark:text-gray-50">여백 — lg padding</p>
+          </Card>
+        </Variant>
+        <Variant label="interactive (hover / active)">
+          <Card interactive onClick={() => alert('card click')}>
+            <p className="text-body text-gray-900 dark:text-gray-50">인터랙티브 — hover/active 시각 효과</p>
           </Card>
         </Variant>
       </Section>
+      {/* NOTE: 도메인 컴포넌트 SplitCard는 Phase 1.4에서 features/splits/SplitCard.tsx로 별도 작성. 위 Card 데모는 primitive 변형만 보여주는 의도 */}
 
       <Section title="Badges">
         <Variant label="Badge tones">
