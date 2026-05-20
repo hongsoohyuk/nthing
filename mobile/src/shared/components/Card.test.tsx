@@ -11,7 +11,11 @@ describe('Card', () => {
 
   it('fires onClick when interactive', async () => {
     const onClick = vi.fn();
-    render(<Card interactive onClick={onClick}>card</Card>);
+    render(
+      <Card interactive onClick={onClick}>
+        card
+      </Card>,
+    );
     await userEvent.click(screen.getByText('card'));
     expect(onClick).toHaveBeenCalledOnce();
   });

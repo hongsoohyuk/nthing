@@ -4,8 +4,7 @@ import { cn } from '../lib/cn';
 type Tone = 'brand' | 'success' | 'warning' | 'error' | 'neutral';
 
 const toneClass: Record<Tone, string> = {
-  brand:
-    'bg-brand-surface text-brand dark:bg-brand-surface-dark dark:text-brand-dark-adj',
+  brand: 'bg-brand-surface text-brand dark:bg-brand-surface-dark dark:text-brand-dark-adj',
   success: 'bg-success/10 text-success',
   warning: 'bg-warning/10 text-warning',
   error: 'bg-error/10 text-error',

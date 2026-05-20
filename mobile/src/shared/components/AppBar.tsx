@@ -19,10 +19,7 @@ export function AppBar({
 }: AppBarProps) {
   return (
     <header
-      className={cn(
-        'flex h-14 items-center px-2',
-        !transparent && 'bg-white dark:bg-gray-950',
-      )}
+      className={cn('flex h-14 items-center px-2', !transparent && 'bg-white dark:bg-gray-950')}
     >
       {onBack ? (
         <button

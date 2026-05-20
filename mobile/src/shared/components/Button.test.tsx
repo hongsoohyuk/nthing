@@ -18,7 +18,11 @@ describe('Button', () => {
 
   it('is disabled when loading', async () => {
     const onClick = vi.fn();
-    render(<Button loading onClick={onClick}>loading</Button>);
+    render(
+      <Button loading onClick={onClick}>
+        loading
+      </Button>,
+    );
     const btn = screen.getByRole('button');
     expect(btn).toBeDisabled();
     await userEvent.click(btn);
@@ -36,7 +40,11 @@ describe('Button', () => {
   });
 
   it('renders spinner when loading', () => {
-    render(<Button loading aria-label="loading-button">x</Button>);
+    render(
+      <Button loading aria-label="loading-button">
+        x
+      </Button>,
+    );
     expect(screen.getByRole('button')).toHaveAttribute('aria-busy', 'true');
   });
 });

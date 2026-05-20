@@ -36,9 +36,7 @@ export function BottomNav({ current, onSelect }: BottomNavProps) {
             <span
               className={cn(
                 'text-meta',
-                isActive
-                  ? 'font-semibold text-brand dark:text-brand-dark-adj'
-                  : 'text-gray-400',
+                isActive ? 'font-semibold text-brand dark:text-brand-dark-adj' : 'text-gray-400',
               )}
             >
               {label}

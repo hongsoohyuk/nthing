@@ -88,7 +88,9 @@ export function Catalog() {
       <Section title="Cards">
         <Variant label="default / md padding">
           <Card>
-            <p className="text-body text-gray-900 dark:text-gray-50">기본 카드 — md padding, shadow-card</p>
+            <p className="text-body text-gray-900 dark:text-gray-50">
+              기본 카드 — md padding, shadow-card
+            </p>
           </Card>
         </Variant>
         <Variant label="sm padding">
@@ -103,7 +105,9 @@ export function Catalog() {
         </Variant>
         <Variant label="interactive (hover / active)">
           <Card interactive onClick={() => alert('card click')}>
-            <p className="text-body text-gray-900 dark:text-gray-50">인터랙티브 — hover/active 시각 효과</p>
+            <p className="text-body text-gray-900 dark:text-gray-50">
+              인터랙티브 — hover/active 시각 효과
+            </p>
           </Card>
         </Variant>
       </Section>
@@ -134,11 +138,7 @@ export function Catalog() {
         <Variant label="active / inactive 토글">
           <div className="flex flex-wrap gap-2">
             {['전체', '모집중', '음식', '생필품', '마감임박'].map((label) => (
-              <Chip
-                key={label}
-                active={chipActive === label}
-                onClick={() => setChipActive(label)}
-              >
+              <Chip key={label} active={chipActive === label} onClick={() => setChipActive(label)}>
                 {label}
               </Chip>
             ))}
