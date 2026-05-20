@@ -2,6 +2,10 @@
 .serena/cache/
 .serena/project.local.yml
 
+# macOS metadata
+.DS_Store
+**/.DS_Store
+
 # Environment secrets
 *.env
 !*.env.example
