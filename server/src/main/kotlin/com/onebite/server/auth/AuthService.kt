@@ -53,6 +53,11 @@ class AuthService(
         return loginOrRegister(AuthProvider.APPLE, userInfo)
     }
 
+    // dev 전용 로그인: 시드 유저(개발테스터) find-or-create 후 실제 JWT 발급.
+    // DevAuthController(@Profile("!prod"))에서만 호출됨.
+    fun devLogin(): AuthResponse =
+        loginOrRegister(AuthProvider.KAKAO, SocialUserInfo("dev-local-user", "개발테스터", null))
+
     // OAuth callback 로그인 (iOS 웹 OAuth용 — 인가코드 → 토큰 교환 → JWT 발급)
     fun oauthCallbackLogin(provider: String, code: String, state: String?): AuthResponse =
         when (provider.lowercase()) {
