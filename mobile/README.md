@@ -58,6 +58,24 @@ npx cap open android                 # Android Studio 열기
 ## Deep link scheme
 - `nthing://` — OAuth 콜백 등에 사용 (Info.plist + AndroidManifest 셋업됨)
 
+## 환경변수 (`.env.local` 로 주입, 커밋 금지)
+
+| 변수 | 용도 | dev 기본값 |
+|------|------|-----------|
+| `VITE_API_BASE_URL` | API 베이스 URL | 미설정 시 `http://localhost:8080/api` |
+| `VITE_KAKAO_REST_KEY` | 카카오 REST 키 (authorize client_id) | (실값 필요) |
+| `VITE_NAVER_CLIENT_ID` | 네이버 client_id | (실값 필요) |
+| `VITE_GOOGLE_CLIENT_ID` | 구글 OAuth client_id | (실값 필요) |
+| `VITE_APPLE_CLIENT_ID` | 애플 client_id (Apple 로그인은 아직 보류) | (후속) |
+
+## 인증 / OAuth
+
+- 방식: **서버 릴레이**. authorize `redirect_uri = {VITE_API_BASE_URL}/auth/callback/{provider}` → 서버가
+  `nthing://auth/callback?provider=..&code=..` 커스텀 스킴으로 딥링크 → 앱이 받아 `POST /auth/{provider}` 로 코드 교환.
+- 커스텀 스킴 딥링크는 **네이티브(iOS/Android)에서만** 동작. 웹/브라우저 dev 에서는 **dev 전용 "테스트 로그인"** 버튼으로 검증.
+- dev 로그인: 서버 `@Profile("!prod")` 의 `POST /api/auth/dev-login` 이 시드 유저 JWT 발급. (prod 빌드엔 미존재)
+- 실제 OAuth 라운드트립은 실 client_id + provider 콘솔의 redirect_uri 화이트리스트 등록 후 가능.
+
 ## Reference
 - 마이그레이션 spec: `docs/superpowers/specs/2026-05-18-client-rewrite-design.md`
 - Phase 1.1 plan: `docs/superpowers/plans/2026-05-19-nthing-phase1-foundation.md`
