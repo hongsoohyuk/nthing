@@ -5,7 +5,11 @@ import { useAuthStore } from '../shared/stores/authStore';
 import { NAVER_STATE_KEY } from '../features/auth/oauth';
 import { type AuthResponse, type Provider } from '../shared/api/types';
 
-async function exchange(provider: Provider, code: string, state: string | null): Promise<AuthResponse> {
+async function exchange(
+  provider: Provider,
+  code: string,
+  state: string | null,
+): Promise<AuthResponse> {
   switch (provider) {
     case 'kakao':
       return nthingApi.loginKakao(code);

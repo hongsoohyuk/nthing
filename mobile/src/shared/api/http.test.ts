@@ -47,12 +47,17 @@ describe('apiFetch', () => {
     (fetch as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(
       jsonResponse({ status: 400, error: 'Bad Request', message: '상품명은 필수입니다' }, 400),
     );
-    await expect(apiFetch('/splits')).rejects.toMatchObject({ status: 400, message: '상품명은 필수입니다' });
+    await expect(apiFetch('/splits')).rejects.toMatchObject({
+      status: 400,
+      message: '상품명은 필수입니다',
+    });
     await expect(apiFetch('/splits')).rejects.toBeInstanceOf(ApiError);
   });
 
   it('401 이면 onUnauthorized 콜백을 호출한다', async () => {
-    (fetch as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(jsonResponse({ message: '인증 필요' }, 401));
+    (fetch as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(
+      jsonResponse({ message: '인증 필요' }, 401),
+    );
     const onUnauthorized = vi.fn();
     setUnauthorizedHandler(onUnauthorized);
     await expect(apiFetch('/users/me')).rejects.toBeInstanceOf(ApiError);

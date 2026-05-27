@@ -5,7 +5,11 @@ import { MemoryRouter } from 'react-router-dom';
 
 vi.mock('../features/auth/oauth', () => ({ startOAuth: vi.fn() }));
 vi.mock('../shared/api/nthingApi', () => ({
-  nthingApi: { devLogin: vi.fn().mockResolvedValue({ token: 't', userId: 1, nickname: '개발테스터', isNewUser: false }) },
+  nthingApi: {
+    devLogin: vi
+      .fn()
+      .mockResolvedValue({ token: 't', userId: 1, nickname: '개발테스터', isNewUser: false }),
+  },
 }));
 
 import { startOAuth } from '../features/auth/oauth';

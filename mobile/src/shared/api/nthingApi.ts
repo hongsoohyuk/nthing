@@ -14,11 +14,9 @@ export const nthingApi = {
   loginApple: (idToken: string) =>
     apiFetch<AuthResponse>('/auth/apple', { method: 'POST', body: { idToken }, auth: false }),
 
-  devLogin: () =>
-    apiFetch<AuthResponse>('/auth/dev-login', { method: 'POST', auth: false }),
+  devLogin: () => apiFetch<AuthResponse>('/auth/dev-login', { method: 'POST', auth: false }),
 
   getMe: () => apiFetch<Me>('/users/me'),
 
-  updateMe: (req: UpdateMeRequest) =>
-    apiFetch<Me>('/users/me', { method: 'PATCH', body: req }),
+  updateMe: (req: UpdateMeRequest) => apiFetch<Me>('/users/me', { method: 'PATCH', body: req }),
 };

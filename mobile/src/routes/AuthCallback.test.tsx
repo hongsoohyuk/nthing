@@ -4,8 +4,12 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 vi.mock('../shared/api/nthingApi', () => ({
   nthingApi: {
-    loginKakao: vi.fn().mockResolvedValue({ token: 't', userId: 1, nickname: 'k', isNewUser: false }),
-    loginNaver: vi.fn().mockResolvedValue({ token: 't', userId: 1, nickname: 'n', isNewUser: false }),
+    loginKakao: vi
+      .fn()
+      .mockResolvedValue({ token: 't', userId: 1, nickname: 'k', isNewUser: false }),
+    loginNaver: vi
+      .fn()
+      .mockResolvedValue({ token: 't', userId: 1, nickname: 'n', isNewUser: false }),
     loginGoogle: vi.fn(),
   },
 }));
