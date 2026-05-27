@@ -63,4 +63,16 @@ describe('apiFetch', () => {
     await expect(apiFetch('/users/me')).rejects.toBeInstanceOf(ApiError);
     expect(onUnauthorized).toHaveBeenCalledOnce();
   });
+
+  it('auth:false 요청의 401 은 onUnauthorized 를 호출하지 않는다', async () => {
+    (fetch as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(
+      jsonResponse({ message: '인증 필요' }, 401),
+    );
+    const onUnauthorized = vi.fn();
+    setUnauthorizedHandler(onUnauthorized);
+    await expect(
+      apiFetch('/auth/dev-login', { method: 'POST', auth: false }),
+    ).rejects.toBeInstanceOf(ApiError);
+    expect(onUnauthorized).not.toHaveBeenCalled();
+  });
 });

@@ -16,6 +16,7 @@ describe('parseAuthCallback', () => {
   it('우리 콜백이 아닌 URL 은 null', () => {
     expect(parseAuthCallback('nthing://other?x=1')).toBeNull();
     expect(parseAuthCallback('https://example.com/auth/callback?provider=kakao&code=A')).toBeNull();
+    expect(parseAuthCallback('nthing://auth/callbackfoo?provider=kakao&code=A')).toBeNull();
   });
 
   it('provider 없으면 null', () => {

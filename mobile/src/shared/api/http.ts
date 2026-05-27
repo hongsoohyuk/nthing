@@ -31,7 +31,9 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
-  if (res.status === 401) onUnauthorized?.();
+  // 인증 요청(auth)의 401 만 글로벌 로그아웃 트리거. 로그인/dev-login 같은 auth:false 요청의
+  // 401 은 아직 세션이 없으므로 로그아웃 핸들러를 부르지 않는다.
+  if (auth && res.status === 401) onUnauthorized?.();
 
   if (!res.ok) {
     let message = `요청 실패 (${res.status})`;
