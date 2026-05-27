@@ -1,15 +1,18 @@
 package com.onebite.server.auth
 
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/auth")
 class AuthController(
-    private val authService: AuthService
+    private val authService: AuthService,
+    @Value("\${app.oauth.callback-url:nthing://auth/callback}") private val callbackUrl: String
 ) {
-    // GET /api/auth/callback/{provider} — OAuth callback (iOS 웹 OAuth용)
-    // 카카오 등에서 리다이렉트 → 서버에서 토큰 교환 → JWT 발급 → 딥링크로 앱에 전달
+    // GET /api/auth/callback/{provider} — OAuth 릴레이.
+    // provider 콘솔에는 이 https URL 을 redirect_uri 로 등록. 서버가 인가코드를
+    // 앱 커스텀 스킴(nthing://auth/callback?provider=..&code=..)으로 딥링크해 되돌린다.
     @GetMapping("/callback/{provider}")
     fun oauthCallback(
         @PathVariable provider: String,
@@ -18,18 +21,17 @@ class AuthController(
         @RequestParam error: String?,
         response: HttpServletResponse
     ) {
-        val scheme = "com.onebite.app://oauth/$provider"
-        if (error != null || code == null) {
-            response.sendRedirect("$scheme?error=${error ?: "no_code"}")
-            return
-        }
-        val params = buildString {
-            append("code=").append(java.net.URLEncoder.encode(code, "UTF-8"))
-            if (state != null) {
-                append("&state=").append(java.net.URLEncoder.encode(state, "UTF-8"))
+        fun enc(v: String) = java.net.URLEncoder.encode(v, "UTF-8")
+        val query = buildString {
+            append("provider=").append(enc(provider))
+            if (error != null || code == null) {
+                append("&error=").append(enc(error ?: "no_code"))
+            } else {
+                append("&code=").append(enc(code))
+                if (state != null) append("&state=").append(enc(state))
             }
         }
-        response.sendRedirect("$scheme?$params")
+        response.sendRedirect("$callbackUrl?$query")
     }
 
     // POST /api/auth/kakao — 카카오 로그인 (인가코드 or 액세스토큰)
