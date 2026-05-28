@@ -5,11 +5,23 @@ import { SplitCard } from './SplitCard';
 import { type Split } from '../../shared/api/types';
 
 const SPLIT: Split = {
-  id: 1, productName: '두쫀쿠 4개입', totalPrice: 20000, totalQty: 4, splitCount: 2,
-  pricePerPerson: 10000, qtyPerPerson: 2, imageUrl: null,
-  latitude: 37.5665, longitude: 126.978, address: '서울 강남구 역삼동',
-  status: 'WAITING', author: { id: 99, nickname: '판매자', profileImageUrl: null },
-  createdAt: '2026-05-27T10:00:00', participants: [], currentParticipants: 1, distanceKm: 0.3,
+  id: 1,
+  productName: '두쫀쿠 4개입',
+  totalPrice: 20000,
+  totalQty: 4,
+  splitCount: 2,
+  pricePerPerson: 10000,
+  qtyPerPerson: 2,
+  imageUrl: null,
+  latitude: 37.5665,
+  longitude: 126.978,
+  address: '서울 강남구 역삼동',
+  status: 'WAITING',
+  author: { id: 99, nickname: '판매자', profileImageUrl: null },
+  createdAt: '2026-05-27T10:00:00',
+  participants: [],
+  currentParticipants: 1,
+  distanceKm: 0.3,
 };
 
 describe('SplitCard', () => {

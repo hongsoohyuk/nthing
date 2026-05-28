@@ -16,13 +16,7 @@ vi.mock('../../shared/api/nthingApi', () => ({
 }));
 
 import { nthingApi } from '../../shared/api/nthingApi';
-import {
-  splitKeys,
-  useSplits,
-  useSplit,
-  useCreateSplit,
-  useJoinSplit,
-} from './queries';
+import { splitKeys, useSplits, useSplit, useCreateSplit, useJoinSplit } from './queries';
 
 const api = nthingApi as unknown as Record<string, ReturnType<typeof vi.fn>>;
 
@@ -36,7 +30,14 @@ function makeWrapper() {
   };
 }
 
-const PAGE = { content: [{ id: 1 }], page: 0, size: 20, totalElements: 1, totalPages: 1, hasNext: false };
+const PAGE = {
+  content: [{ id: 1 }],
+  page: 0,
+  size: 20,
+  totalElements: 1,
+  totalPages: 1,
+  hasNext: false,
+};
 
 describe('splitKeys', () => {
   it('스펙 컨벤션 키', () => {
@@ -78,8 +79,13 @@ describe('mutations invalidate', () => {
     const spy = vi.spyOn(qc, 'invalidateQueries');
     const { result } = renderHook(() => useCreateSplit(), { wrapper });
     result.current.mutate({
-      productName: 'x', totalPrice: 100, totalQty: 2, splitCount: 2,
-      latitude: 1, longitude: 2, address: 'a',
+      productName: 'x',
+      totalPrice: 100,
+      totalQty: 2,
+      splitCount: 2,
+      latitude: 1,
+      longitude: 2,
+      address: 'a',
     });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(spy).toHaveBeenCalledWith({ queryKey: splitKeys.all });

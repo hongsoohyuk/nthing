@@ -12,7 +12,11 @@ import { CreateSplit } from './CreateSplit';
 const useCreateSplitMock = useCreateSplit as unknown as ReturnType<typeof vi.fn>;
 
 function renderCreate() {
-  return render(<MemoryRouter><CreateSplit /></MemoryRouter>);
+  return render(
+    <MemoryRouter>
+      <CreateSplit />
+    </MemoryRouter>,
+  );
 }
 
 describe('CreateSplit', () => {
@@ -47,8 +51,13 @@ describe('CreateSplit', () => {
 
     expect(mutate).toHaveBeenCalledTimes(1);
     expect(mutate.mock.calls[0][0]).toEqual({
-      productName: '두쫀쿠', totalPrice: 20000, totalQty: 4, splitCount: 2,
-      latitude: 37.5665, longitude: 126.978, address: '역삼동 GS25',
+      productName: '두쫀쿠',
+      totalPrice: 20000,
+      totalQty: 4,
+      splitCount: 2,
+      latitude: 37.5665,
+      longitude: 126.978,
+      address: '역삼동 GS25',
     });
   });
 });

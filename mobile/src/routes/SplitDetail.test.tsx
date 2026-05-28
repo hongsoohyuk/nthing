@@ -20,11 +20,23 @@ const useJoinMock = useJoinSplit as unknown as ReturnType<typeof vi.fn>;
 const useCancelMock = useCancelSplit as unknown as ReturnType<typeof vi.fn>;
 
 const SPLIT = {
-  id: 1, productName: '두쫀쿠 4개입', totalPrice: 20000, totalQty: 4, splitCount: 2,
-  pricePerPerson: 10000, qtyPerPerson: 2, imageUrl: null,
-  latitude: 37.5, longitude: 127, address: '역삼동 GS25', status: 'WAITING',
+  id: 1,
+  productName: '두쫀쿠 4개입',
+  totalPrice: 20000,
+  totalQty: 4,
+  splitCount: 2,
+  pricePerPerson: 10000,
+  qtyPerPerson: 2,
+  imageUrl: null,
+  latitude: 37.5,
+  longitude: 127,
+  address: '역삼동 GS25',
+  status: 'WAITING',
   author: { id: 99, nickname: '판매자', profileImageUrl: null },
-  createdAt: '2026-05-27T10:00:00', participants: [], currentParticipants: 1, distanceKm: 1.2,
+  createdAt: '2026-05-27T10:00:00',
+  participants: [],
+  currentParticipants: 1,
+  distanceKm: 1.2,
 };
 
 function renderDetail() {
@@ -70,7 +82,11 @@ describe('SplitDetail', () => {
   });
 
   it('마감 상태(COMPLETED) → 비활성 마감된 반띵', () => {
-    useSplitMock.mockReturnValue({ isPending: false, isError: false, data: { ...SPLIT, status: 'COMPLETED' } });
+    useSplitMock.mockReturnValue({
+      isPending: false,
+      isError: false,
+      data: { ...SPLIT, status: 'COMPLETED' },
+    });
     renderDetail();
     expect(screen.getByRole('button', { name: '마감된 반띵' })).toBeDisabled();
   });

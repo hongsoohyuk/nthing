@@ -10,7 +10,11 @@ type SplitCardProps = {
 };
 
 export function SplitCard({ split, onClick }: SplitCardProps) {
-  const meta = [split.address, formatDistance(split.distanceKm), formatRelativeTime(split.createdAt)]
+  const meta = [
+    split.address,
+    formatDistance(split.distanceKm),
+    formatRelativeTime(split.createdAt),
+  ]
     .filter(Boolean)
     .join(' · ');
 
@@ -34,7 +38,9 @@ export function SplitCard({ split, onClick }: SplitCardProps) {
         <span className="text-body-em text-brand dark:text-brand-dark-adj">
           1인당 {formatPrice(split.pricePerPerson)}
         </span>
-        <span className="text-caption text-gray-500 dark:text-gray-400">{split.splitCount}명 모집</span>
+        <span className="text-caption text-gray-500 dark:text-gray-400">
+          {split.splitCount}명 모집
+        </span>
       </div>
     </Card>
   );

@@ -64,16 +64,42 @@ export function CreateSplit() {
             <span className="text-caption">사진 추가 (준비 중)</span>
           </button>
 
-          <TextField label="상품명" value={productName} onChange={setProductName} placeholder="예: 두쫀쿠 4개입" />
-          <TextField label="전체 가격" value={totalPrice} onChange={setTotalPrice} placeholder="20000" inputMode="numeric" />
-          <TextField label="전체 수량" value={totalQty} onChange={setTotalQty} placeholder="4" inputMode="numeric" />
-          <TextField label="나눌 인원" value={splitCount} onChange={setSplitCount} placeholder="2" inputMode="numeric" supportingText="최소 2명" />
+          <TextField
+            label="상품명"
+            value={productName}
+            onChange={setProductName}
+            placeholder="예: 두쫀쿠 4개입"
+          />
+          <TextField
+            label="전체 가격"
+            value={totalPrice}
+            onChange={setTotalPrice}
+            placeholder="20000"
+            inputMode="numeric"
+          />
+          <TextField
+            label="전체 수량"
+            value={totalQty}
+            onChange={setTotalQty}
+            placeholder="4"
+            inputMode="numeric"
+          />
+          <TextField
+            label="나눌 인원"
+            value={splitCount}
+            onChange={setSplitCount}
+            placeholder="2"
+            inputMode="numeric"
+            supportingText="최소 2명"
+          />
           <TextField label="주소" value={address} onChange={setAddress} placeholder="만날 위치" />
 
           {/* 인당 가격 미리보기 — Card 대신 plain div (brand-surface 배경 충돌 회피) */}
           <div className="flex items-center justify-between rounded-lg bg-brand-surface p-4 dark:bg-brand-surface-dark">
             <span className="text-body text-gray-700 dark:text-gray-200">1인당 예상 가격</span>
-            <span className="text-h1 text-brand dark:text-brand-dark-adj">{formatPrice(perPerson)}</span>
+            <span className="text-h1 text-brand dark:text-brand-dark-adj">
+              {formatPrice(perPerson)}
+            </span>
           </div>
         </div>
       </div>

@@ -102,7 +102,15 @@ describe('nthingApi splits/uploads', () => {
   });
 
   it('createSplit 는 POST /splits (body)', async () => {
-    const req = { productName: '두쫀쿠', totalPrice: 20000, totalQty: 4, splitCount: 2, latitude: 37.5, longitude: 127, address: '역삼동' };
+    const req = {
+      productName: '두쫀쿠',
+      totalPrice: 20000,
+      totalQty: 4,
+      splitCount: 2,
+      latitude: 37.5,
+      longitude: 127,
+      address: '역삼동',
+    };
     await nthingApi.createSplit(req);
     expect(mockFetch).toHaveBeenCalledWith('/splits', { method: 'POST', body: req });
   });
@@ -129,6 +137,9 @@ describe('nthingApi splits/uploads', () => {
 
   it('signUpload 는 POST /uploads/sign (body)', async () => {
     await nthingApi.signUpload({ contentType: 'image/jpeg', size: 123 });
-    expect(mockFetch).toHaveBeenCalledWith('/uploads/sign', { method: 'POST', body: { contentType: 'image/jpeg', size: 123 } });
+    expect(mockFetch).toHaveBeenCalledWith('/uploads/sign', {
+      method: 'POST',
+      body: { contentType: 'image/jpeg', size: 123 },
+    });
   });
 });

@@ -20,7 +20,11 @@ function renderProfile() {
 
 describe('Profile', () => {
   beforeEach(() => {
-    useAuthStore.setState({ token: 'jwt', user: { id: 1, nickname: '엔띵유저' }, isHydrated: true });
+    useAuthStore.setState({
+      token: 'jwt',
+      user: { id: 1, nickname: '엔띵유저' },
+      isHydrated: true,
+    });
   });
 
   it('헤더 타이틀과 닉네임, 메뉴 항목을 렌더', () => {
