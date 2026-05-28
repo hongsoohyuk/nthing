@@ -79,3 +79,56 @@ describe('nthingApi', () => {
     });
   });
 });
+
+describe('nthingApi splits/uploads', () => {
+  beforeEach(() => {
+    mockFetch.mockReset();
+    mockFetch.mockResolvedValue({ id: 1 });
+  });
+
+  it('getSplits 는 파라미터를 쿼리스트링으로 GET /splits', async () => {
+    await nthingApi.getSplits({ lat: 37.5, lng: 127, radiusKm: 3, status: 'WAITING' });
+    expect(mockFetch).toHaveBeenCalledWith('/splits?status=WAITING&lat=37.5&lng=127&radiusKm=3');
+  });
+
+  it('getSplits 는 빈 파라미터면 쿼리 없이 GET /splits', async () => {
+    await nthingApi.getSplits();
+    expect(mockFetch).toHaveBeenCalledWith('/splits');
+  });
+
+  it('getSplit 는 GET /splits/{id}', async () => {
+    await nthingApi.getSplit(7);
+    expect(mockFetch).toHaveBeenCalledWith('/splits/7');
+  });
+
+  it('createSplit 는 POST /splits (body)', async () => {
+    const req = { productName: '두쫀쿠', totalPrice: 20000, totalQty: 4, splitCount: 2, latitude: 37.5, longitude: 127, address: '역삼동' };
+    await nthingApi.createSplit(req);
+    expect(mockFetch).toHaveBeenCalledWith('/splits', { method: 'POST', body: req });
+  });
+
+  it('joinSplit 는 POST /splits/{id}/join', async () => {
+    await nthingApi.joinSplit(3);
+    expect(mockFetch).toHaveBeenCalledWith('/splits/3/join', { method: 'POST' });
+  });
+
+  it('cancelSplit 는 PATCH /splits/{id}/cancel', async () => {
+    await nthingApi.cancelSplit(3);
+    expect(mockFetch).toHaveBeenCalledWith('/splits/3/cancel', { method: 'PATCH' });
+  });
+
+  it('getMySplits 는 GET /splits/my?page&size', async () => {
+    await nthingApi.getMySplits();
+    expect(mockFetch).toHaveBeenCalledWith('/splits/my?page=0&size=20');
+  });
+
+  it('getParticipatedSplits 는 GET /splits/participated?page&size', async () => {
+    await nthingApi.getParticipatedSplits(2, 10);
+    expect(mockFetch).toHaveBeenCalledWith('/splits/participated?page=2&size=10');
+  });
+
+  it('signUpload 는 POST /uploads/sign (body)', async () => {
+    await nthingApi.signUpload({ contentType: 'image/jpeg', size: 123 });
+    expect(mockFetch).toHaveBeenCalledWith('/uploads/sign', { method: 'POST', body: { contentType: 'image/jpeg', size: 123 } });
+  });
+});

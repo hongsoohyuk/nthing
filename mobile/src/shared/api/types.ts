@@ -31,3 +31,81 @@ export class ApiError extends Error {
     this.status = status;
   }
 }
+
+// ── Split 도메인 (서버 SplitDto.kt 기준) ──
+export type SplitStatus = 'WAITING' | 'MATCHED' | 'COMPLETED' | 'CANCELLED';
+
+export type Author = {
+  id: number;
+  nickname: string;
+  profileImageUrl: string | null;
+};
+
+export type Participant = {
+  userId: number;
+  nickname: string;
+  profileImageUrl: string | null;
+  joinedAt: string;
+};
+
+export type Split = {
+  id: number;
+  productName: string;
+  totalPrice: number;
+  totalQty: number;
+  splitCount: number;
+  pricePerPerson: number;
+  qtyPerPerson: number;
+  imageUrl: string | null;
+  latitude: number;
+  longitude: number;
+  address: string;
+  status: SplitStatus;
+  author: Author;
+  createdAt: string;
+  participants: Participant[];
+  currentParticipants: number;
+  distanceKm: number | null;
+};
+
+export type PageResponse<T> = {
+  content: T[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  hasNext: boolean;
+};
+
+export type CreateSplitRequest = {
+  productName: string;
+  totalPrice: number;
+  totalQty: number;
+  splitCount: number;
+  imageUrl?: string | null;
+  latitude: number;
+  longitude: number;
+  address: string;
+};
+
+export type GetSplitsParams = {
+  status?: SplitStatus;
+  lat?: number;
+  lng?: number;
+  radiusKm?: number;
+  page?: number;
+  size?: number;
+};
+
+// ── Upload (서버 UploadDto.kt 기준) ──
+export type PresignRequest = {
+  contentType: 'image/jpeg' | 'image/png' | 'image/webp';
+  size: number;
+};
+
+export type PresignResponse = {
+  uploadUrl: string;
+  publicUrl: string;
+  key: string;
+  expiresInSeconds: number;
+};
