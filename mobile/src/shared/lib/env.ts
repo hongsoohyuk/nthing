@@ -4,4 +4,5 @@ export const env = {
   naverClientId: import.meta.env.VITE_NAVER_CLIENT_ID ?? '',
   googleClientId: import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '',
   appleClientId: import.meta.env.VITE_APPLE_CLIENT_ID ?? '',
+  kakaoMapKey: import.meta.env.VITE_KAKAOMAP_APP_KEY ?? '',
 } as const;

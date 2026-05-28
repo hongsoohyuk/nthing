@@ -6,6 +6,7 @@ interface ImportMetaEnv {
   readonly VITE_NAVER_CLIENT_ID?: string;
   readonly VITE_GOOGLE_CLIENT_ID?: string;
   readonly VITE_APPLE_CLIENT_ID?: string;
+  readonly VITE_KAKAOMAP_APP_KEY?: string;
 }
 
 interface ImportMeta {
