@@ -137,8 +137,8 @@ npx cap sync && npx cap open android  # Android Studio
 - [x] API 클라이언트(auth/me + splits/uploads) + authStore + locationStore + TanStack Query 훅 (Phase 1.3 + 1.4)
 - [x] 7화면 이식: Login(1.3) + MainLayout 셸(AppBar+BottomNav+FAB) + Home/Map/Profile/Create/Detail/List (Phase 1.4) — Map은 placeholder(1.5)
 - [~] OAuth: kakao/naver/google 서버 릴레이(nthing://) 배선 + dev-login (Phase 1.3) — Apple·실키 라운드트립 후속
-- [ ] 카카오맵 JS SDK (Phase 1.5)
-- [~] Capacitor Plugins: Preferences/Browser/App (Phase 1.3) — Camera/Geolocation는 1.5
+- [x] 카카오맵 JS SDK (Phase 1.5) — 지도/핀/슬라이드업, 키 없으면 placeholder
+- [x] Capacitor Plugins: Preferences/Browser/App (1.3) + Camera/Geolocation (1.5)
 - [ ] iOS/Android 빌드 + 실기기 스모크
 
 **인프라**
