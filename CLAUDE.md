@@ -134,8 +134,8 @@ npx cap sync && npx cap open android  # Android Studio
 **모바일 (Vite + React + Capacitor — 마이그레이션 Phase 1)**
 - [x] Vite 프로젝트 scaffold + Capacitor 셸 (Phase 1.1)
 - [x] Tailwind + 디자인 토큰 + Pretendard (1.1) + 디자인 시스템 컴포넌트 8종 (Phase 1.2)
-- [~] API 클라이언트(auth/me) + authStore + TanStack Query Provider 배선 (Phase 1.3) — splits/uploads API·queries·locationStore는 1.4
-- [~] 7화면: Login + 인증 셸/가드/임시 Home (Phase 1.3) — Home/Map/Profile/Create/Detail/List는 1.4
+- [x] API 클라이언트(auth/me + splits/uploads) + authStore + locationStore + TanStack Query 훅 (Phase 1.3 + 1.4)
+- [x] 7화면 이식: Login(1.3) + MainLayout 셸(AppBar+BottomNav+FAB) + Home/Map/Profile/Create/Detail/List (Phase 1.4) — Map은 placeholder(1.5)
 - [~] OAuth: kakao/naver/google 서버 릴레이(nthing://) 배선 + dev-login (Phase 1.3) — Apple·실키 라운드트립 후속
 - [ ] 카카오맵 JS SDK (Phase 1.5)
 - [~] Capacitor Plugins: Preferences/Browser/App (Phase 1.3) — Camera/Geolocation는 1.5
