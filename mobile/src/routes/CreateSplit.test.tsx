@@ -1,15 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 
 const mutate = vi.fn();
 vi.mock('../features/splits/queries', () => ({ useCreateSplit: vi.fn() }));
+vi.mock('../features/upload/imagePicker', () => ({ pickImage: vi.fn() }));
+vi.mock('../features/upload/uploadImage', () => ({ uploadImage: vi.fn() }));
 
 import { useCreateSplit } from '../features/splits/queries';
+import { pickImage } from '../features/upload/imagePicker';
+import { uploadImage } from '../features/upload/uploadImage';
 import { CreateSplit } from './CreateSplit';
 
 const useCreateSplitMock = useCreateSplit as unknown as ReturnType<typeof vi.fn>;
+const pickImageMock = pickImage as unknown as ReturnType<typeof vi.fn>;
+const uploadImageMock = uploadImage as unknown as ReturnType<typeof vi.fn>;
 
 function renderCreate() {
   return render(
@@ -19,9 +25,19 @@ function renderCreate() {
   );
 }
 
+async function fillRequired() {
+  await userEvent.type(screen.getByLabelText('상품명'), '두쫀쿠');
+  await userEvent.type(screen.getByLabelText('전체 가격'), '20000');
+  await userEvent.type(screen.getByLabelText('전체 수량'), '4');
+  await userEvent.type(screen.getByLabelText('나눌 인원'), '2');
+  await userEvent.type(screen.getByLabelText('주소'), '역삼동 GS25');
+}
+
 describe('CreateSplit', () => {
   beforeEach(() => {
     mutate.mockReset();
+    pickImageMock.mockReset();
+    uploadImageMock.mockReset();
     useCreateSplitMock.mockReturnValue({ mutate, isPending: false });
   });
 
@@ -37,18 +53,12 @@ describe('CreateSplit', () => {
     expect(screen.getByText('₩10,000')).toBeInTheDocument();
   });
 
-  it('유효 입력 후 제출 시 createSplit 페이로드로 mutate', async () => {
+  it('유효 입력 후 제출 시 createSplit 페이로드로 mutate (imageUrl 없음)', async () => {
     renderCreate();
-    await userEvent.type(screen.getByLabelText('상품명'), '두쫀쿠');
-    await userEvent.type(screen.getByLabelText('전체 가격'), '20000');
-    await userEvent.type(screen.getByLabelText('전체 수량'), '4');
-    await userEvent.type(screen.getByLabelText('나눌 인원'), '2');
-    await userEvent.type(screen.getByLabelText('주소'), '역삼동 GS25');
-
+    await fillRequired();
     const submit = screen.getByRole('button', { name: '내 반띵 올리기' });
     expect(submit).toBeEnabled();
     await userEvent.click(submit);
-
     expect(mutate).toHaveBeenCalledTimes(1);
     expect(mutate.mock.calls[0][0]).toEqual({
       productName: '두쫀쿠',
@@ -59,5 +69,21 @@ describe('CreateSplit', () => {
       longitude: 126.978,
       address: '역삼동 GS25',
     });
+  });
+
+  it('사진 추가 → 업로드 성공 시 imageUrl 이 payload 에 포함', async () => {
+    pickImageMock.mockResolvedValue({
+      blob: new Blob(['x'], { type: 'image/jpeg' }),
+      contentType: 'image/jpeg',
+    });
+    uploadImageMock.mockResolvedValue('https://s3/img.jpg');
+    renderCreate();
+
+    await userEvent.click(screen.getByRole('button', { name: /사진 추가/ }));
+    await waitFor(() => expect(uploadImageMock).toHaveBeenCalled());
+
+    await fillRequired();
+    await userEvent.click(screen.getByRole('button', { name: '내 반띵 올리기' }));
+    expect(mutate.mock.calls[0][0]).toMatchObject({ imageUrl: 'https://s3/img.jpg' });
   });
 });

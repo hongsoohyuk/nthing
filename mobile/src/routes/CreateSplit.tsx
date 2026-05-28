@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera } from 'lucide-react';
+import { Camera, Loader2 } from 'lucide-react';
 import { AppBar } from '../shared/components/AppBar';
 import { TextField } from '../shared/components/TextField';
 import { Button } from '../shared/components/Button';
 import { useCreateSplit } from '../features/splits/queries';
 import { useLocationStore, DEFAULT_COORDS } from '../shared/stores/locationStore';
 import { formatPrice } from '../shared/lib/format';
+import { pickImage } from '../features/upload/imagePicker';
+import { uploadImage } from '../features/upload/uploadImage';
 
 export function CreateSplit() {
   const navigate = useNavigate();
@@ -18,6 +20,9 @@ export function CreateSplit() {
   const [totalQty, setTotalQty] = useState('');
   const [splitCount, setSplitCount] = useState('');
   const [address, setAddress] = useState('');
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const priceNum = Number(totalPrice);
   const qtyNum = Number(totalQty);
@@ -30,7 +35,25 @@ export function CreateSplit() {
     qtyNum >= 1 &&
     countNum >= 2 &&
     address.trim() !== '' &&
+    !uploading &&
     !create.isPending;
+
+  const onPickPhoto = () => {
+    void (async () => {
+      const picked = await pickImage();
+      if (!picked) return;
+      setUploadError(null);
+      setUploading(true);
+      try {
+        const url = await uploadImage(picked);
+        setImageUrl(url);
+      } catch {
+        setUploadError('사진 업로드에 실패했어요. 다시 시도해 주세요.');
+      } finally {
+        setUploading(false);
+      }
+    })();
+  };
 
   const onSubmit = () => {
     create.mutate(
@@ -42,7 +65,7 @@ export function CreateSplit() {
         latitude: coords.lat,
         longitude: coords.lng,
         address: address.trim(),
-        // imageUrl 은 Phase 1.5(사진 촬영 + S3 업로드)에서 채움
+        ...(imageUrl ? { imageUrl } : {}),
       },
       { onSuccess: (created) => navigate(`/splits/${created.id}`, { replace: true }) },
     );
@@ -54,15 +77,32 @@ export function CreateSplit() {
 
       <div className="flex-1 overflow-y-auto px-6 pb-6">
         <div className="flex flex-col gap-4">
-          {/* 사진 슬롯 — Phase 1.5 에서 카메라/갤러리 + S3 업로드 연결 */}
+          {/* 사진 슬롯 — 탭하면 카메라/갤러리 → S3 업로드 */}
           <button
             type="button"
-            disabled
-            className="flex h-44 w-full flex-col items-center justify-center gap-2 rounded-lg bg-gray-100 text-gray-400 dark:bg-gray-800"
+            onClick={onPickPhoto}
+            disabled={uploading}
+            className="relative flex h-44 w-full flex-col items-center justify-center gap-2 overflow-hidden rounded-lg bg-gray-100 text-gray-400 dark:bg-gray-800"
           >
-            <Camera className="size-7" aria-hidden />
-            <span className="text-caption">사진 추가 (준비 중)</span>
+            {imageUrl ? (
+              <img
+                src={imageUrl}
+                alt="첨부 사진"
+                className="absolute inset-0 size-full object-cover"
+              />
+            ) : uploading ? (
+              <>
+                <Loader2 className="size-7 animate-spin" aria-hidden />
+                <span className="text-caption">업로드 중…</span>
+              </>
+            ) : (
+              <>
+                <Camera className="size-7" aria-hidden />
+                <span className="text-caption">사진 추가</span>
+              </>
+            )}
           </button>
+          {uploadError && <p className="text-caption text-error">{uploadError}</p>}
 
           <TextField
             label="상품명"
