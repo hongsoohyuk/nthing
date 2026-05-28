@@ -1,30 +1,69 @@
-// TEMP: Phase 1.3 인증 후 착지점. Phase 1.4 에서 MainLayout(AppBar+BottomNav+FAB)으로 교체.
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../shared/stores/authStore';
+import { AppBar } from '../shared/components/AppBar';
+import { Chip } from '../shared/components/Badge';
 import { Button } from '../shared/components/Button';
+import { LoadingState } from '../shared/components/states/LoadingState';
+import { EmptyState } from '../shared/components/states/EmptyState';
+import { ErrorState } from '../shared/components/states/ErrorState';
+import { SplitCard } from '../features/splits/SplitCard';
+import { useSplits } from '../features/splits/queries';
+import { useLocationStore, DEFAULT_COORDS } from '../shared/stores/locationStore';
+import { type SplitStatus } from '../shared/api/types';
+
+// 서버 카테고리/마감 필드 부재로 1.4 는 전체/모집중만 배선 (음식/생필품/마감임박은 후속)
+const FILTERS: Array<{ label: string; status?: SplitStatus }> = [
+  { label: '전체', status: undefined },
+  { label: '모집중', status: 'WAITING' },
+];
 
 export function Home() {
   const navigate = useNavigate();
-  const user = useAuthStore((s) => s.user);
-  const logout = useAuthStore((s) => s.logout);
+  const coords = useLocationStore((s) => s.current) ?? DEFAULT_COORDS;
+  const [filterIdx, setFilterIdx] = useState(0);
+  const query = useSplits({
+    lat: coords.lat,
+    lng: coords.lng,
+    radiusKm: 3,
+    status: FILTERS[filterIdx].status,
+  });
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-6 px-6">
-      <div className="text-center">
-        <p className="text-h1 text-gray-900">{user?.nickname ?? '게스트'}님</p>
-        <p className="text-body text-gray-500">반띵하자 — 로그인 성공 (임시 화면)</p>
+    <div>
+      <AppBar title="근처 반띵" />
+      <div className="flex gap-2 overflow-x-auto px-4 pb-3">
+        {FILTERS.map((f, i) => (
+          <Chip key={f.label} active={i === filterIdx} onClick={() => setFilterIdx(i)}>
+            {f.label}
+          </Chip>
+        ))}
       </div>
-      <Button
-        variant="secondary"
-        onClick={() => {
-          void (async () => {
-            await logout();
-            navigate('/login', { replace: true });
-          })();
-        }}
-      >
-        로그아웃
-      </Button>
+
+      {query.isPending ? (
+        <LoadingState />
+      ) : query.isError ? (
+        <ErrorState message="반띵을 불러오지 못했어요" onRetry={() => void query.refetch()} />
+      ) : query.data.content.length === 0 ? (
+        <EmptyState
+          title="아직 반띵이 없어요"
+          subtitle="첫 반띵을 올려보세요"
+          action={
+            <Button size="md" onClick={() => navigate('/splits/new')}>
+              반띵 등록하기
+            </Button>
+          }
+        />
+      ) : (
+        <div className="flex flex-col gap-3 px-4 pb-24">
+          {query.data.content.map((split) => (
+            <SplitCard
+              key={split.id}
+              split={split}
+              onClick={() => navigate(`/splits/${split.id}`)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
