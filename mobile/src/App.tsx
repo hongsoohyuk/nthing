@@ -8,7 +8,13 @@ import { DeepLinkListener } from './features/auth/DeepLinkListener';
 import { RootRedirect, RequireAuth } from './features/auth/guards';
 import { Login } from './routes/Login';
 import { AuthCallback } from './routes/AuthCallback';
+import { MainLayout } from './routes/MainLayout';
 import { Home } from './routes/Home';
+import { Map } from './routes/Map';
+import { Profile } from './routes/Profile';
+import { CreateSplit } from './routes/CreateSplit';
+import { SplitDetail } from './routes/SplitDetail';
+import { SplitList } from './routes/SplitList';
 import { Catalog } from './routes/Catalog';
 
 function App() {
@@ -32,14 +38,54 @@ function App() {
           <Route path="/" element={<RootRedirect />} />
           <Route path="/login" element={<Login />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
+
+          {/* 인증된 3탭 — MainLayout(Outlet + BottomNav + FAB) 아래 중첩 */}
           <Route
-            path="/home"
             element={
               <RequireAuth>
-                <Home />
+                <MainLayout />
+              </RequireAuth>
+            }
+          >
+            <Route path="/home" element={<Home />} />
+            <Route path="/map" element={<Map />} />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
+
+          {/* 인증 필요한 풀스크린 (셸 없음, 자체 AppBar + back) */}
+          <Route
+            path="/splits/new"
+            element={
+              <RequireAuth>
+                <CreateSplit />
               </RequireAuth>
             }
           />
+          <Route
+            path="/splits/:id"
+            element={
+              <RequireAuth>
+                <SplitDetail />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/me/splits"
+            element={
+              <RequireAuth>
+                <SplitList variant="my" />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/me/splits/participated"
+            element={
+              <RequireAuth>
+                <SplitList variant="participated" />
+              </RequireAuth>
+            }
+          />
+
           <Route path="/catalog" element={<Catalog />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
