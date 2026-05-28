@@ -28,11 +28,23 @@ import { Map } from './Map';
 const useSplitsMock = useSplits as unknown as ReturnType<typeof vi.fn>;
 
 const SPLIT = {
-  id: 7, productName: '두쫀쿠 4개입', totalPrice: 20000, totalQty: 4, splitCount: 2,
-  pricePerPerson: 10000, qtyPerPerson: 2, imageUrl: null,
-  latitude: 37.5, longitude: 127, address: '역삼동', status: 'WAITING',
+  id: 7,
+  productName: '두쫀쿠 4개입',
+  totalPrice: 20000,
+  totalQty: 4,
+  splitCount: 2,
+  pricePerPerson: 10000,
+  qtyPerPerson: 2,
+  imageUrl: null,
+  latitude: 37.5,
+  longitude: 127,
+  address: '역삼동',
+  status: 'WAITING',
   author: { id: 1, nickname: '판매자', profileImageUrl: null },
-  createdAt: '2026-05-28T10:00:00', participants: [], currentParticipants: 1, distanceKm: 0.3,
+  createdAt: '2026-05-28T10:00:00',
+  participants: [],
+  currentParticipants: 1,
+  distanceKm: 0.3,
 };
 
 function renderMap() {
