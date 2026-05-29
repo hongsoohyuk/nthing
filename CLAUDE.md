@@ -26,7 +26,7 @@
 - 서버 패키지 `com.onebite.server`는 그대로 유지 (외부 노출 X, 동작 안정성 우선)
 
 ### 영역 2: 모바일 클라이언트 (`mobile/`) — 마이그레이션 진행 중
-- 기술: **Vite + React + Capacitor 6** (마이그레이션 결정 2026-05-18)
+- 기술: **Vite + React + Capacitor 8** (마이그레이션 결정 2026-05-18, scaffold 시 Capacitor 8.x 채택)
 - App id: `co.nthing.app`
 - 담당: UI, 네이티브 연동 (Capacitor Plugin: Camera/Geolocation/Preferences/Browser/Push)
 - API 연동: `docs/api-spec.md` 기준으로 서버와 독립 개발
@@ -43,7 +43,7 @@
 
 | 영역 | 기술 | 비고 |
 |------|------|------|
-| 모바일 | **Vite + React + Capacitor 6** | iOS + Android + Web (PWA) |
+| 모바일 | **Vite + React + Capacitor 8** | iOS + Android + Web (PWA) |
 | 모바일 UI | Tailwind CSS + Pretendard | 디자인 토큰 `tailwind.config.ts` |
 | 모바일 상태 | Zustand + TanStack Query | |
 | 서버 | Kotlin + Spring Boot 3.5 | |
@@ -139,7 +139,8 @@ npx cap sync && npx cap open android  # Android Studio
 - [~] OAuth: kakao/naver/google 서버 릴레이(nthing://) 배선 + dev-login (Phase 1.3) — Apple·실키 라운드트립 후속
 - [x] 카카오맵 JS SDK (Phase 1.5) — 지도/핀/슬라이드업, 키 없으면 placeholder
 - [x] Capacitor Plugins: Preferences/Browser/App (1.3) + Camera/Geolocation (1.5)
-- [ ] iOS/Android 빌드 + 실기기 스모크
+- [x] iOS/Android 디버그 빌드 검증 (2026-05-29) — Android `assembleDebug` APK + iOS `App.app`(iPhone 17 sim) 둘 다 통과. 빌드 환경 요구: Android는 JDK 21(Capacitor 8 플러그인 toolchain), iOS는 Xcode `-downloadPlatform iOS`로 iOS 시뮬 런타임 설치 필요
+- [ ] iOS/Android 실기기 스모크 (코드 서명 + 실기기)
 
 **인프라**
 - [x] AWS Terraform (EC2 + EIP + S3 + IAM)
