@@ -1,0 +1,53 @@
+import { env } from '../../shared/lib/env';
+
+export type KakaoLatLng = object;
+export type KakaoMapInstance = { setCenter: (latlng: KakaoLatLng) => void };
+export type KakaoMarker = object;
+export type KakaoMaps = {
+  load: (cb: () => void) => void;
+  Map: new (
+    container: HTMLElement,
+    options: { center: KakaoLatLng; level: number },
+  ) => KakaoMapInstance;
+  LatLng: new (lat: number, lng: number) => KakaoLatLng;
+  Marker: new (options: { position: KakaoLatLng; map?: KakaoMapInstance }) => KakaoMarker;
+  event: { addListener: (target: object, type: string, handler: () => void) => void };
+};
+
+declare global {
+  interface Window {
+    kakao?: { maps: KakaoMaps };
+  }
+}
+
+const SCRIPT_ID = 'kakao-maps-sdk';
+
+// JS SDK 동적 로드. 키 없으면(또는 로드 실패) null 반환 → 호출부는 placeholder 로 폴백.
+export function loadKakaoMaps(key: string = env.kakaoMapKey): Promise<KakaoMaps | null> {
+  return new Promise((resolve) => {
+    if (!key) {
+      resolve(null);
+      return;
+    }
+    if (window.kakao?.maps) {
+      resolve(window.kakao.maps);
+      return;
+    }
+    const onReady = () => window.kakao!.maps.load(() => resolve(window.kakao!.maps));
+    const onError = () => resolve(null);
+
+    const existing = document.getElementById(SCRIPT_ID) as HTMLScriptElement | null;
+    if (existing) {
+      existing.addEventListener('load', onReady);
+      existing.addEventListener('error', onError);
+      return;
+    }
+    const script = document.createElement('script');
+    script.id = SCRIPT_ID;
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${key}&autoload=false&libraries=services`;
+    script.async = true;
+    script.onload = onReady;
+    script.onerror = onError;
+    document.head.appendChild(script);
+  });
+}
