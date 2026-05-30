@@ -38,8 +38,12 @@ export async function syncDeviceLocation(): Promise<void> {
 export async function setNearbyAlerts(enabled: boolean): Promise<void> {
   const platform = devicePlatform();
   if (!platform) return;
-  const { token } = await FirebaseMessaging.getToken();
-  await nthingApi.registerDevice({ fcmToken: token, platform, nearbyAlertsEnabled: enabled });
+  try {
+    const { token } = await FirebaseMessaging.getToken();
+    await nthingApi.registerDevice({ fcmToken: token, platform, nearbyAlertsEnabled: enabled });
+  } catch {
+    // 미등록(권한 미허용) 상태에서 토글 시 getToken 거부 → 무시 (best-effort)
+  }
 }
 
 export async function unregisterDevice(): Promise<void> {

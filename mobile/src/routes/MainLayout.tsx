@@ -1,9 +1,12 @@
+import { useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { BottomNav } from '../shared/components/BottomNav';
 import { Fab } from '../shared/components/Fab';
 import { useEnsureLocation } from '../features/location/useEnsureLocation';
+import { useLocationStore } from '../shared/stores/locationStore';
 import { usePushPriming } from '../features/notifications/usePushPriming';
 import { PushPrimingSheet } from '../features/notifications/PushPrimingSheet';
+import { syncDeviceLocation } from '../features/notifications/pushService';
 
 type Tab = 'home' | 'map' | 'profile';
 
@@ -27,6 +30,12 @@ export function MainLayout() {
 
   useEnsureLocation();
   const priming = usePushPriming();
+
+  // 위치가 갱신되면 등록된 기기의 마지막 위치를 서버에 동기화 (네이티브만, best-effort)
+  const coords = useLocationStore((s) => s.current);
+  useEffect(() => {
+    if (coords) void syncDeviceLocation();
+  }, [coords]);
 
   return (
     <div className="relative mx-auto flex h-screen max-w-md flex-col bg-white dark:bg-gray-950">

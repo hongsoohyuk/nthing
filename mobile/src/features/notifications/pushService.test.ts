@@ -12,7 +12,7 @@ import { Capacitor } from '@capacitor/core';
 import { FirebaseMessaging } from '@capacitor-firebase/messaging';
 import { nthingApi } from '../../shared/api/nthingApi';
 import { useLocationStore } from '../../shared/stores/locationStore';
-import { requestPermissionAndRegister, devicePlatform } from './pushService';
+import { requestPermissionAndRegister, devicePlatform, setNearbyAlerts } from './pushService';
 
 const getPlatform = Capacitor.getPlatform as unknown as ReturnType<typeof vi.fn>;
 const requestPermissions = FirebaseMessaging.requestPermissions as unknown as ReturnType<
@@ -53,6 +53,13 @@ describe('pushService', () => {
     getPlatform.mockReturnValue('ios');
     requestPermissions.mockResolvedValue({ receive: 'denied' });
     expect(await requestPermissionAndRegister()).toBe(false);
+    expect(registerDevice).not.toHaveBeenCalled();
+  });
+
+  it('setNearbyAlerts: 미등록(getToken 거부) 시 throw 하지 않음', async () => {
+    getPlatform.mockReturnValue('android');
+    getToken.mockRejectedValue(new Error('no token'));
+    await expect(setNearbyAlerts(true)).resolves.toBeUndefined();
     expect(registerDevice).not.toHaveBeenCalled();
   });
 });
