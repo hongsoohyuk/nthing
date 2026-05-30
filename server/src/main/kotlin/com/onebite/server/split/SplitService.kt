@@ -1,11 +1,13 @@
 package com.onebite.server.split
 
 import com.onebite.server.user.UserRepository
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
 import kotlin.math.*
 
@@ -14,12 +16,13 @@ class SplitService(
     private val splitRepository: SplitRepository,
     private val splitParticipantRepository: SplitParticipantRepository,
     private val userRepository: UserRepository,
-    private val splitLocationQuery: SplitLocationQuery
+    private val splitLocationQuery: SplitLocationQuery,
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
+    @Transactional
     fun create(dto: CreateSplitDto, userId: Long): SplitResponse {
         val author = userRepository.findById(userId)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다: $userId") }
-
         val entity = SplitRequest(
             author = author,
             productName = dto.productName,
@@ -29,9 +32,11 @@ class SplitService(
             imageUrl = dto.imageUrl,
             latitude = dto.latitude,
             longitude = dto.longitude,
-            address = dto.address
+            address = dto.address,
         )
-        return SplitResponse.from(splitRepository.save(entity))
+        val saved = splitRepository.save(entity)
+        eventPublisher.publishEvent(SplitCreatedEvent(saved.id))
+        return SplitResponse.from(saved)
     }
 
     fun findAll(pageable: Pageable): Page<SplitResponse> =
@@ -62,6 +67,7 @@ class SplitService(
         return PageImpl(responses, pageable, page.totalElements)
     }
 
+    @Transactional
     fun join(splitId: Long, userId: Long): SplitResponse {
         val split = splitRepository.findById(splitId)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Split을 찾을 수 없습니다: $splitId") }
@@ -84,15 +90,21 @@ class SplitService(
         splitParticipantRepository.save(SplitParticipant(splitRequest = split, user = user))
 
         val participantCount = splitParticipantRepository.countBySplitRequestId(splitId)
+        var matched = false
         if (participantCount >= split.splitCount - 1) {
             split.status = SplitStatus.MATCHED
             splitRepository.save(split)
+            matched = true
         }
+
+        eventPublisher.publishEvent(SplitJoinedEvent(splitId, userId))
+        if (matched) eventPublisher.publishEvent(SplitMatchedEvent(splitId))
 
         val participants = splitParticipantRepository.findBySplitRequestId(splitId)
         return SplitResponse.from(split, participants)
     }
 
+    @Transactional
     fun cancel(id: Long, userId: Long): SplitResponse {
         val entity = splitRepository.findById(id)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Split을 찾을 수 없습니다: $id") }
@@ -107,6 +119,7 @@ class SplitService(
 
         entity.status = SplitStatus.CANCELLED
         val saved = splitRepository.save(entity)
+        eventPublisher.publishEvent(SplitCancelledEvent(id))
         val participants = splitParticipantRepository.findBySplitRequestId(id)
         return SplitResponse.from(saved, participants)
     }
