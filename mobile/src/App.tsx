@@ -5,6 +5,7 @@ import { queryClient } from './shared/lib/queryClient';
 import { setUnauthorizedHandler } from './shared/api/http';
 import { useAuthStore } from './shared/stores/authStore';
 import { DeepLinkListener } from './features/auth/DeepLinkListener';
+import { PushListener } from './features/notifications/PushListener';
 import { RootRedirect, RequireAuth } from './features/auth/guards';
 import { Login } from './routes/Login';
 import { AuthCallback } from './routes/AuthCallback';
@@ -34,6 +35,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <DeepLinkListener />
+        <PushListener />
         <Routes>
           <Route path="/" element={<RootRedirect />} />
           <Route path="/login" element={<Login />} />

@@ -12,8 +12,12 @@ vi.mock('@capacitor/preferences', () => ({
     }),
   },
 }));
+vi.mock('../../features/notifications/pushService', () => ({
+  unregisterDevice: vi.fn().mockResolvedValue(undefined),
+}));
 
 import { useAuthStore } from './authStore';
+import { unregisterDevice } from '../../features/notifications/pushService';
 
 describe('authStore', () => {
   beforeEach(() => {
@@ -63,5 +67,10 @@ describe('authStore', () => {
     expect(s.token).toBeNull();
     expect(s.user).toBeNull();
     expect(store['nthing.auth']).toBeUndefined();
+  });
+
+  it('logout 은 unregisterDevice 를 호출한다', async () => {
+    await useAuthStore.getState().logout();
+    expect(unregisterDevice).toHaveBeenCalled();
   });
 });

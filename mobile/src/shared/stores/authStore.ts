@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Preferences } from '@capacitor/preferences';
 import { setAuthToken } from '../api/http';
+import { unregisterDevice } from '../../features/notifications/pushService';
 import { type AuthResponse, type AuthUser } from '../api/types';
 
 const STORAGE_KEY = 'nthing.auth';
@@ -32,6 +33,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   logout: async () => {
+    await unregisterDevice(); // 토큰 클리어 전, 인증된 상태에서 서버에 해제 요청 (실패해도 무시)
     setAuthToken(null);
     await Preferences.remove({ key: STORAGE_KEY });
     set({ token: null, user: null });
