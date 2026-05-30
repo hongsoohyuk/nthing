@@ -2,11 +2,13 @@ import { apiFetch } from './http';
 import {
   type AuthResponse,
   type CreateSplitRequest,
+  type DeviceResponse,
   type GetSplitsParams,
   type Me,
   type PageResponse,
   type PresignRequest,
   type PresignResponse,
+  type RegisterDeviceRequest,
   type Split,
   type UpdateMeRequest,
 } from './types';
@@ -74,4 +76,11 @@ export const nthingApi = {
   // ── uploads (Phase 1.4 시그니처만; 실제 PUT 업로드는 1.5) ──
   signUpload: (req: PresignRequest) =>
     apiFetch<PresignResponse>('/uploads/sign', { method: 'POST', body: req }),
+
+  // ── devices (Phase 2 push) ──
+  registerDevice: (req: RegisterDeviceRequest) =>
+    apiFetch<DeviceResponse>('/devices', { method: 'POST', body: req }),
+
+  unregisterDevice: (fcmToken: string) =>
+    apiFetch<void>('/devices/unregister', { method: 'POST', body: { fcmToken } }),
 };

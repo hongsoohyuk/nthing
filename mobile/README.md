@@ -92,7 +92,18 @@ cd mobile && VITE_API_BASE_URL=/api pnpm dev
 새로고침해도 유지(Preferences hydrate=자동 로그인), 로그아웃 시 `/login` 복귀.
 (네이티브 빌드는 절대 `VITE_API_BASE_URL` 사용. 프로덕션 Capacitor 웹뷰는 별도 CORS/네이티브 HTTP 검토 — infra 단계.)
 
+## 푸시 알림 (Phase 2)
+
+- 플러그인: `@capacitor-firebase/messaging` (FCM 단일 채널, iOS는 Firebase가 APNs 중계). 웹 구현이 `firebase` JS 패키지를 동반 요구하므로 `firebase` 의존성도 포함됨.
+- 네이티브 설정파일(커밋 대상 아님, 각자 발급):
+  - iOS: `ios/App/App/GoogleService-Info.plist`
+  - Android: `android/app/google-services.json`
+- iOS: Apple Developer에서 APNs 인증키(.p8)를 발급해 **Firebase 콘솔에 업로드**.
+- 서버: Firebase 서비스계정 JSON을 `firebase.credentials-path`로 주입(미설정 시 서버는 발송 로그만 남기는 no-op).
+- 웹(PWA) 빌드에서 푸시는 동작하지 않음(no-op — `Capacitor.getPlatform()`이 web이면 조기 반환).
+
 ## Reference
 - 마이그레이션 spec: `docs/superpowers/specs/2026-05-18-client-rewrite-design.md`
 - Phase 1.1 plan: `docs/superpowers/plans/2026-05-19-nthing-phase1-foundation.md`
+- Phase 2 푸시 plan: `docs/superpowers/plans/2026-05-29-nthing-phase2-push-notifications.md`
 - 디자인 brief: `docs/design/claude-design-brief.md`
