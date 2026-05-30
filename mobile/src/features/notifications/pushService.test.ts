@@ -15,7 +15,9 @@ import { useLocationStore } from '../../shared/stores/locationStore';
 import { requestPermissionAndRegister, devicePlatform } from './pushService';
 
 const getPlatform = Capacitor.getPlatform as unknown as ReturnType<typeof vi.fn>;
-const requestPermissions = FirebaseMessaging.requestPermissions as unknown as ReturnType<typeof vi.fn>;
+const requestPermissions = FirebaseMessaging.requestPermissions as unknown as ReturnType<
+  typeof vi.fn
+>;
 const getToken = FirebaseMessaging.getToken as unknown as ReturnType<typeof vi.fn>;
 const registerDevice = nthingApi.registerDevice as unknown as ReturnType<typeof vi.fn>;
 

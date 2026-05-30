@@ -153,8 +153,8 @@ npx cap sync && npx cap open android  # Android Studio
 - [ ] 푸시 알림 → Phase 2 로 이동
 
 ### Phase 2 - 신뢰와 편의성
-- [ ] 푸시 알림 (Capacitor Push + 서버 FCM/APNs 전송)
-- [ ] 위치 기반 트리거 알림 ("근처 N미터 내 새 반띵")
+- [~] 푸시 알림 (Capacitor `@capacitor-firebase/messaging` + 서버 FCM 단일 채널) — 코드 완성, 실 전송은 Firebase/APNs/도메인 셋업 후
+- [~] 위치 기반 트리거 알림 ("근처 N미터 내 새 반띵") — 코드 완성 (DeviceLocationQuery 전략 패턴)
 - [ ] 인앱 채팅
 - [ ] PG 에스크로 연동 (안전거래)
 - [ ] 거래 완료 인증
@@ -197,6 +197,7 @@ npx cap sync && npx cap open android  # Android Studio
 | 2026-05-18 | 브랜드 리브랜딩 한입 → Nthing/엔띵 | "반띵하자" 컨셉이 비음식 벌크 상품(휴지/세제/원두 등)까지 자연스럽게 포괄, 글로벌 확장 친화 | 한입 유지 |
 | 2026-05-18 | 디자인 컬러 한입 오렌지(#FF6B35) → 딥 그린(#16A34A) | 당근마켓과 동일 톤 회피, 신선/안전 어소시에이션 | 테라코타, 인디고 |
 | 2026-05-18 | 클라이언트 마이그레이션 KMP → Vite + React + Capacitor | KMP 학습/유지보수 부담, 디자인 mockup이 HTML 기반이라 React 이식 유리, iOS PWA 푸시 한계 → Capacitor 셸 필요 | KMP 유지, RN, Flutter, 수동 WebView Bridge |
+| 2026-05-29 | Phase 2 푸시: FCM 단일 채널 + device 테이블(토큰+위치) + 이벤트 AFTER_COMMIT 디커플링 | 1인 개발 서버 단순화(APNs 직접 회피), 정밀 근접 타겟팅, split 도메인 비침투 | 네이티브 APNs+FCM 분리, 지오해시 토픽, 아웃박스 |
 
 ---
 
