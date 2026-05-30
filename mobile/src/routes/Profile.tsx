@@ -1,9 +1,13 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Settings, User } from 'lucide-react';
+import { Preferences } from '@capacitor/preferences';
+import { Capacitor } from '@capacitor/core';
 import { AppBar } from '../shared/components/AppBar';
 import { Card } from '../shared/components/Card';
 import { Button } from '../shared/components/Button';
 import { useAuthStore } from '../shared/stores/authStore';
+import { setNearbyAlerts } from '../features/notifications/pushService';
 
 const MENU: Array<{ label: string; to: string }> = [
   { label: '내 나눠사기', to: '/me/splits' },
@@ -14,6 +18,24 @@ export function Profile() {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
+
+  const isNative = Capacitor.isNativePlatform();
+  const [nearby, setNearby] = useState(true);
+
+  useEffect(() => {
+    if (!isNative) return;
+    void (async () => {
+      const { value } = await Preferences.get({ key: 'nthing.push.nearby' });
+      if (value !== null) setNearby(value === '1');
+    })();
+  }, [isNative]);
+
+  const toggleNearby = () => {
+    const next = !nearby;
+    setNearby(next);
+    void Preferences.set({ key: 'nthing.push.nearby', value: next ? '1' : '0' });
+    void setNearbyAlerts(next);
+  };
 
   const onLogout = () => {
     void (async () => {
@@ -62,6 +84,28 @@ export function Profile() {
             </li>
           ))}
         </ul>
+
+        {isNative && (
+          <div className="mt-2 flex h-14 items-center justify-between">
+            <span className="text-body text-gray-900 dark:text-gray-100">근처 알림</span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={nearby}
+              aria-label="근처 알림"
+              onClick={toggleNearby}
+              className={`relative h-6 w-11 rounded-pill transition-colors ${
+                nearby ? 'bg-brand' : 'bg-gray-300 dark:bg-gray-700'
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 size-5 rounded-full bg-white transition-transform ${
+                  nearby ? 'translate-x-5' : 'translate-x-0.5'
+                }`}
+              />
+            </button>
+          </div>
+        )}
 
         <div className="mt-8 flex justify-center">
           <Button variant="text" onClick={onLogout}>
