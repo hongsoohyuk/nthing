@@ -109,3 +109,16 @@ export type PresignResponse = {
   key: string;
   expiresInSeconds: number;
 };
+
+// ── Device (서버 DeviceDto.kt 기준) ──
+export type DevicePlatform = 'IOS' | 'ANDROID';
+
+export type RegisterDeviceRequest = {
+  fcmToken: string;
+  platform: DevicePlatform;
+  lat?: number;
+  lng?: number;
+  nearbyAlertsEnabled?: boolean;
+};
+
+export type DeviceResponse = { id: number };
