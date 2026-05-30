@@ -52,12 +52,22 @@ src/main/kotlin/com/onebite/server/
 │   ├── UploadController.kt # POST /api/uploads/sign
 │   ├── UploadService.kt    # presign PUT URL 생성 + 크기/타입 검증
 │   └── UploadDto.kt        # PresignRequest, PresignResponse
-└── user/                    # 유저 도메인
-    ├── User.kt              # Entity (provider, providerId, nickname, profileImageUrl)
-    ├── UserRepository.kt    # findByProviderAndProviderId
-    ├── UserController.kt    # GET/PATCH /api/users/me
-    ├── UserService.kt       # 프로필 조회/수정
-    └── UserDto.kt           # UserResponse, UpdateUserDto
+├── user/                    # 유저 도메인
+│   ├── User.kt              # Entity (provider, providerId, nickname, profileImageUrl)
+│   ├── UserRepository.kt    # findByProviderAndProviderId
+│   ├── UserController.kt    # GET/PATCH /api/users/me
+│   ├── UserService.kt       # 프로필 조회/수정
+│   └── UserDto.kt           # UserResponse, UpdateUserDto
+└── notification/            # 푸시 알림 도메인 (FCM)
+    ├── Device.kt / DeviceRepository.kt
+    ├── DeviceLocationQuery.kt  # 전략 패턴 (H2 Haversine / PostGIS)
+    ├── Notification.kt / NotificationRepository.kt
+    ├── DeviceController.kt     # POST /api/devices, /api/devices/unregister
+    ├── DeviceDto.kt            # RegisterDeviceRequest, UnregisterDeviceRequest, DeviceResponse
+    ├── DeviceService.kt        # 토큰 upsert + 삭제
+    ├── FcmSender.kt / FcmConfig.kt / AsyncConfig.kt
+    ├── NotificationService.kt  # 수신자 결정 + FCM 전송 + 로그 + 토큰 정리
+    └── NotificationEventListener.kt  # split 이벤트 → 푸시 (AFTER_COMMIT + @Async)
 ```
 
 ## API 엔드포인트
@@ -76,6 +86,8 @@ src/main/kotlin/com/onebite/server/
 | POST | /api/splits/{id}/join | O | 참여 |
 | PATCH | /api/splits/{id}/cancel | O | 취소 (작성자만, WAITING만) |
 | POST | /api/uploads/sign | O | S3 presigned PUT URL 발급 (contentType, size) |
+| POST | /api/devices | O | 디바이스 토큰/위치 등록·갱신 (upsert) |
+| POST | /api/devices/unregister | O | 디바이스 토큰 삭제 (로그아웃) |
 | GET | /api/users/me | O | 내 프로필 |
 | PATCH | /api/users/me | O | 프로필 수정 (nickname) |
 
@@ -122,7 +134,7 @@ SecurityConfig 매칭 순서 주의: `/splits/my`와 `/splits/participated`는 `
 - [ ] Swagger/OpenAPI 문서 자동 생성
 
 **Phase 2**
-- [ ] 푸시 알림 (FCM + APNs)
+- [x] 푸시 알림 서버 (FCM + APNs) — notification 도메인: Device(token upsert/unregister), DeviceLocationQuery, NotificationService(4종 알림), AFTER_COMMIT+@Async 이벤트 리스너 (모바일 연동 진행 중)
 - [ ] 인앱 채팅
 - [ ] PG 에스크로 연동
 
