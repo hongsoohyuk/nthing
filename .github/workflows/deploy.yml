@@ -93,7 +93,7 @@ jobs:
           {
             "commands": [
               "set -eux",
-              "if [ ! -d /opt/onebite/.git ]; then sudo rm -rf /opt/onebite && sudo git clone https://github.com/hongsoohyuk/one-bite.git /opt/onebite && sudo chown -R ec2-user:ec2-user /opt/onebite; fi",
+              "if [ ! -d /opt/onebite/.git ]; then sudo rm -rf /opt/onebite && sudo git clone https://github.com/hongsoohyuk/nthing.git /opt/onebite && sudo chown -R ec2-user:ec2-user /opt/onebite; fi",
               "cd /opt/onebite",
               "sudo -u ec2-user git fetch origin main && sudo -u ec2-user git reset --hard origin/main",
               "echo '$ENV_B64' | base64 -d | sudo tee /opt/onebite/infra/.env > /dev/null",

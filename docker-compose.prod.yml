@@ -23,7 +23,7 @@ services:
           cpus: "0.5"
 
   server:
-    image: ghcr.io/hongsoohyuk/one-bite/server:latest
+    image: ghcr.io/hongsoohyuk/nthing/server:latest
     container_name: onebite-server
     restart: always
     expose:
