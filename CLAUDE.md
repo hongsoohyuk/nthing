@@ -198,6 +198,7 @@ npx cap sync && npx cap open android  # Android Studio
 | 2026-05-18 | 디자인 컬러 한입 오렌지(#FF6B35) → 딥 그린(#16A34A) | 당근마켓과 동일 톤 회피, 신선/안전 어소시에이션 | 테라코타, 인디고 |
 | 2026-05-18 | 클라이언트 마이그레이션 KMP → Vite + React + Capacitor | KMP 학습/유지보수 부담, 디자인 mockup이 HTML 기반이라 React 이식 유리, iOS PWA 푸시 한계 → Capacitor 셸 필요 | KMP 유지, RN, Flutter, 수동 WebView Bridge |
 | 2026-05-29 | Phase 2 푸시: FCM 단일 채널 + device 테이블(토큰+위치) + 이벤트 AFTER_COMMIT 디커플링 | 1인 개발 서버 단순화(APNs 직접 회피), 정밀 근접 타겟팅, split 도메인 비침투 | 네이티브 APNs+FCM 분리, 지오해시 토픽, 아웃박스 |
+| 2026-06-02 | 랜딩 페이지(`web/`, Next.js) Vercel 배포 + `nthing.app` 도메인 연결 (apex A→Vercel, www→apex 308, GitHub `main` 자동배포, rootDirectory=`web`) | 정적 랜딩은 EC2 부하 없이 Vercel 무료 호스팅·자동 SSL·CDN로 충분, 앱 API(`api.nthing.app`)는 EC2 유지로 분리 | EC2/nginx에 직접 서빙(SSL·배포 수동 부담), S3+CloudFront(설정 과다) |
 
 ---
 
