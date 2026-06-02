@@ -102,6 +102,7 @@ jobs:
               "echo '$GH_TOKEN' | sudo -u ec2-user docker login ghcr.io -u '$GH_ACTOR' --password-stdin",
               "sudo -u ec2-user docker compose --env-file ./infra/.env -f docker-compose.prod.yml pull server",
               "sudo -u ec2-user docker compose --env-file ./infra/.env -f docker-compose.prod.yml up -d",
+              "sudo -u ec2-user docker compose --env-file ./infra/.env -f docker-compose.prod.yml up -d --force-recreate nginx",
               "sudo -u ec2-user docker image prune -f"
             ]
           }
