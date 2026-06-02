@@ -145,15 +145,16 @@ npx cap sync && npx cap open android  # Android Studio
 **인프라**
 - [x] AWS Terraform (EC2 + EIP + S3 + IAM)
 - [x] GitHub Actions 자동 배포 (GHCR + SSM + 자동 bootstrap)
+- [x] 도메인 확보 + HTTPS (2026-06-02) — `nthing.app` 확보. 서버 `api.nthing.app`(EC2 nginx + Let's Encrypt), 랜딩 `nthing.app`(Vercel). repo 리네임(one-bite→nthing) 잔재(OIDC trust/GHCR/clone) 정렬 완료
 
 **남은 것** (코드 아닌 운영/테스트)
 - [ ] 실기기 E2E 스모크 (React 마이그레이션 후)
-- [ ] 도메인 확보 → HTTPS / OAuth 실값 / 모바일 BASE_URL 교체 (`infra/CLAUDE.md` 체크리스트)
-  - 도메인 후보: nthing.co / nthing.co.kr (예정)
+- [ ] OAuth 실값 교체 — provider 콘솔에 redirect `https://api.nthing.app/api/auth/callback/{provider}` 등록 + 실 client_id/secret → `infra/.env` → `ONEBITE_ENV_B64` 재배포 (`infra/CLAUDE.md` 도메인 체크리스트 4~6단계)
+- [ ] 모바일 BASE_URL → `https://api.nthing.app/api` 교체 후 재빌드
 - [ ] 푸시 알림 → Phase 2 로 이동
 
 ### Phase 2 - 신뢰와 편의성
-- [~] 푸시 알림 (Capacitor `@capacitor-firebase/messaging` + 서버 FCM 단일 채널) — 코드 완성, 실 전송은 Firebase/APNs/도메인 셋업 후
+- [~] 푸시 알림 (Capacitor `@capacitor-firebase/messaging` + 서버 FCM 단일 채널) — 코드 완성. Firebase 프로젝트(`n-thing`) 생성 + config 배치 완료(2026-06-02): Android `google-services.json`, iOS `GoogleService-Info.plist`(Xcode 타겟 등록), 서버 service account(`server/secrets/`, gitignored). 남은 것: 서버 prod에 service account 마운트(`FIREBASE_CREDENTIALS_PATH`) + iOS APNs 키(Apple Developer 계정 후)
 - [~] 위치 기반 트리거 알림 ("근처 N미터 내 새 반띵") — 코드 완성 (DeviceLocationQuery 전략 패턴)
 - [ ] 인앱 채팅
 - [ ] PG 에스크로 연동 (안전거래)
