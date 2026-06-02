@@ -306,14 +306,15 @@ GitHub Actions가 main 브랜치 푸시 시 자동으로 배포합니다. 수동
 - [ ] `curl -I https://<domain>/actuator/health` → `200 OK` 확인
 
 ### 4) OAuth 콘솔 업데이트
-- [ ] 카카오: developers.kakao.com → 내 애플리케이션 → 카카오 로그인 → Redirect URI에 `https://<domain>/api/auth/kakao/callback` 추가
-- [ ] 네이버: developers.naver.com → 애플리케이션 → 서비스 URL / Callback URL 업데이트
-- [ ] Google: console.cloud.google.com → APIs & Services → Credentials → OAuth client → Authorized redirect URIs
-- [ ] Apple: developer.apple.com → Identifiers → Services IDs → Domains and Subdomains / Return URLs
+> ⚠️ redirect_uri 형식은 **서버 릴레이 경로 `/api/auth/callback/{provider}`** (callback 먼저). 구현(`AuthController` `@GetMapping("/callback/{provider}")` + 모바일 `oauth.ts`)과 일치해야 함. 옛 형식 `/api/auth/{provider}/callback` 는 레거시이며 사용 금지.
+- [ ] 카카오: developers.kakao.com → 내 애플리케이션 → 카카오 로그인 → Redirect URI에 `https://api.nthing.app/api/auth/callback/kakao` 추가
+- [ ] 네이버: developers.naver.com → 애플리케이션 → Callback URL에 `https://api.nthing.app/api/auth/callback/naver` 추가
+- [ ] Google: console.cloud.google.com → APIs & Services → Credentials → OAuth client → Authorized redirect URIs에 `https://api.nthing.app/api/auth/callback/google` 추가
+- [ ] Apple: developer.apple.com → Identifiers → Services IDs → Return URLs에 `https://api.nthing.app/api/auth/callback/apple` (웹 릴레이 사용 시)
 
 ### 5) `infra/.env` 업데이트 + 재배포
 - [ ] 각 콘솔에서 실제 `CLIENT_SECRET` 복사 → 로컬 `infra/.env`에 반영 (`KAKAO_CLIENT_SECRET`, `NAVER_CLIENT_SECRET`, `GOOGLE_CLIENT_SECRET`)
-- [ ] `KAKAO_REDIRECT_URI`, `GOOGLE_REDIRECT_URI`를 `https://<domain>/...`로 변경
+- [ ] `KAKAO_REDIRECT_URI=https://api.nthing.app/api/auth/callback/kakao`, `GOOGLE_REDIRECT_URI=https://api.nthing.app/api/auth/callback/google` 로 변경 (릴레이 경로 `/callback/{provider}` — 토큰 교환 redirect_uri가 authorize와 일치해야 함)
 - [ ] `base64 -i infra/.env | tr -d '\n' | pbcopy` → GitHub Settings에서 `ONEBITE_ENV_B64` Secret 덮어쓰기
 - [ ] GitHub Actions → "Deploy to AWS" → **Re-run workflow** 클릭 (bootstrap step이 EC2의 `.env`를 덮어쓰고 컨테이너 재시작까지 처리)
 
