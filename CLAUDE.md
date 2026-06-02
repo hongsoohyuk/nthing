@@ -148,9 +148,9 @@ npx cap sync && npx cap open android  # Android Studio
 - [x] 도메인 확보 + HTTPS (2026-06-02) — `nthing.app` 확보. 서버 `api.nthing.app`(EC2 nginx + Let's Encrypt), 랜딩 `nthing.app`(Vercel). repo 리네임(one-bite→nthing) 잔재(OIDC trust/GHCR/clone) 정렬 완료
 
 **남은 것** (코드 아닌 운영/테스트)
-- [ ] 실기기 E2E 스모크 (React 마이그레이션 후)
-- [ ] OAuth 실값 교체 — provider 콘솔에 redirect `https://api.nthing.app/api/auth/callback/{provider}` 등록 + 실 client_id/secret → `infra/.env` → `ONEBITE_ENV_B64` 재배포 (`infra/CLAUDE.md` 도메인 체크리스트 4~6단계)
-- [ ] 모바일 BASE_URL → `https://api.nthing.app/api` 교체 후 재빌드
+- [x] OAuth 실값 교체 (2026-06-02) — **웹 리다이렉트 3종(Google/Kakao/Naver)** 서버(`infra/.env`→`ONEBITE_ENV_B64`→배포) + 모바일(`.env.local` VITE_*) + provider 콘솔 redirect `https://api.nthing.app/api/auth/callback/{provider}` 등록 완료. Apple 만 미배선(Apple Developer 계정 대기)
+- [x] 모바일 BASE_URL dev/prod 분리 (2026-06-02) — `.env.development`=`/api`(Vite proxy), `.env.production`=`https://api.nthing.app/api`(앱 빌드, OAuth redirect_uri 기반)
+- [ ] 실기기 E2E 스모크 — iPhone 17 보유. 무료 Apple ID(Xcode personal team, 7일 서명)로 **코어 앱 + Google/Kakao/Naver 로그인 + API**는 지금 테스트 가능. Apple 로그인·푸시·(iOS 카카오맵 도메인)은 유료 Apple Developer 계정 후
 - [ ] 푸시 알림 → Phase 2 로 이동
 
 ### Phase 2 - 신뢰와 편의성
