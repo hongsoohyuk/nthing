@@ -136,7 +136,7 @@ npx cap sync && npx cap open android  # Android Studio
 - [x] Tailwind + 디자인 토큰 + Pretendard (1.1) + 디자인 시스템 컴포넌트 8종 (Phase 1.2)
 - [x] API 클라이언트(auth/me + splits/uploads) + authStore + locationStore + TanStack Query 훅 (Phase 1.3 + 1.4)
 - [x] 7화면 이식: Login(1.3) + MainLayout 셸(AppBar+BottomNav+FAB) + Home/Map/Profile/Create/Detail/List (Phase 1.4) — Map은 placeholder(1.5)
-- [~] OAuth: kakao/naver/google 서버 릴레이(nthing://) 배선 + dev-login (Phase 1.3) — Apple·실키 라운드트립 후속
+- [x] OAuth: kakao/naver/google/apple 서버 릴레이(nthing://) 배선 + dev-login — Apple은 웹 form_post(scope=name email) + 서버 client_secret(ES256) 교환 (2026-06-04) — 실키 라운드트립만 후속
 - [x] 카카오맵 JS SDK (Phase 1.5) — 지도/핀/슬라이드업, 키 없으면 placeholder
 - [x] Capacitor Plugins: Preferences/Browser/App (1.3) + Camera/Geolocation (1.5)
 - [x] iOS/Android 디버그 빌드 검증 (2026-05-29) — Android `assembleDebug` APK + iOS `App.app`(iPhone 17 sim) 둘 다 통과. 빌드 환경 요구: Android는 JDK 21(Capacitor 8 플러그인 toolchain), iOS는 Xcode `-downloadPlatform iOS`로 iOS 시뮬 런타임 설치 필요
@@ -148,13 +148,13 @@ npx cap sync && npx cap open android  # Android Studio
 - [x] 도메인 확보 + HTTPS (2026-06-02) — `nthing.app` 확보. 서버 `api.nthing.app`(EC2 nginx + Let's Encrypt), 랜딩 `nthing.app`(Vercel). repo 리네임(one-bite→nthing) 잔재(OIDC trust/GHCR/clone) 정렬 완료
 
 **남은 것** (코드 아닌 운영/테스트)
-- [x] OAuth 실값 교체 (2026-06-02) — **웹 리다이렉트 3종(Google/Kakao/Naver)** 서버(`infra/.env`→`ONEBITE_ENV_B64`→배포) + 모바일(`.env.local` VITE_*) + provider 콘솔 redirect `https://api.nthing.app/api/auth/callback/{provider}` 등록 완료. Apple 만 미배선(Apple Developer 계정 대기)
+- [x] OAuth 실값 교체 — 웹 리다이렉트 **4종(Google/Kakao/Naver/Apple)** 서버(`infra/.env`→`ONEBITE_ENV_B64`→배포) + 모바일(`.env.local` VITE_*) + provider 콘솔 redirect `https://api.nthing.app/api/auth/callback/{provider}` 등록 완료. Apple은 2026-06-04 배선·배포(Services ID `co.nthing.app.signin` + Sign in with Apple .p8 `APPLE_PRIVATE_KEY_BASE64` + Team/Key ID). prod 헬스+콜백 엔드포인트 확인 완료. 실기기 라운드트립만 남음
 - [x] 모바일 BASE_URL dev/prod 분리 (2026-06-02) — `.env.development`=`/api`(Vite proxy), `.env.production`=`https://api.nthing.app/api`(앱 빌드, OAuth redirect_uri 기반)
-- [ ] 실기기 E2E 스모크 — iPhone 17 보유. 무료 Apple ID(Xcode personal team, 7일 서명)로 **코어 앱 + Google/Kakao/Naver 로그인 + API**는 지금 테스트 가능. Apple 로그인·푸시·(iOS 카카오맵 도메인)은 유료 Apple Developer 계정 후
+- [ ] 실기기 E2E 스모크 — iPhone 17 보유. Apple Developer 계정 승인됨(Team `5WQ7PQ4YN4`, 2026-06-04). 이제 **코어 앱 + Google/Kakao/Naver/Apple 로그인 + API** 실기기 테스트 가능. iOS 카카오맵 도메인·APNs 푸시는 추가 콘솔 설정 후
 - [ ] 푸시 알림 → Phase 2 로 이동
 
 ### Phase 2 - 신뢰와 편의성
-- [~] 푸시 알림 (Capacitor `@capacitor-firebase/messaging` + 서버 FCM 단일 채널) — 코드 완성. Firebase 프로젝트(`n-thing`) 생성 + config 배치 완료(2026-06-02): Android `google-services.json`, iOS `GoogleService-Info.plist`(Xcode 타겟 등록), 서버 service account(`server/secrets/`, gitignored). 남은 것: 서버 prod에 service account 마운트(`FIREBASE_CREDENTIALS_PATH`) + iOS APNs 키(Apple Developer 계정 후)
+- [~] 푸시 알림 (Capacitor `@capacitor-firebase/messaging` + 서버 FCM 단일 채널) — 코드 완성. Firebase 프로젝트(`n-thing`) 생성 + config 배치 완료(2026-06-02): Android `google-services.json`, iOS `GoogleService-Info.plist`(Xcode 타겟 등록), 서버 service account(`server/secrets/`, gitignored). iOS APNs 인증 키(.p8) 발급 + Firebase Cloud Messaging 업로드 완료(2026-06-04). 남은 것: 서버 prod에 service account 마운트(`FIREBASE_CREDENTIALS_PATH`, 현재 docker-compose.prod.yml에 secrets 볼륨 미마운트 — base64 env 방식 필요)
 - [~] 위치 기반 트리거 알림 ("근처 N미터 내 새 반띵") — 코드 완성 (DeviceLocationQuery 전략 패턴)
 - [ ] 인앱 채팅
 - [ ] PG 에스크로 연동 (안전거래)
