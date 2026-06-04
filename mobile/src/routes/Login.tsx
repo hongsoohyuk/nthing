@@ -28,7 +28,6 @@ export function Login({ showDevLogin = import.meta.env.DEV }: LoginProps) {
   const [busy, setBusy] = useState(false);
 
   const onProvider = async (provider: Provider) => {
-    if (provider === 'apple') return; // 준비 중
     await startOAuth(provider);
   };
 
@@ -52,25 +51,21 @@ export function Login({ showDevLogin = import.meta.env.DEV }: LoginProps) {
       </header>
 
       <div className="space-y-3">
-        {(Object.keys(PROVIDER_LABEL) as Provider[]).map((provider) => {
-          const isApple = provider === 'apple';
-          return (
-            <button
-              key={provider}
-              type="button"
-              disabled={isApple || busy}
-              onClick={() => void onProvider(provider)}
-              className={cn(
-                'flex h-[52px] w-full items-center justify-center rounded-md text-body-em transition-opacity',
-                'disabled:cursor-not-allowed disabled:opacity-40',
-                PROVIDER_CLASS[provider],
-              )}
-            >
-              {PROVIDER_LABEL[provider]}
-              {isApple && <span className="ml-2 text-meta opacity-70">(준비 중)</span>}
-            </button>
-          );
-        })}
+        {(Object.keys(PROVIDER_LABEL) as Provider[]).map((provider) => (
+          <button
+            key={provider}
+            type="button"
+            disabled={busy}
+            onClick={() => void onProvider(provider)}
+            className={cn(
+              'flex h-[52px] w-full items-center justify-center rounded-md text-body-em transition-opacity',
+              'disabled:cursor-not-allowed disabled:opacity-40',
+              PROVIDER_CLASS[provider],
+            )}
+          >
+            {PROVIDER_LABEL[provider]}
+          </button>
+        ))}
 
         {showDevLogin && (
           <button

@@ -34,8 +34,12 @@ export const nthingApi = {
   loginGoogle: (code: string) =>
     apiFetch<AuthResponse>('/auth/google', { method: 'POST', body: { code }, auth: false }),
 
-  loginApple: (idToken: string) =>
-    apiFetch<AuthResponse>('/auth/apple', { method: 'POST', body: { idToken }, auth: false }),
+  loginApple: (code: string, user?: string | null) =>
+    apiFetch<AuthResponse>('/auth/apple', {
+      method: 'POST',
+      body: { code, user: user ?? undefined },
+      auth: false,
+    }),
 
   devLogin: () => apiFetch<AuthResponse>('/auth/dev-login', { method: 'POST', auth: false }),
 

@@ -4,12 +4,13 @@ import { type Provider } from '../../shared/api/types';
 
 const REDIRECT_BASE = `${env.apiBaseUrl}/auth/callback`; // → .../api/auth/callback/{provider}
 export const NAVER_STATE_KEY = 'nthing.naver.state';
+export const APPLE_STATE_KEY = 'nthing.apple.state';
 
 function redirectUri(provider: Provider): string {
   return `${REDIRECT_BASE}/${provider}`;
 }
 
-// 순수 함수: provider authorize URL 을 만든다. apple 은 아직 미지원.
+// 순수 함수: provider authorize URL 을 만든다.
 export function buildAuthorizeUrl(provider: Provider, state?: string): string {
   const redirect = encodeURIComponent(redirectUri(provider));
   switch (provider) {
@@ -31,7 +32,13 @@ export function buildAuthorizeUrl(provider: Provider, state?: string): string {
         `&state=${encodeURIComponent(state ?? '')}`
       );
     case 'apple':
-      throw new Error('Apple 로그인은 준비 중입니다');
+      // scope(name/email) 요청 시 Apple 은 응답을 form_post(POST) 로 보낸다.
+      return (
+        'https://appleid.apple.com/auth/authorize' +
+        `?client_id=${env.appleClientId}&redirect_uri=${redirect}&response_type=code` +
+        `&response_mode=form_post&scope=${encodeURIComponent('name email')}` +
+        `&state=${encodeURIComponent(state ?? '')}`
+      );
   }
 }
 
@@ -41,6 +48,9 @@ export async function startOAuth(provider: Provider): Promise<void> {
   if (provider === 'naver') {
     state = crypto.randomUUID();
     sessionStorage.setItem(NAVER_STATE_KEY, state);
+  } else if (provider === 'apple') {
+    state = crypto.randomUUID();
+    sessionStorage.setItem(APPLE_STATE_KEY, state);
   }
   const url = buildAuthorizeUrl(provider, state);
   await Browser.open({ url });

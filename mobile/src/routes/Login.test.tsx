@@ -35,9 +35,11 @@ describe('Login', () => {
     expect(screen.getByRole('button', { name: /Apple/ })).toBeInTheDocument();
   });
 
-  it('Apple 버튼은 비활성(준비 중)', () => {
+  it('Apple 버튼 클릭 시 startOAuth("apple") 호출', async () => {
     renderLogin();
-    expect(screen.getByRole('button', { name: /Apple/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /Apple/ })).toBeEnabled();
+    await userEvent.click(screen.getByRole('button', { name: /Apple/ }));
+    expect(startOAuth).toHaveBeenCalledWith('apple');
   });
 
   it('카카오 버튼 클릭 시 startOAuth("kakao") 호출', async () => {

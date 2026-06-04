@@ -28,8 +28,14 @@ describe('buildAuthorizeUrl', () => {
     expect(url).toContain('state=STATE-XYZ');
   });
 
-  it('apple 은 아직 미지원이라 throw', () => {
-    expect(() => buildAuthorizeUrl('apple')).toThrow();
+  it('apple: form_post + name/email 스코프 + state', () => {
+    const url = buildAuthorizeUrl('apple', 'STATE-APL');
+    expect(url).toContain('https://appleid.apple.com/auth/authorize');
+    expect(url).toContain('response_type=code');
+    expect(url).toContain('response_mode=form_post');
+    expect(url).toContain('scope=name%20email');
+    expect(url).toContain('state=STATE-APL');
+    expect(url).toContain(`redirect_uri=${REDIRECT}%2Fapple`);
   });
 });
 
@@ -45,5 +51,10 @@ describe('startOAuth', () => {
   it('naver 는 state 를 생성해 sessionStorage 에 저장', async () => {
     await startOAuth('naver');
     expect(sessionStorage.getItem('nthing.naver.state')).toBeTruthy();
+  });
+
+  it('apple 도 state 를 생성해 sessionStorage 에 저장', async () => {
+    await startOAuth('apple');
+    expect(sessionStorage.getItem('nthing.apple.state')).toBeTruthy();
   });
 });

@@ -47,8 +47,14 @@ class AuthService(
         return loginOrRegister(AuthProvider.GOOGLE, userInfo)
     }
 
-    // Apple 로그인
-    fun appleLogin(idToken: String): AuthResponse {
+    // Apple 로그인 (웹 인가코드 → 토큰 교환 → userInfo)
+    fun appleLogin(authCode: String, userJson: String?): AuthResponse {
+        val userInfo = appleClient.exchangeCodeAndGetUserInfo(authCode, userJson)
+        return loginOrRegister(AuthProvider.APPLE, userInfo)
+    }
+
+    // Apple 로그인 (네이티브 ID 토큰 → 검증 → userInfo)
+    fun appleLoginWithToken(idToken: String): AuthResponse {
         val userInfo = appleClient.verifyAndGetUserInfo(idToken)
         return loginOrRegister(AuthProvider.APPLE, userInfo)
     }
@@ -64,6 +70,7 @@ class AuthService(
             "kakao" -> kakaoLogin(code)
             "naver" -> naverLogin(code, state ?: "")
             "google" -> googleLogin(code)
+            "apple" -> appleLogin(code, null)
             else -> throw IllegalArgumentException("지원하지 않는 OAuth 프로바이더: $provider")
         }
 

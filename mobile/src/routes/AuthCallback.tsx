@@ -2,13 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { nthingApi } from '../shared/api/nthingApi';
 import { useAuthStore } from '../shared/stores/authStore';
-import { NAVER_STATE_KEY } from '../features/auth/oauth';
+import { NAVER_STATE_KEY, APPLE_STATE_KEY } from '../features/auth/oauth';
 import { type AuthResponse, type Provider } from '../shared/api/types';
 
 async function exchange(
   provider: Provider,
   code: string,
   state: string | null,
+  user: string | null,
 ): Promise<AuthResponse> {
   switch (provider) {
     case 'kakao':
@@ -21,8 +22,12 @@ async function exchange(
       if (!state || state !== expected) throw new Error('네이버 state 불일치');
       return nthingApi.loginNaver(code, state);
     }
-    case 'apple':
-      throw new Error('Apple 로그인은 준비 중입니다');
+    case 'apple': {
+      const expected = sessionStorage.getItem(APPLE_STATE_KEY);
+      sessionStorage.removeItem(APPLE_STATE_KEY);
+      if (!state || state !== expected) throw new Error('Apple state 불일치');
+      return nthingApi.loginApple(code, user);
+    }
   }
 }
 
@@ -41,6 +46,7 @@ export function AuthCallback() {
     const code = params.get('code');
     const state = params.get('state');
     const error = params.get('error');
+    const user = params.get('user');
 
     if (!provider || error || !code) {
       navigate('/login', { replace: true });
@@ -49,7 +55,7 @@ export function AuthCallback() {
 
     void (async () => {
       try {
-        const res = await exchange(provider, code, state);
+        const res = await exchange(provider, code, state, user);
         await setAuth(res);
         navigate('/home', { replace: true });
       } catch {
