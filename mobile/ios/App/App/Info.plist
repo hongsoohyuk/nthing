@@ -35,6 +35,14 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<!-- 카카오맵 JS SDK 가 WKWebView 안에서 받는 일부 리소스가 기본 ATS 에 걸려
+		     iOS 에서만 지도가 안 뜨는 문제. WebView 콘텐츠 로드만 ATS 를 완화한다
+		     (네이티브 네트워킹은 ATS 유지). -->
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<true/>
+	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>N띵 상품 사진을 촬영하기 위해 카메라를 사용합니다.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
