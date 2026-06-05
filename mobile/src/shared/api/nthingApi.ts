@@ -41,6 +41,10 @@ export const nthingApi = {
       auth: false,
     }),
 
+  // iOS 네이티브 Sign in with Apple — identityToken 직접 검증
+  loginAppleNative: (idToken: string) =>
+    apiFetch<AuthResponse>('/auth/apple', { method: 'POST', body: { idToken }, auth: false }),
+
   devLogin: () => apiFetch<AuthResponse>('/auth/dev-login', { method: 'POST', auth: false }),
 
   // ── me (Phase 1.3) ──

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { startOAuth } from '../features/auth/oauth';
+import { isAppleNativeAvailable, loginWithAppleNative } from '../features/auth/appleNative';
 import { nthingApi } from '../shared/api/nthingApi';
 import { useAuthStore } from '../shared/stores/authStore';
 import { type Provider } from '../shared/api/types';
@@ -28,6 +29,18 @@ export function Login({ showDevLogin = import.meta.env.DEV }: LoginProps) {
   const [busy, setBusy] = useState(false);
 
   const onProvider = async (provider: Provider) => {
+    // iOS 는 네이티브 Apple 시트(Safari 미경유) 사용, 나머지는 웹 리다이렉트.
+    if (provider === 'apple' && isAppleNativeAvailable()) {
+      setBusy(true);
+      try {
+        const res = await loginWithAppleNative();
+        await setAuth(res);
+        navigate('/home', { replace: true });
+      } finally {
+        setBusy(false);
+      }
+      return;
+    }
     await startOAuth(provider);
   };
 

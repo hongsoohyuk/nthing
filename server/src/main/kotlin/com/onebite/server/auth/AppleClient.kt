@@ -21,12 +21,17 @@ import java.util.concurrent.ConcurrentHashMap
 
 @Component
 class AppleClient(
-    @Value("\${apple.client-id}") private val clientId: String,           // Services ID (web OAuth client_id)
+    @Value("\${apple.client-id}") private val clientId: String,           // Services ID (web OAuth aud)
+    @Value("\${apple.bundle-id:}") private val bundleId: String,          // 앱 번들 ID (네이티브 로그인 aud)
     @Value("\${apple.team-id:}") private val teamId: String,
     @Value("\${apple.key-id:}") private val keyId: String,
     @Value("\${apple.private-key-base64:}") private val privateKeyBase64: String,
     @Value("\${apple.redirect-uri:}") private val redirectUri: String
 ) {
+    // 허용 audience: 웹(Services ID) + 네이티브(번들 ID). 빈 값은 제외.
+    private val allowedAudiences: Set<String>
+        get() = setOf(clientId, bundleId).filter { it.isNotBlank() }.toSet()
+
     private val restTemplate = RestTemplate()
     private val keyCache = ConcurrentHashMap<String, PublicKey>()
 
@@ -110,10 +115,14 @@ class AppleClient(
         val claims = Jwts.parser()
             .verifyWith(publicKey as java.security.interfaces.RSAPublicKey)
             .requireIssuer("https://appleid.apple.com")
-            .requireAudience(clientId)
             .build()
             .parseSignedClaims(idToken)
             .payload
+
+        // aud 가 웹(Services ID) 또는 네이티브(번들 ID) 중 하나와 일치해야 함
+        require(claims.audience?.any { it in allowedAudiences } == true) {
+            "Apple ID 토큰 audience 불일치 (aud=${claims.audience})"
+        }
 
         val sub = claims.subject
             ?: throw RuntimeException("Apple ID 토큰에서 sub을 찾을 수 없습니다")
