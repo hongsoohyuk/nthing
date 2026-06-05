@@ -4,8 +4,15 @@ import { startOAuth } from '../features/auth/oauth';
 import { isAppleNativeAvailable, loginWithAppleNative } from '../features/auth/appleNative';
 import { nthingApi } from '../shared/api/nthingApi';
 import { useAuthStore } from '../shared/stores/authStore';
+import { toast } from '../shared/stores/toastStore';
 import { type Provider } from '../shared/api/types';
 import { cn } from '../shared/lib/cn';
+
+// 사용자가 시트를 직접 닫은 경우(취소)는 토스트를 띄우지 않는다.
+function isAppleCancel(e: unknown): boolean {
+  const msg = e instanceof Error ? e.message : String(e);
+  return /1001|cancel/i.test(msg);
+}
 
 type LoginProps = { showDevLogin?: boolean };
 
@@ -36,6 +43,10 @@ export function Login({ showDevLogin = import.meta.env.DEV }: LoginProps) {
         const res = await loginWithAppleNative();
         await setAuth(res);
         navigate('/home', { replace: true });
+      } catch (e) {
+        if (!isAppleCancel(e)) {
+          toast('Apple 로그인에 실패했어요. 설정 > Apple 계정 로그인을 확인해 주세요');
+        }
       } finally {
         setBusy(false);
       }

@@ -6,6 +6,7 @@ import { setUnauthorizedHandler } from './shared/api/http';
 import { useAuthStore } from './shared/stores/authStore';
 import { DeepLinkListener } from './features/auth/DeepLinkListener';
 import { PushListener } from './features/notifications/PushListener';
+import { Toaster } from './shared/components/Toaster';
 import { RootRedirect, RequireAuth } from './features/auth/guards';
 import { Login } from './routes/Login';
 import { AuthCallback } from './routes/AuthCallback';
@@ -36,6 +37,7 @@ function App() {
       <BrowserRouter>
         <DeepLinkListener />
         <PushListener />
+        <Toaster />
         <Routes>
           <Route path="/" element={<RootRedirect />} />
           <Route path="/login" element={<Login />} />

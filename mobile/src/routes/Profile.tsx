@@ -94,13 +94,13 @@ export function Profile() {
               aria-checked={nearby}
               aria-label="근처 알림"
               onClick={toggleNearby}
-              className={`relative h-6 w-11 rounded-pill transition-colors ${
+              className={`inline-flex h-6 w-11 items-center rounded-pill px-0.5 transition-colors ${
                 nearby ? 'bg-brand' : 'bg-gray-300 dark:bg-gray-700'
               }`}
             >
               <span
-                className={`absolute top-0.5 size-5 rounded-full bg-white transition-transform ${
-                  nearby ? 'translate-x-5' : 'translate-x-0.5'
+                className={`size-5 rounded-full bg-white shadow transition-transform ${
+                  nearby ? 'translate-x-5' : 'translate-x-0'
                 }`}
               />
             </button>
