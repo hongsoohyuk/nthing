@@ -1,5 +1,6 @@
 // mobile/src/shared/stores/themeStore.test.ts
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { Preferences } from '@capacitor/preferences';
 import { useThemeStore } from './themeStore';
 
 vi.mock('@capacitor/preferences', () => ({
@@ -11,6 +12,8 @@ vi.mock('@capacitor/preferences', () => ({
 
 describe('themeStore', () => {
   beforeEach(() => {
+    // 모듈 레벨 mql/listener 를 system→light 전환으로 확실히 해제 → 테스트 간 누수 방지.
+    useThemeStore.getState().setMode('light');
     document.documentElement.classList.remove('dark');
     useThemeStore.setState({ mode: 'system' });
   });
@@ -35,5 +38,47 @@ describe('themeStore', () => {
   it('hydrate 는 저장값을 반영 (없으면 system)', async () => {
     await useThemeStore.getState().hydrate();
     expect(useThemeStore.getState().mode).toBe('system');
+  });
+
+  it('hydrate 는 저장된 dark 를 반영하고 클래스도 적용', async () => {
+    vi.mocked(Preferences.get).mockResolvedValueOnce({ value: 'dark' });
+    await useThemeStore.getState().hydrate();
+    expect(useThemeStore.getState().mode).toBe('dark');
+    expect(document.documentElement.classList.contains('dark')).toBe(true);
+  });
+
+  it('system 모드에서 OS 변경 이벤트가 클래스를 갱신', () => {
+    let captured: ((e: MediaQueryListEvent) => void) | null = null;
+    let matches = false;
+    const original = window.matchMedia;
+    window.matchMedia = ((q: string) =>
+      ({
+        get matches() {
+          return matches;
+        },
+        media: q,
+        onchange: null,
+        addEventListener: (_: string, cb: (e: MediaQueryListEvent) => void) => {
+          captured = cb;
+        },
+        removeEventListener: () => {
+          captured = null;
+        },
+        addListener: () => {},
+        removeListener: () => {},
+        dispatchEvent: () => false,
+      }) as unknown as MediaQueryList) as unknown as typeof window.matchMedia;
+
+    try {
+      useThemeStore.getState().setMode('system'); // matches=false → dark 미적용
+      expect(document.documentElement.classList.contains('dark')).toBe(false);
+
+      matches = true;
+      captured?.({ matches: true } as MediaQueryListEvent); // applyClass('system') 가 prefersDark 재평가
+      expect(document.documentElement.classList.contains('dark')).toBe(true);
+    } finally {
+      useThemeStore.getState().setMode('light'); // 리스너 해제 → 다른 테스트 누수 방지
+      window.matchMedia = original;
+    }
   });
 });
