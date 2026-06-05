@@ -7,6 +7,7 @@ export type AuthCallbackParams = {
   code?: string;
   state?: string;
   error?: string;
+  user?: string; // Apple 첫 로그인 시 이름 JSON
 };
 
 export function parseAuthCallback(url: string): AuthCallbackParams | null {
@@ -23,5 +24,6 @@ export function parseAuthCallback(url: string): AuthCallbackParams | null {
     code: params.get('code') ?? undefined,
     state: params.get('state') ?? undefined,
     error: params.get('error') ?? undefined,
+    user: params.get('user') ?? undefined,
   };
 }
