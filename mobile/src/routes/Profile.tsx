@@ -1,13 +1,13 @@
+import { Capacitor } from '@capacitor/core';
+import { Preferences } from '@capacitor/preferences';
+import { ChevronRight, Settings, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, Settings, User } from 'lucide-react';
-import { Preferences } from '@capacitor/preferences';
-import { Capacitor } from '@capacitor/core';
-import { AppBar } from '../shared/components/AppBar';
-import { Card } from '../shared/components/Card';
-import { Button } from '../shared/components/Button';
-import { useAuthStore } from '../shared/stores/authStore';
 import { setNearbyAlerts } from '../features/notifications/pushService';
+import { AppBar } from '../shared/components/AppBar';
+import { Button } from '../shared/components/Button';
+import { Card } from '../shared/components/Card';
+import { useAuthStore } from '../shared/stores/authStore';
 
 const MENU: Array<{ label: string; to: string }> = [
   { label: '내 나눠사기', to: '/me/splits' },
@@ -66,7 +66,6 @@ export function Profile() {
           </div>
           <div>
             <p className="text-h1 text-gray-900 dark:text-gray-50">{user?.nickname ?? '게스트'}</p>
-            <p className="text-caption text-gray-500">반띵으로 알뜰하게</p>
           </div>
         </Card>
 
