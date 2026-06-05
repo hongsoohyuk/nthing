@@ -46,11 +46,11 @@ class SecurityConfig(
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)
             .build()
 
-    // Capacitor 네이티브 웹뷰 origin(iOS/Android 모두 https://localhost)을 허용.
-    // 토큰은 Authorization 헤더로 보내므로(쿠키 X) credentials 는 불필요.
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
-        val config = CorsConfiguration().apply {
+        // 앱(웹뷰)의 AJAX 호출: Capacitor 웹뷰 origin(iOS/Android 모두 https://localhost)만 허용.
+        // 토큰은 Authorization 헤더로 보내므로(쿠키 X) credentials 는 불필요.
+        val appConfig = CorsConfiguration().apply {
             allowedOrigins = listOf(
                 "https://localhost",     // iOS(iosScheme=https) + Android(androidScheme=https) 웹뷰
                 "http://localhost",      // fallback
@@ -59,8 +59,16 @@ class SecurityConfig(
             allowedMethods = listOf("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS")
             allowedHeaders = listOf("*")
         }
+        // OAuth 콜백 릴레이는 provider 도메인(appleid.apple.com 등)에서 form_post/redirect 로
+        // 들어오는 공개 네비게이션이라 origin 을 제한하면 안 된다(제한 시 "invalid cors request").
+        val callbackConfig = CorsConfiguration().apply {
+            allowedOriginPatterns = listOf("*")
+            allowedMethods = listOf("GET", "POST", "OPTIONS")
+            allowedHeaders = listOf("*")
+        }
         return UrlBasedCorsConfigurationSource().apply {
-            registerCorsConfiguration("/**", config)
+            registerCorsConfiguration("/api/auth/callback/**", callbackConfig) // 더 구체적인 패턴 먼저
+            registerCorsConfiguration("/**", appConfig)
         }
     }
 }
