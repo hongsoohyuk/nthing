@@ -11,3 +11,27 @@ index 94246dfd65d0f4e9d76182782798303b6af015f0..f900a1bc395bf76f2c4514c621bb4943
      ],
      targets: [
          .target(
+diff --git a/ios/Sources/SignInWithApple/Plugin.swift b/ios/Sources/SignInWithApple/Plugin.swift
+index f53087c7ea5e8de9ac2f01fc8124708c7b1ba685..2b4dd9724d47b49a6db0ae55991416472801b87a 100755
+--- a/ios/Sources/SignInWithApple/Plugin.swift
++++ b/ios/Sources/SignInWithApple/Plugin.swift
+@@ -24,6 +24,7 @@ public class SignInWithApple: CAPPlugin, CAPBridgedPlugin {
+ 
+         let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+         authorizationController.delegate = self
++        authorizationController.presentationContextProvider = self
+         authorizationController.performRequests()
+     }
+ 
+@@ -83,3 +84,11 @@ extension SignInWithApple: ASAuthorizationControllerDelegate {
+         self.bridge?.releaseCall(call)
+     }
+ }
++
++extension SignInWithApple: ASAuthorizationControllerPresentationContextProviding {
++    // presentation anchor 를 명시하지 않으면 iOS 가 Apple 시트의 dimming 백드롭을
++    // 깔끔히 dismiss 하지 못해 취소 시 화면에 회색 overlay 가 남는다(닫기 버튼만 살짝 보임).
++    public func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
++        return self.bridge?.viewController?.view.window ?? ASPresentationAnchor()
++    }
++}

@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  '@capacitor-community/apple-sign-in@7.1.0': 28573c99dd9ec8f13261292e64a7a530c461da6db7b052e3050fd05a1b9ed66d
+  '@capacitor-community/apple-sign-in@7.1.0': 9c6a581e8afaf7eb9af9f1e9a6fa7c81b2a78897d8715b8d547cb762e44756bc
 
 importers:
 
@@ -13,7 +13,7 @@ importers:
     dependencies:
       '@capacitor-community/apple-sign-in':
         specifier: 7.1.0
-        version: 7.1.0(patch_hash=28573c99dd9ec8f13261292e64a7a530c461da6db7b052e3050fd05a1b9ed66d)(@capacitor/core@8.3.4)
+        version: 7.1.0(patch_hash=9c6a581e8afaf7eb9af9f1e9a6fa7c81b2a78897d8715b8d547cb762e44756bc)(@capacitor/core@8.3.4)
       '@capacitor-firebase/messaging':
         specifier: ^8.2.0
         version: 8.2.0(@capacitor/core@8.3.4)(firebase@12.14.0)
@@ -2517,7 +2517,7 @@ snapshots:
     dependencies:
       css-tree: 3.2.1
 
-  '@capacitor-community/apple-sign-in@7.1.0(patch_hash=28573c99dd9ec8f13261292e64a7a530c461da6db7b052e3050fd05a1b9ed66d)(@capacitor/core@8.3.4)':
+  '@capacitor-community/apple-sign-in@7.1.0(patch_hash=9c6a581e8afaf7eb9af9f1e9a6fa7c81b2a78897d8715b8d547cb762e44756bc)(@capacitor/core@8.3.4)':
     dependencies:
       '@capacitor/core': 8.3.4
       '@types/scriptjs': 0.0.2
