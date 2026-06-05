@@ -8,6 +8,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
 @EnableWebSecurity
@@ -17,6 +20,7 @@ class SecurityConfig(
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain =
         http
+            .cors { it.configurationSource(corsConfigurationSource()) } // 네이티브 웹뷰(cross-origin) preflight 허용
             .csrf { it.disable() }                          // API 서버니까 CSRF 비활성화
             .formLogin { it.disable() }                     // 폼 로그인 비활성화 (JWT 사용)
             .httpBasic { it.disable() }                     // HTTP Basic 비활성화
@@ -41,4 +45,22 @@ class SecurityConfig(
             .headers { it.frameOptions { fo -> fo.disable() } }   // H2 콘솔용
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)
             .build()
+
+    // Capacitor 네이티브 웹뷰 origin(iOS/Android 모두 https://localhost)을 허용.
+    // 토큰은 Authorization 헤더로 보내므로(쿠키 X) credentials 는 불필요.
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val config = CorsConfiguration().apply {
+            allowedOrigins = listOf(
+                "https://localhost",     // iOS(iosScheme=https) + Android(androidScheme=https) 웹뷰
+                "http://localhost",      // fallback
+                "capacitor://localhost", // capacitor 기본 스킴 fallback
+            )
+            allowedMethods = listOf("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS")
+            allowedHeaders = listOf("*")
+        }
+        return UrlBasedCorsConfigurationSource().apply {
+            registerCorsConfiguration("/**", config)
+        }
+    }
 }
