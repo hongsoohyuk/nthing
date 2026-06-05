@@ -3,7 +3,7 @@ include ':capacitor-android'
 project(':capacitor-android').projectDir = new File('../node_modules/.pnpm/@capacitor+android@8.3.4_@capacitor+core@8.3.4/node_modules/@capacitor/android/capacitor')
 
 include ':capacitor-community-apple-sign-in'
-project(':capacitor-community-apple-sign-in').projectDir = new File('../node_modules/.pnpm/@capacitor-community+apple-sign-in@7.1.0_@capacitor+core@8.3.4/node_modules/@capacitor-community/apple-sign-in/android')
+project(':capacitor-community-apple-sign-in').projectDir = new File('../node_modules/.pnpm/@capacitor-community+apple-sign-in@7.1.0_patch_hash=9c6a581e8afaf7eb9af9f1e9a6fa7c81b2a_3d48f25b59f6852838049327f4d4a8f0/node_modules/@capacitor-community/apple-sign-in/android')
 
 include ':capacitor-firebase-messaging'
 project(':capacitor-firebase-messaging').projectDir = new File('../node_modules/.pnpm/@capacitor-firebase+messaging@8.2.0_@capacitor+core@8.3.4_firebase@12.14.0/node_modules/@capacitor-firebase/messaging/android')
