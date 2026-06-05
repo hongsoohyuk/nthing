@@ -33,8 +33,18 @@ export function loadKakaoMaps(key: string = env.kakaoMapKey): Promise<KakaoMaps 
       resolve(window.kakao.maps);
       return;
     }
-    const onReady = () => window.kakao!.maps.load(() => resolve(window.kakao!.maps));
-    const onError = () => resolve(null);
+    const onReady = () => {
+      if (!window.kakao?.maps) {
+        console.warn('[kakao-maps] script loaded but window.kakao.maps missing');
+        resolve(null);
+        return;
+      }
+      window.kakao.maps.load(() => resolve(window.kakao!.maps));
+    };
+    const onError = (e: unknown) => {
+      console.warn('[kakao-maps] sdk.js load failed', e);
+      resolve(null);
+    };
 
     const existing = document.getElementById(SCRIPT_ID) as HTMLScriptElement | null;
     if (existing) {
@@ -44,7 +54,8 @@ export function loadKakaoMaps(key: string = env.kakaoMapKey): Promise<KakaoMaps 
     }
     const script = document.createElement('script');
     script.id = SCRIPT_ID;
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${key}&autoload=false&libraries=services`;
+    // 명시적 https (protocol-relative `//` 는 일부 네이티브 webview 에서 스킴이 어긋남)
+    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${key}&autoload=false&libraries=services`;
     script.async = true;
     script.onload = onReady;
     script.onerror = onError;
