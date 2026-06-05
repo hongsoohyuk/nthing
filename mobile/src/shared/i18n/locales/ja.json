@@ -1,0 +1,119 @@
+{
+  "common": {
+    "guest": "ゲスト",
+    "join": "参加します",
+    "registerSplit": "シェアを登録",
+    "retry": "再試行",
+    "people": "{{count}}人",
+    "qty": "{{count}}個"
+  },
+  "aria": {
+    "back": "戻る",
+    "settings": "設定"
+  },
+  "nav": {
+    "home": "ホーム",
+    "map": "地図",
+    "profile": "マイ"
+  },
+  "login": {
+    "tagline": "わけ買いしよう",
+    "subtitle": "近くでN分の1、一緒に買おう",
+    "kakao": "Kakaoで始める",
+    "naver": "Naverで始める",
+    "google": "Googleで始める",
+    "apple": "Appleで始める",
+    "devLogin": "テストログイン（開発用）",
+    "appleError": "Appleログインに失敗しました。設定 > Appleアカウントのサインインをご確認ください"
+  },
+  "splits": {
+    "loadError": "シェアを読み込めませんでした",
+    "emptyTitle": "まだシェアがありません",
+    "emptySubtitle": "最初のシェアを投稿しましょう",
+    "recruitCount": "{{count}}人募集",
+    "perPersonShort": "1人あたり{{price}}"
+  },
+  "home": {
+    "title": "近くのシェア",
+    "filterAll": "すべて",
+    "filterRecruiting": "募集中"
+  },
+  "map": {
+    "title": "地図",
+    "loadError": "地図を読み込めませんでした"
+  },
+  "profile": {
+    "title": "マイシェア",
+    "mySplits": "自分のシェア",
+    "participated": "参加したシェア",
+    "nearbyAlerts": "近くの通知",
+    "logout": "ログアウト"
+  },
+  "settings": {
+    "title": "設定",
+    "languageSection": "言語",
+    "themeSection": "テーマ",
+    "notificationsSection": "通知",
+    "themeLight": "ライト",
+    "themeDark": "ダーク",
+    "themeSystem": "システム"
+  },
+  "create": {
+    "title": "シェアを投稿",
+    "photoAlt": "添付写真",
+    "uploading": "アップロード中…",
+    "addPhoto": "写真を追加",
+    "uploadError": "写真のアップロードに失敗しました。もう一度お試しください。",
+    "fieldName": "商品名",
+    "fieldNamePlaceholder": "例: チョコクッキー 4個入り",
+    "fieldPrice": "合計金額",
+    "fieldQty": "合計数量",
+    "fieldCount": "分け合う人数",
+    "fieldCountSupport": "最低2人",
+    "fieldAddress": "住所",
+    "fieldAddressPlaceholder": "待ち合わせ場所",
+    "perPersonEstimate": "1人あたりの予想金額"
+  },
+  "detail": {
+    "title": "シェアの詳細",
+    "perPerson": "1人あたり",
+    "totalPrice": "合計金額",
+    "totalQty": "合計数量",
+    "splitCount": "分け合う人数",
+    "location": "場所",
+    "closed": "締め切ったシェア",
+    "cancel": "キャンセル"
+  },
+  "list": {
+    "loadError": "リストを読み込めませんでした"
+  },
+  "states": {
+    "loading": "読み込み中…"
+  },
+  "status": {
+    "waiting": "募集中",
+    "matched": "マッチ済み",
+    "completed": "完了",
+    "cancelled": "キャンセル",
+    "urgent": "締切間近"
+  },
+  "push": {
+    "primingTitle": "近くのシェア通知を受け取りますか？",
+    "primingBody": "近くで新しいシェアが投稿されたり、自分のシェアに参加があるとお知らせします。",
+    "primingAccept": "通知を受け取る",
+    "primingLater": "あとで"
+  },
+  "auth": {
+    "callbackFailed": "ログインに失敗しました",
+    "callbackLoading": "ログイン中..."
+  },
+  "time": {
+    "justNow": "たった今",
+    "minutesAgo": "{{count}}分前",
+    "hoursAgo": "{{count}}時間前",
+    "daysAgo": "{{count}}日前"
+  },
+  "error": {
+    "requestFailed": "リクエスト失敗 ({{status}})"
+  }
+}

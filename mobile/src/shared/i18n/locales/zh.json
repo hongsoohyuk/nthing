@@ -1,0 +1,119 @@
+{
+  "common": {
+    "guest": "访客",
+    "join": "我要拼",
+    "registerSplit": "发布拼单",
+    "retry": "重试",
+    "people": "{{count}}人",
+    "qty": "{{count}}个"
+  },
+  "aria": {
+    "back": "返回",
+    "settings": "设置"
+  },
+  "nav": {
+    "home": "首页",
+    "map": "地图",
+    "profile": "我的"
+  },
+  "login": {
+    "tagline": "一起拼单吧",
+    "subtitle": "就近拼单，一起购买",
+    "kakao": "使用 Kakao 登录",
+    "naver": "使用 Naver 登录",
+    "google": "使用 Google 登录",
+    "apple": "使用 Apple 登录",
+    "devLogin": "测试登录（开发用）",
+    "appleError": "Apple 登录失败。请检查设置 > Apple 账户登录。"
+  },
+  "splits": {
+    "loadError": "无法加载拼单",
+    "emptyTitle": "还没有拼单",
+    "emptySubtitle": "来发布第一个拼单吧",
+    "recruitCount": "招募{{count}}人",
+    "perPersonShort": "每人{{price}}"
+  },
+  "home": {
+    "title": "附近拼单",
+    "filterAll": "全部",
+    "filterRecruiting": "招募中"
+  },
+  "map": {
+    "title": "地图",
+    "loadError": "无法加载地图"
+  },
+  "profile": {
+    "title": "我的拼单",
+    "mySplits": "我的拼单",
+    "participated": "参与的拼单",
+    "nearbyAlerts": "附近通知",
+    "logout": "退出登录"
+  },
+  "settings": {
+    "title": "设置",
+    "languageSection": "语言",
+    "themeSection": "主题",
+    "notificationsSection": "通知",
+    "themeLight": "浅色",
+    "themeDark": "深色",
+    "themeSystem": "跟随系统"
+  },
+  "create": {
+    "title": "发布我的拼单",
+    "photoAlt": "附加照片",
+    "uploading": "上传中…",
+    "addPhoto": "添加照片",
+    "uploadError": "照片上传失败，请重试。",
+    "fieldName": "商品名称",
+    "fieldNamePlaceholder": "例：巧克力饼干 4个装",
+    "fieldPrice": "总价",
+    "fieldQty": "总数量",
+    "fieldCount": "拼单人数",
+    "fieldCountSupport": "至少2人",
+    "fieldAddress": "地址",
+    "fieldAddressPlaceholder": "见面地点",
+    "perPersonEstimate": "每人预计价格"
+  },
+  "detail": {
+    "title": "拼单详情",
+    "perPerson": "每人",
+    "totalPrice": "总价",
+    "totalQty": "总数量",
+    "splitCount": "拼单人数",
+    "location": "位置",
+    "closed": "已结束的拼单",
+    "cancel": "取消"
+  },
+  "list": {
+    "loadError": "无法加载列表"
+  },
+  "states": {
+    "loading": "加载中…"
+  },
+  "status": {
+    "waiting": "招募中",
+    "matched": "已匹配",
+    "completed": "已完成",
+    "cancelled": "已取消",
+    "urgent": "即将结束"
+  },
+  "push": {
+    "primingTitle": "接收附近拼单通知？",
+    "primingBody": "当附近有新拼单，或有人参与你的拼单时，我们会通知你。",
+    "primingAccept": "接收通知",
+    "primingLater": "稍后"
+  },
+  "auth": {
+    "callbackFailed": "登录失败",
+    "callbackLoading": "登录中..."
+  },
+  "time": {
+    "justNow": "刚刚",
+    "minutesAgo": "{{count}}分钟前",
+    "hoursAgo": "{{count}}小时前",
+    "daysAgo": "{{count}}天前"
+  },
+  "error": {
+    "requestFailed": "请求失败 ({{status}})"
+  }
+}
