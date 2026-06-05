@@ -16,10 +16,16 @@ export async function requestPermissionAndRegister(): Promise<boolean> {
   if (!platform) return false;
   const perm = await FirebaseMessaging.requestPermissions();
   if (perm.receive !== 'granted') return false;
-  const { token } = await FirebaseMessaging.getToken();
-  const loc = useLocationStore.getState().current;
-  await nthingApi.registerDevice({ fcmToken: token, platform, lat: loc?.lat, lng: loc?.lng });
-  return true;
+  try {
+    // iOS 시뮬레이터/APNs 미설정 환경에선 getToken 이 "No APNS token" 으로 실패.
+    // 푸시는 best-effort 라 실패해도 앱 흐름을 막지 않는다.
+    const { token } = await FirebaseMessaging.getToken();
+    const loc = useLocationStore.getState().current;
+    await nthingApi.registerDevice({ fcmToken: token, platform, lat: loc?.lat, lng: loc?.lng });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export async function syncDeviceLocation(): Promise<void> {
