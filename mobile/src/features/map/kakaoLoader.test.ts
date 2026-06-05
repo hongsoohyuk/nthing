@@ -12,11 +12,23 @@ describe('loadKakaoMaps', () => {
     expect(document.getElementById('kakao-maps-sdk')).toBeNull();
   });
 
-  it('window.kakao.maps 가 이미 있으면 그걸 반환(스크립트 추가 안 함)', async () => {
-    const maps = { sentinel: true } as unknown;
+  it('풀 API(LatLng)가 이미 준비됐으면 그걸 반환(스크립트 추가 안 함)', async () => {
+    // autoload=false 라 LatLng 유무로 "완전 로드"를 판별한다.
+    const maps = { sentinel: true, LatLng: function () {} } as unknown;
     (window as unknown as { kakao: { maps: unknown } }).kakao = { maps };
     await expect(loadKakaoMaps('KEY')).resolves.toBe(maps);
     expect(document.getElementById('kakao-maps-sdk')).toBeNull();
+  });
+
+  it('kakao.maps 는 있지만 LatLng 미준비면 load() 콜백을 기다린다', async () => {
+    let loadCb: (() => void) | null = null;
+    const maps = { load: (cb: () => void) => (loadCb = cb) } as unknown;
+    (window as unknown as { kakao: { maps: unknown } }).kakao = { maps };
+    const promise = loadKakaoMaps('KEY');
+    // load 콜백 전에는 미해결 → 스크립트도 추가 안 함
+    expect(document.getElementById('kakao-maps-sdk')).toBeNull();
+    loadCb!(); // 라이브러리 로드 완료 시뮬레이션
+    await expect(promise).resolves.toBe(maps);
   });
 
   it('키가 있으면 SDK 스크립트 주입 + onload→load 콜백 후 maps 반환', async () => {

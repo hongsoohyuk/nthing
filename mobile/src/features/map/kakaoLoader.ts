@@ -29,11 +29,15 @@ export function loadKakaoMaps(key: string = env.kakaoMapKey): Promise<KakaoMaps 
       resolve(null);
       return;
     }
-    if (window.kakao?.maps) {
+    // 풀 API(LatLng/Map/Marker)가 준비된 경우만 즉시 반환.
+    // autoload=false 라 kakao.maps 는 처음엔 load() 만 있고, load 콜백 후에야
+    // LatLng 등 생성자가 붙는다. LatLng 유무로 "완전 로드"를 판별한다.
+    if (window.kakao?.maps?.LatLng) {
       resolve(window.kakao.maps);
       return;
     }
-    const onReady = () => {
+    // kakao.maps 는 있지만 아직 load() 전 → load 콜백을 기다린다.
+    const waitForLoad = () => {
       if (!window.kakao?.maps) {
         console.warn('[kakao-maps] script loaded but window.kakao.maps missing');
         resolve(null);
@@ -46,9 +50,14 @@ export function loadKakaoMaps(key: string = env.kakaoMapKey): Promise<KakaoMaps 
       resolve(null);
     };
 
+    if (window.kakao?.maps) {
+      waitForLoad();
+      return;
+    }
+
     const existing = document.getElementById(SCRIPT_ID) as HTMLScriptElement | null;
     if (existing) {
-      existing.addEventListener('load', onReady);
+      existing.addEventListener('load', waitForLoad);
       existing.addEventListener('error', onError);
       return;
     }
@@ -57,7 +66,7 @@ export function loadKakaoMaps(key: string = env.kakaoMapKey): Promise<KakaoMaps 
     // 명시적 https (protocol-relative `//` 는 일부 네이티브 webview 에서 스킴이 어긋남)
     script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${key}&autoload=false&libraries=services`;
     script.async = true;
-    script.onload = onReady;
+    script.onload = waitForLoad;
     script.onerror = onError;
     document.head.appendChild(script);
   });
