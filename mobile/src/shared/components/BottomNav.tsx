@@ -16,7 +16,7 @@ const tabs: Array<{ key: Tab; icon: LucideIcon; label: string }> = [
 
 export function BottomNav({ current, onSelect }: BottomNavProps) {
   return (
-    <nav className="flex h-16 items-stretch border-t border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-950">
+    <nav className="flex min-h-16 items-stretch border-t border-gray-200 bg-white pb-[env(safe-area-inset-bottom)] dark:border-gray-700 dark:bg-gray-950">
       {tabs.map(({ key, icon: Icon, label }) => {
         const isActive = key === current;
         return (

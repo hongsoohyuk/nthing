@@ -40,8 +40,17 @@ describe('nthingApi', () => {
     });
   });
 
-  it('loginApple 는 POST /auth/apple { idToken }', async () => {
-    await nthingApi.loginApple('IDTOKEN');
+  it('loginApple 는 POST /auth/apple { code, user } (웹 플로우)', async () => {
+    await nthingApi.loginApple('CODE', '{"name":{}}');
+    expect(mockFetch).toHaveBeenCalledWith('/auth/apple', {
+      method: 'POST',
+      body: { code: 'CODE', user: '{"name":{}}' },
+      auth: false,
+    });
+  });
+
+  it('loginAppleNative 는 POST /auth/apple { idToken } (네이티브)', async () => {
+    await nthingApi.loginAppleNative('IDTOKEN');
     expect(mockFetch).toHaveBeenCalledWith('/auth/apple', {
       method: 'POST',
       body: { idToken: 'IDTOKEN' },

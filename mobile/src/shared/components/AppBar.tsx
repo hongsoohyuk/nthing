@@ -19,7 +19,11 @@ export function AppBar({
 }: AppBarProps) {
   return (
     <header
-      className={cn('flex h-14 items-center px-2', !transparent && 'bg-white dark:bg-gray-950')}
+      className={cn(
+        // pt-[env(safe-area-inset-top)] 로 노치/다이내믹 아일랜드 아래로 내림
+        'flex min-h-14 items-center px-2 pt-[env(safe-area-inset-top)]',
+        !transparent && 'bg-white dark:bg-gray-950',
+      )}
     >
       {onBack ? (
         <button
