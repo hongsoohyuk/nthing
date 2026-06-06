@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Nthing 로고 시안 4 — 1/N 분수">
+  <title>1/N fraction</title>
+  <rect width="64" height="64" rx="16" fill="#DCFCE7"/>
+  <!-- literal 1 / N — N분의 1 -->
+  <g fill="#16A34A" font-family="Pretendard, -apple-system, system-ui, sans-serif" font-weight="800">
+    <text x="15" y="32" font-size="26" text-anchor="middle">1</text>
+    <text x="46" y="52" font-size="26" text-anchor="middle">N</text>
+  </g>
+  <!-- the dividing slash doubles as a fresh diagonal stroke -->
+  <line x1="46" y1="13" x2="18" y2="53" stroke="#16A34A" stroke-width="4" stroke-linecap="round"/>
+</svg>

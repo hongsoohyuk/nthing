@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Nthing 로고 시안 1 — 절취선 N">
+  <title>Perforated N</title>
+  <rect width="64" height="64" rx="16" fill="#16A34A"/>
+  <!-- N letterform built from two posts + a diagonal -->
+  <g fill="#FFFFFF">
+    <rect x="14" y="15" width="8" height="34" rx="4"/>
+    <rect x="42" y="15" width="8" height="34" rx="4"/>
+    <path d="M14 15 L22 15 L50 49 L42 49 Z"/>
+  </g>
+  <!-- tear / perforation seam: the N splits in half (반띵) -->
+  <line x1="32" y1="8" x2="32" y2="56" stroke="#BBF7D0" stroke-width="2.5"
+        stroke-linecap="round" stroke-dasharray="2 6"/>
+</svg>
