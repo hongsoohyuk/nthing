@@ -23,5 +23,10 @@ class User(
     var nickname: String,
     var profileImageUrl: String? = null,
 
-    val createdAt: LocalDateTime = LocalDateTime.now()
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+
+    // 반띵 성사율 집계 (결과 확정 시 동일 트랜잭션 내 갱신)
+    var completedCount: Int = 0,
+    var lateCancelCount: Int = 0,
+    var brokenCount: Int = 0,
 )
