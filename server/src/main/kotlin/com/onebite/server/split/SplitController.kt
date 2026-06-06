@@ -97,7 +97,7 @@ class SplitController(
         authentication: Authentication,
     ): SplitResponse {
         val userId = authentication.principal as Long
-        return splitService.reportBroken(id, userId, dto.targetUserId, dto.reasonTag)
+        return splitService.reportBroken(id, userId, dto.targetUserId!!, dto.reasonTag)
     }
 
     // POST /api/splits/{id}/leave — 참여자 이탈

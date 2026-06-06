@@ -88,4 +88,14 @@ class SplitOutcomeControllerTest {
         mockMvc.post("/api/splits/$id/leave") { header("Authorization", "Bearer $tokenB") }
             .andExpect { status { isOk() } }
     }
+
+    @Test
+    fun `report-broken targetUserId 누락 400`() {
+        val id = matchedSplit()
+        mockMvc.post("/api/splits/$id/report-broken") {
+            header("Authorization", "Bearer $tokenB")
+            contentType = MediaType.APPLICATION_JSON
+            content = "{}"
+        }.andExpect { status { isBadRequest() } }
+    }
 }
