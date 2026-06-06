@@ -1,9 +1,5 @@
-import { Capacitor } from '@capacitor/core';
-import { Preferences } from '@capacitor/preferences';
 import { ChevronRight, Settings, User } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { setNearbyAlerts } from '../features/notifications/pushService';
 import { AppBar } from '../shared/components/AppBar';
 import { Button } from '../shared/components/Button';
 import { Card } from '../shared/components/Card';
@@ -18,24 +14,6 @@ export function Profile() {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
-
-  const isNative = Capacitor.isNativePlatform();
-  const [nearby, setNearby] = useState(true);
-
-  useEffect(() => {
-    if (!isNative) return;
-    void (async () => {
-      const { value } = await Preferences.get({ key: 'nthing.push.nearby' });
-      if (value !== null) setNearby(value === '1');
-    })();
-  }, [isNative]);
-
-  const toggleNearby = () => {
-    const next = !nearby;
-    setNearby(next);
-    void Preferences.set({ key: 'nthing.push.nearby', value: next ? '1' : '0' });
-    void setNearbyAlerts(next);
-  };
 
   const onLogout = () => {
     void (async () => {
@@ -52,6 +30,7 @@ export function Profile() {
           <button
             type="button"
             aria-label="설정"
+            onClick={() => navigate('/settings')}
             className="inline-flex size-10 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-900"
           >
             <Settings className="size-5 text-gray-700 dark:text-gray-200" />
@@ -83,28 +62,6 @@ export function Profile() {
             </li>
           ))}
         </ul>
-
-        {isNative && (
-          <div className="mt-2 flex h-14 items-center justify-between">
-            <span className="text-body text-gray-900 dark:text-gray-100">근처 알림</span>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={nearby}
-              aria-label="근처 알림"
-              onClick={toggleNearby}
-              className={`inline-flex h-6 w-11 items-center rounded-pill px-0.5 transition-colors ${
-                nearby ? 'bg-brand' : 'bg-gray-300 dark:bg-gray-700'
-              }`}
-            >
-              <span
-                className={`size-5 rounded-full bg-white shadow transition-transform ${
-                  nearby ? 'translate-x-5' : 'translate-x-0'
-                }`}
-              />
-            </button>
-          </div>
-        )}
 
         <div className="mt-8 flex justify-center">
           <Button variant="text" onClick={onLogout}>
