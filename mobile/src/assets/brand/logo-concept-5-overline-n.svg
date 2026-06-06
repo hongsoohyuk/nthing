@@ -2,7 +2,7 @@
   <title>Overline N (N with a bar = 1/N)</title>
   <rect width="64" height="64" rx="16" fill="#DCFCE7" />
   <!-- N 위의 가로선 = 분수 막대(—/N), "N분의 1"을 미니멀하게 -->
-  <g fill="none" stroke="#16A34A" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+  <g fill="none" stroke="#16A34A" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
     <path d="M18 17 L46 17" />
     <path d="M19 46 L19 26 L45 46 L45 26" />
   </g>

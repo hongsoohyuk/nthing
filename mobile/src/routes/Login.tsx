@@ -19,8 +19,8 @@ import logoConcept4d from '../assets/brand/logo-concept-4d-coin.svg';
 import logoConcept5 from '../assets/brand/logo-concept-5-overline-n.svg';
 import logoConcept5b from '../assets/brand/logo-concept-5b-overline-n-chip.svg';
 
-// 히어로/푸시 카드에 쓰는 로고. 기본은 채택안(1번).
-// dev 빌드에서만 ?logo=2|3|4|4a..4d|5|5b 쿼리로 다른 시안을 라이브 비교할 수 있다.
+// 히어로/푸시 카드에 쓰는 로고. 기본은 채택안 5번(가로선 N).
+// dev 빌드에서만 ?logo=1|2|3|4|4a..4d|5|5b 쿼리로 다른 시안을 라이브 비교할 수 있다.
 const LOGO_CONCEPTS = {
   '1': logoConcept1,
   '2': logoConcept2,
@@ -35,9 +35,9 @@ const LOGO_CONCEPTS = {
 } as const;
 
 function resolveLogoMark(): string {
-  if (!import.meta.env.DEV || typeof window === 'undefined') return LOGO_CONCEPTS['1'];
+  if (!import.meta.env.DEV || typeof window === 'undefined') return LOGO_CONCEPTS['5'];
   const pick = new URLSearchParams(window.location.search).get('logo');
-  return LOGO_CONCEPTS[(pick ?? '1') as keyof typeof LOGO_CONCEPTS] ?? LOGO_CONCEPTS['1'];
+  return LOGO_CONCEPTS[(pick ?? '5') as keyof typeof LOGO_CONCEPTS] ?? LOGO_CONCEPTS['5'];
 }
 
 // 사용자가 시트를 직접 닫은 경우(취소)는 토스트를 띄우지 않는다.
