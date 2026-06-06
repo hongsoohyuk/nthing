@@ -14,6 +14,7 @@ vi.mock('../shared/api/nthingApi', () => ({
 
 import { startOAuth } from '../features/auth/oauth';
 import { Login } from './Login';
+import pushData from '../features/auth/mockPushSamples.json';
 
 function renderLogin(showDevLogin = false) {
   return render(
@@ -33,6 +34,15 @@ describe('Login', () => {
     expect(screen.getByRole('button', { name: /네이버/ })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Google/ })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Apple/ })).toBeInTheDocument();
+  });
+
+  it('목업 푸시 캐러셀이 JSON 샘플을 렌더', () => {
+    renderLogin();
+    const samples = pushData.samples as Array<{ title: string }>;
+    expect(samples.length).toBeGreaterThan(0);
+    // 데크가 모든 샘플을 DOM에 렌더(순환은 transform/opacity로 처리)
+    expect(screen.getByText(samples[0].title)).toBeInTheDocument();
+    expect(screen.getByText(samples[samples.length - 1].title)).toBeInTheDocument();
   });
 
   it('Apple 버튼 클릭 시 startOAuth("apple") 호출', async () => {

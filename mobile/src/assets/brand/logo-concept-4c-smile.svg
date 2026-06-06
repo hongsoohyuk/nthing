@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Nthing 로고 시안 4c — 웃는 1/N">
+  <title>Smile 1/N (playful)</title>
+  <rect width="64" height="64" rx="16" fill="#DCFCE7" />
+  <!-- 분수선을 웃는 곡선으로 — 1과 N을 한 미소로 이어 친근하게 -->
+  <g fill="none" stroke="#16A34A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 24 L19 19 L19 39 M14 39 L24 39" />
+    <path d="M37 39 L37 20 L49 39 L49 20" />
+    <path d="M18 41 Q32 51 49 41" />
+  </g>
+</svg>

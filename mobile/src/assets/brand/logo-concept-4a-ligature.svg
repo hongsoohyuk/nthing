@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Nthing 로고 시안 4a — 이어진 1/N">
+  <title>Connected 1/N (ligature monoline)</title>
+  <rect width="64" height="64" rx="16" fill="#DCFCE7" />
+  <!-- 1(받침 포함) · 세운 분수 슬래시 · N 이 서로 맞닿아 이어진다 -->
+  <g fill="none" stroke="#16A34A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M13 24 L19 19 L19 44 M13 44 L25 44" />
+    <path d="M41 17 L27 47" />
+    <path d="M37 44 L37 24 L49 44 L49 24" />
+  </g>
+</svg>
