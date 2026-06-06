@@ -49,7 +49,7 @@ export function KakaoMap({ center, markers, onMarkerClick }: KakaoMapProps) {
       <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
         <MapPin className="size-10 text-gray-300" aria-hidden />
         <p className="text-body text-gray-500 dark:text-gray-400">{t('map.loadError')}</p>
-        <p className="text-caption text-gray-400">카카오맵 키 설정 후 다시 시도해 주세요</p>
+        <p className="text-caption text-gray-400">{t('map.loadKeyHint')}</p>
       </div>
     );
   }

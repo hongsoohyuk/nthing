@@ -3,6 +3,7 @@ import i18n from '../i18n';
 import { formatPrice, formatDistance, formatRelativeTime } from './format';
 
 beforeAll(async () => {
+  // 방어적: 같은 워커에서 앞선 테스트가 언어를 바꿔둔 경우를 대비해 ko 로 고정.
   await i18n.changeLanguage('ko');
 });
 
