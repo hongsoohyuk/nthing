@@ -10,7 +10,6 @@ function renderAt(path: string) {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/home" element={<div>HOME-TAB</div>} />
-          <Route path="/map" element={<div>MAP-TAB</div>} />
           <Route path="/profile" element={<div>PROFILE-TAB</div>} />
         </Route>
       </Routes>
@@ -19,12 +18,12 @@ function renderAt(path: string) {
 }
 
 describe('MainLayout', () => {
-  it('Outlet 자식과 BottomNav 3탭을 렌더', () => {
+  it('Outlet 자식과 BottomNav 2탭을 렌더', () => {
     renderAt('/home');
     expect(screen.getByText('HOME-TAB')).toBeInTheDocument();
     expect(screen.getByText('홈')).toBeInTheDocument();
-    expect(screen.getByText('지도')).toBeInTheDocument();
     expect(screen.getByText('나')).toBeInTheDocument();
+    expect(screen.queryByText('지도')).toBeNull();
   });
 
   it('현재 탭(home)이 aria-current 로 표시된다', () => {
@@ -32,7 +31,7 @@ describe('MainLayout', () => {
     expect(screen.getByRole('button', { name: /홈/ })).toHaveAttribute('aria-current', 'page');
   });
 
-  it('home/map 에는 FAB, profile 에는 FAB 없음', () => {
+  it('home 에는 FAB, profile 에는 FAB 없음', () => {
     const { unmount } = renderAt('/home');
     expect(screen.getByRole('button', { name: '반띵 등록하기' })).toBeInTheDocument();
     unmount();

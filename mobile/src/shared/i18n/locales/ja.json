@@ -82,7 +82,17 @@
     "fieldCountSupport": "最低2人",
     "fieldAddress": "住所",
     "fieldAddressPlaceholder": "待ち合わせ場所",
-    "perPersonEstimate": "1人あたりの予想金額"
+    "perPersonEstimate": "1人あたりの予想金額",
+    "locationLabel": "待ち合わせ場所",
+    "locationSearchLabel": "場所を検索",
+    "locationSearchAction": "検索",
+    "locationSearchPlaceholder": "場所を検索（例: 龍山アイパークモール）",
+    "locationNoResult": "検索結果がありません",
+    "locationSearchError": "場所を検索できませんでした",
+    "locationPinHint": "ピンをドラッグするか地図をタップして正確な位置を合わせてください",
+    "locationUnavailable": "地図を読み込めません。下の詳細位置を入力してください",
+    "detailLabel": "詳細位置",
+    "detailPlaceholder": "例: 3階 KFC前のポップアップ"
   },
   "detail": {
     "title": "シェアの詳細",
