@@ -1,4 +1,5 @@
 import { env } from '../lib/env';
+import i18n from '../i18n';
 import { ApiError } from './types';
 
 let authToken: string | null = null;
@@ -36,7 +37,7 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
   if (auth && res.status === 401) onUnauthorized?.();
 
   if (!res.ok) {
-    let message = `요청 실패 (${res.status})`;
+    let message = i18n.t('error.requestFailed', { status: res.status });
     try {
       const err = (await res.json()) as { message?: string };
       if (err?.message) message = err.message;

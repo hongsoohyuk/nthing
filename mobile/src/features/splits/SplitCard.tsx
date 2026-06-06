@@ -1,4 +1,5 @@
 import { ImageIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Card } from '../../shared/components/Card';
 import { StatusBadge } from '../../shared/components/Badge';
 import { type Split } from '../../shared/api/types';
@@ -10,6 +11,7 @@ type SplitCardProps = {
 };
 
 export function SplitCard({ split, onClick }: SplitCardProps) {
+  const { t } = useTranslation();
   const meta = [
     split.address,
     formatDistance(split.distanceKm),
@@ -36,10 +38,10 @@ export function SplitCard({ split, onClick }: SplitCardProps) {
       <p className="mt-1 text-caption text-gray-500 dark:text-gray-400">{meta}</p>
       <div className="mt-2 flex items-center justify-between">
         <span className="text-body-em text-brand dark:text-brand-dark-adj">
-          1인당 {formatPrice(split.pricePerPerson)}
+          {t('splits.perPersonShort', { price: formatPrice(split.pricePerPerson) })}
         </span>
         <span className="text-caption text-gray-500 dark:text-gray-400">
-          {split.splitCount}명 모집
+          {t('splits.recruitCount', { count: split.splitCount })}
         </span>
       </div>
     </Card>

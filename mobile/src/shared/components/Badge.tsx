@@ -1,4 +1,5 @@
 import { type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/cn';
 
 type Tone = 'brand' | 'success' | 'warning' | 'error' | 'neutral';
@@ -33,17 +34,18 @@ export function Badge({ tone = 'neutral', className, children }: BadgeProps) {
 
 type Status = 'WAITING' | 'MATCHED' | 'COMPLETED' | 'CANCELLED' | 'URGENT';
 
-const statusMap: Record<Status, { tone: Tone; label: string }> = {
-  WAITING: { tone: 'brand', label: '모집중' },
-  MATCHED: { tone: 'neutral', label: '매칭됨' },
-  COMPLETED: { tone: 'neutral', label: '완료' },
-  CANCELLED: { tone: 'neutral', label: '취소' },
-  URGENT: { tone: 'warning', label: '마감임박' },
+const statusMap: Record<Status, { tone: Tone; labelKey: string }> = {
+  WAITING: { tone: 'brand', labelKey: 'status.waiting' },
+  MATCHED: { tone: 'neutral', labelKey: 'status.matched' },
+  COMPLETED: { tone: 'neutral', labelKey: 'status.completed' },
+  CANCELLED: { tone: 'neutral', labelKey: 'status.cancelled' },
+  URGENT: { tone: 'warning', labelKey: 'status.urgent' },
 };
 
 export function StatusBadge({ status }: { status: Status }) {
-  const { tone, label } = statusMap[status];
-  return <Badge tone={tone}>{label}</Badge>;
+  const { t } = useTranslation();
+  const { tone, labelKey } = statusMap[status];
+  return <Badge tone={tone}>{t(labelKey)}</Badge>;
 }
 
 type ChipProps = {

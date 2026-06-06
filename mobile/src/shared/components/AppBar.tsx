@@ -1,5 +1,6 @@
 import { type ReactNode } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/cn';
 
 type AppBarProps = {
@@ -17,6 +18,7 @@ export function AppBar({
   transparent = false,
   align = 'left',
 }: AppBarProps) {
+  const { t } = useTranslation();
   return (
     <header
       className={cn(
@@ -29,7 +31,7 @@ export function AppBar({
         <button
           type="button"
           onClick={onBack}
-          aria-label="뒤로가기"
+          aria-label={t('aria.back')}
           className="inline-flex size-10 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-900"
         >
           <ArrowLeft className="size-5 text-gray-900 dark:text-gray-50" />

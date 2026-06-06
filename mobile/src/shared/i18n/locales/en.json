@@ -5,7 +5,8 @@
     "registerSplit": "Post a split",
     "retry": "Try again",
     "people": "{{count}} people",
-    "qty": "{{count}} ea"
+    "qty": "{{count}} ea",
+    "close": "Close"
   },
   "aria": {
     "back": "Back",
@@ -40,7 +41,8 @@
   },
   "map": {
     "title": "Map",
-    "loadError": "Couldn't load the map"
+    "loadError": "Couldn't load the map",
+    "loadKeyHint": "Set up the Kakao Map key and try again"
   },
   "profile": {
     "title": "My splits",

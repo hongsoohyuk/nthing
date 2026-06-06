@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Camera, Loader2 } from 'lucide-react';
 import { AppBar } from '../shared/components/AppBar';
 import { TextField } from '../shared/components/TextField';
@@ -12,6 +13,7 @@ import { uploadImage } from '../features/upload/uploadImage';
 
 export function CreateSplit() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const create = useCreateSplit();
   const coords = useLocationStore((s) => s.current) ?? DEFAULT_COORDS;
 
@@ -48,7 +50,7 @@ export function CreateSplit() {
         const url = await uploadImage(picked);
         setImageUrl(url);
       } catch {
-        setUploadError('사진 업로드에 실패했어요. 다시 시도해 주세요.');
+        setUploadError(t('create.uploadError'));
       } finally {
         setUploading(false);
       }
@@ -73,7 +75,7 @@ export function CreateSplit() {
 
   return (
     <div className="flex h-screen flex-col">
-      <AppBar title="내 반띵 올리기" onBack={() => navigate(-1)} />
+      <AppBar title={t('create.title')} onBack={() => navigate(-1)} />
 
       <div className="flex-1 overflow-y-auto px-6 pb-6">
         <div className="flex flex-col gap-4">
@@ -87,56 +89,61 @@ export function CreateSplit() {
             {imageUrl ? (
               <img
                 src={imageUrl}
-                alt="첨부 사진"
+                alt={t('create.photoAlt')}
                 className="absolute inset-0 size-full object-cover"
               />
             ) : uploading ? (
               <>
                 <Loader2 className="size-7 animate-spin" aria-hidden />
-                <span className="text-caption">업로드 중…</span>
+                <span className="text-caption">{t('create.uploading')}</span>
               </>
             ) : (
               <>
                 <Camera className="size-7" aria-hidden />
-                <span className="text-caption">사진 추가</span>
+                <span className="text-caption">{t('create.addPhoto')}</span>
               </>
             )}
           </button>
           {uploadError && <p className="text-caption text-error">{uploadError}</p>}
 
           <TextField
-            label="상품명"
+            label={t('create.fieldName')}
             value={productName}
             onChange={setProductName}
-            placeholder="예: 두쫀쿠 4개입"
+            placeholder={t('create.fieldNamePlaceholder')}
           />
           <TextField
-            label="전체 가격"
+            label={t('create.fieldPrice')}
             value={totalPrice}
             onChange={setTotalPrice}
             placeholder="20000"
             inputMode="numeric"
           />
           <TextField
-            label="전체 수량"
+            label={t('create.fieldQty')}
             value={totalQty}
             onChange={setTotalQty}
             placeholder="4"
             inputMode="numeric"
           />
           <TextField
-            label="나눌 인원"
+            label={t('create.fieldCount')}
             value={splitCount}
             onChange={setSplitCount}
             placeholder="2"
             inputMode="numeric"
-            supportingText="최소 2명"
+            supportingText={t('create.fieldCountSupport')}
           />
-          <TextField label="주소" value={address} onChange={setAddress} placeholder="만날 위치" />
+          <TextField
+            label={t('create.fieldAddress')}
+            value={address}
+            onChange={setAddress}
+            placeholder={t('create.fieldAddressPlaceholder')}
+          />
 
           {/* 인당 가격 미리보기 — Card 대신 plain div (brand-surface 배경 충돌 회피) */}
           <div className="flex items-center justify-between rounded-lg bg-brand-surface p-4 dark:bg-brand-surface-dark">
-            <span className="text-body text-gray-700 dark:text-gray-200">1인당 예상 가격</span>
+            <span className="text-body text-gray-700 dark:text-gray-200">{t('create.perPersonEstimate')}</span>
             <span className="text-h1 text-brand dark:text-brand-dark-adj">
               {formatPrice(perPerson)}
             </span>
@@ -146,7 +153,7 @@ export function CreateSplit() {
 
       <div className="border-t border-gray-200 p-4 dark:border-gray-700">
         <Button fullWidth disabled={!canSubmit} loading={create.isPending} onClick={onSubmit}>
-          내 반띵 올리기
+          {t('create.title')}
         </Button>
       </div>
     </div>

@@ -33,7 +33,12 @@ function App() {
       useAuthStore.getState().hydrate(),
       useThemeStore.getState().hydrate(),
       bootstrapI18n(),
-    ]).then(() => setReady(true));
+    ])
+      .catch(() => {
+        // 하이드레이션 실패(예: Preferences 접근 불가)해도 빈 화면에 갇히지 않게 진행.
+        // 토큰 복원 실패 시 비로그인 상태로 렌더된다.
+      })
+      .finally(() => setReady(true));
   }, []);
 
   if (!ready) return null; // auth/theme/언어 복원 전 공백 (FOUC 방지)
