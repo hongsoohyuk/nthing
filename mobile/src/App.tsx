@@ -1,9 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './shared/lib/queryClient';
 import { setUnauthorizedHandler } from './shared/api/http';
 import { useAuthStore } from './shared/stores/authStore';
+import { useThemeStore } from './shared/stores/themeStore';
+import { bootstrapI18n } from './shared/i18n';
 import { DeepLinkListener } from './features/auth/DeepLinkListener';
 import { PushListener } from './features/notifications/PushListener';
 import { Toaster } from './shared/components/Toaster';
@@ -20,17 +22,20 @@ import { SplitList } from './routes/SplitList';
 import { Catalog } from './routes/Catalog';
 
 function App() {
-  const hydrate = useAuthStore((s) => s.hydrate);
-  const isHydrated = useAuthStore((s) => s.isHydrated);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     setUnauthorizedHandler(() => {
       void useAuthStore.getState().logout();
     });
-    void hydrate();
-  }, [hydrate]);
+    void Promise.all([
+      useAuthStore.getState().hydrate(),
+      useThemeStore.getState().hydrate(),
+      bootstrapI18n(),
+    ]).then(() => setReady(true));
+  }, []);
 
-  if (!isHydrated) return null; // 토큰 복원 전 짧은 공백 (스플래시 대체)
+  if (!ready) return null; // auth/theme/언어 복원 전 공백 (FOUC 방지)
 
   return (
     <QueryClientProvider client={queryClient}>
