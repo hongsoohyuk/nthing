@@ -12,14 +12,22 @@ import logoConcept1 from '../assets/brand/logo-concept-1-perforated-n.svg';
 import logoConcept2 from '../assets/brand/logo-concept-2-n-pie.svg';
 import logoConcept3 from '../assets/brand/logo-concept-3-split-parcel.svg';
 import logoConcept4 from '../assets/brand/logo-concept-4-fraction.svg';
+import logoConcept4a from '../assets/brand/logo-concept-4a-ligature.svg';
+import logoConcept4b from '../assets/brand/logo-concept-4b-chip.svg';
+import logoConcept4c from '../assets/brand/logo-concept-4c-smile.svg';
+import logoConcept4d from '../assets/brand/logo-concept-4d-coin.svg';
 
 // 히어로/푸시 카드에 쓰는 로고. 기본은 채택안(1번).
-// dev 빌드에서만 ?logo=2|3|4 쿼리로 다른 시안을 라이브 비교할 수 있다.
+// dev 빌드에서만 ?logo=2|3|4|4a|4b|4c|4d 쿼리로 다른 시안을 라이브 비교할 수 있다.
 const LOGO_CONCEPTS = {
   '1': logoConcept1,
   '2': logoConcept2,
   '3': logoConcept3,
   '4': logoConcept4,
+  '4a': logoConcept4a,
+  '4b': logoConcept4b,
+  '4c': logoConcept4c,
+  '4d': logoConcept4d,
 } as const;
 
 function resolveLogoMark(): string {

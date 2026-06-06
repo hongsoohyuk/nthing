@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Nthing 로고 시안 4b — 둥근 칩 1/N">
+  <title>Rounded chip 1/N</title>
+  <rect width="64" height="64" rx="20" fill="#16A34A" />
+  <!-- 둥근 끝선의 통통한 1/N (앱 아이콘용) -->
+  <g fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M15 25 L21 20 L21 44 M15 44 L27 44" />
+    <path d="M43 18 L29 46" />
+    <path d="M38 44 L38 24 L50 44 L50 24" />
+  </g>
+</svg>
