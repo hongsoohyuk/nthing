@@ -25,6 +25,7 @@ function Row({
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={selected}
       className="flex h-12 w-full items-center justify-between"
     >
       <span className="text-body text-gray-900 dark:text-gray-100">{label}</span>
@@ -65,63 +66,65 @@ export function Settings() {
   };
 
   return (
-    <div>
+    <div className="flex h-screen flex-col">
       <AppBar title={t('settings.title')} onBack={() => navigate(-1)} />
 
-      <div className="space-y-6 px-4 py-2">
-        <section>
-          <h2 className="mb-1 text-caption text-gray-500">{t('settings.languageSection')}</h2>
-          <Card>
-            {SUPPORTED_LANGS.map((lang: Lang) => (
-              <Row
-                key={lang}
-                label={LANG_LABEL[lang]}
-                selected={i18n.language === lang}
-                onClick={() => void changeLanguagePersisted(lang)}
-              />
-            ))}
-          </Card>
-        </section>
-
-        <section>
-          <h2 className="mb-1 text-caption text-gray-500">{t('settings.themeSection')}</h2>
-          <Card>
-            {themes.map((m) => (
-              <Row key={m} label={themeLabel[m]} selected={mode === m} onClick={() => setMode(m)} />
-            ))}
-          </Card>
-        </section>
-
-        {isNative && (
+      <div className="flex-1 overflow-y-auto px-4 py-2">
+        <div className="space-y-6">
           <section>
-            <h2 className="mb-1 text-caption text-gray-500">
-              {t('settings.notificationsSection')}
-            </h2>
+            <h2 className="mb-1 text-caption text-gray-500">{t('settings.languageSection')}</h2>
             <Card>
-              <div className="flex h-12 items-center justify-between">
-                <span className="text-body text-gray-900 dark:text-gray-100">
-                  {t('profile.nearbyAlerts')}
-                </span>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={nearby}
-                  aria-label={t('profile.nearbyAlerts')}
-                  onClick={toggleNearby}
-                  className={`inline-flex h-6 w-11 items-center rounded-pill px-0.5 transition-colors ${
-                    nearby ? 'bg-brand' : 'bg-gray-300 dark:bg-gray-700'
-                  }`}
-                >
-                  <span
-                    className={`size-5 rounded-full bg-white shadow transition-transform ${
-                      nearby ? 'translate-x-5' : 'translate-x-0'
-                    }`}
-                  />
-                </button>
-              </div>
+              {SUPPORTED_LANGS.map((lang: Lang) => (
+                <Row
+                  key={lang}
+                  label={LANG_LABEL[lang]}
+                  selected={i18n.language === lang}
+                  onClick={() => void changeLanguagePersisted(lang)}
+                />
+              ))}
             </Card>
           </section>
-        )}
+
+          <section>
+            <h2 className="mb-1 text-caption text-gray-500">{t('settings.themeSection')}</h2>
+            <Card>
+              {themes.map((m) => (
+                <Row key={m} label={themeLabel[m]} selected={mode === m} onClick={() => setMode(m)} />
+              ))}
+            </Card>
+          </section>
+
+          {isNative && (
+            <section>
+              <h2 className="mb-1 text-caption text-gray-500">
+                {t('settings.notificationsSection')}
+              </h2>
+              <Card>
+                <div className="flex h-12 items-center justify-between">
+                  <span className="text-body text-gray-900 dark:text-gray-100">
+                    {t('profile.nearbyAlerts')}
+                  </span>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={nearby}
+                    aria-label={t('profile.nearbyAlerts')}
+                    onClick={toggleNearby}
+                    className={`inline-flex h-6 w-11 items-center rounded-pill px-0.5 transition-colors ${
+                      nearby ? 'bg-brand' : 'bg-gray-300 dark:bg-gray-700'
+                    }`}
+                  >
+                    <span
+                      className={`size-5 rounded-full bg-white shadow transition-transform ${
+                        nearby ? 'translate-x-5' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
+                </div>
+              </Card>
+            </section>
+          )}
+        </div>
       </div>
     </div>
   );

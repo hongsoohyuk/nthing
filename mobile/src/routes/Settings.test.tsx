@@ -1,11 +1,13 @@
 // mobile/src/routes/Settings.test.tsx
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { Capacitor } from '@capacitor/core';
 import i18n from '../shared/i18n';
 import { Settings } from './Settings';
 import { useThemeStore } from '../shared/stores/themeStore';
+import { setNearbyAlerts } from '../features/notifications/pushService';
 
 vi.mock('@capacitor/core', () => ({
   Capacitor: { isNativePlatform: () => false, getPlatform: () => 'web' },
@@ -16,6 +18,7 @@ vi.mock('@capacitor/preferences', () => ({
     set: vi.fn().mockResolvedValue(undefined),
   },
 }));
+vi.mock('../features/notifications/pushService', () => ({ setNearbyAlerts: vi.fn() }));
 
 function renderSettings() {
   return render(
@@ -52,5 +55,34 @@ describe('Settings', () => {
     await userEvent.click(screen.getByText('다크'));
     expect(document.documentElement.classList.contains('dark')).toBe(true);
     expect(useThemeStore.getState().mode).toBe('dark');
+  });
+});
+
+describe('Settings — native path', () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage('ko');
+    document.documentElement.classList.remove('dark');
+    useThemeStore.setState({ mode: 'system' });
+    vi.mocked(Capacitor).isNativePlatform = (() => true) as typeof Capacitor.isNativePlatform;
+  });
+
+  afterEach(() => {
+    vi.mocked(Capacitor).isNativePlatform = (() => false) as typeof Capacitor.isNativePlatform;
+    vi.mocked(setNearbyAlerts).mockClear();
+  });
+
+  it('네이티브에서 근처 알림 토글이 렌더되고 클릭 시 setNearbyAlerts 호출', async () => {
+    renderSettings();
+
+    // Notifications section should appear
+    expect(screen.getByText('알림')).toBeInTheDocument();
+
+    const toggle = screen.getByRole('switch', { name: '근처 알림' });
+    // Initial state is true (checked)
+    expect(toggle).toHaveAttribute('aria-checked', 'true');
+
+    await userEvent.click(toggle);
+
+    expect(vi.mocked(setNearbyAlerts)).toHaveBeenCalledWith(false);
   });
 });
