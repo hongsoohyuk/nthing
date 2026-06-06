@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AppBar } from '../shared/components/AppBar';
 import { Chip } from '../shared/components/Badge';
 import { Button } from '../shared/components/Button';
@@ -12,13 +13,14 @@ import { useLocationStore, DEFAULT_COORDS } from '../shared/stores/locationStore
 import { type SplitStatus } from '../shared/api/types';
 
 // 서버 카테고리/마감 필드 부재로 1.4 는 전체/모집중만 배선 (음식/생필품/마감임박은 후속)
-const FILTERS: Array<{ label: string; status?: SplitStatus }> = [
-  { label: '전체', status: undefined },
-  { label: '모집중', status: 'WAITING' },
+const FILTERS: Array<{ labelKey: string; status?: SplitStatus }> = [
+  { labelKey: 'home.filterAll', status: undefined },
+  { labelKey: 'home.filterRecruiting', status: 'WAITING' },
 ];
 
 export function Home() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const coords = useLocationStore((s) => s.current) ?? DEFAULT_COORDS;
   const [filterIdx, setFilterIdx] = useState(0);
   const query = useSplits({
@@ -30,11 +32,11 @@ export function Home() {
 
   return (
     <div>
-      <AppBar title="근처 반띵" />
+      <AppBar title={t('home.title')} />
       <div className="flex gap-2 overflow-x-auto px-4 pb-3">
         {FILTERS.map((f, i) => (
-          <Chip key={f.label} active={i === filterIdx} onClick={() => setFilterIdx(i)}>
-            {f.label}
+          <Chip key={f.labelKey} active={i === filterIdx} onClick={() => setFilterIdx(i)}>
+            {t(f.labelKey)}
           </Chip>
         ))}
       </div>
@@ -42,14 +44,14 @@ export function Home() {
       {query.isPending ? (
         <LoadingState />
       ) : query.isError ? (
-        <ErrorState message="반띵을 불러오지 못했어요" onRetry={() => void query.refetch()} />
+        <ErrorState message={t('splits.loadError')} onRetry={() => void query.refetch()} />
       ) : query.data.content.length === 0 ? (
         <EmptyState
-          title="아직 반띵이 없어요"
-          subtitle="첫 반띵을 올려보세요"
+          title={t('splits.emptyTitle')}
+          subtitle={t('splits.emptySubtitle')}
           action={
             <Button size="md" onClick={() => navigate('/splits/new')}>
-              반띵 등록하기
+              {t('common.registerSplit')}
             </Button>
           }
         />

@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AppBar } from '../shared/components/AppBar';
 import { Button } from '../shared/components/Button';
 import { StatusBadge } from '../shared/components/Badge';
@@ -21,6 +22,7 @@ export function SplitDetail() {
   const { id } = useParams();
   const splitId = Number(id);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const userId = useAuthStore((s) => s.user?.id);
   const query = useSplit(splitId);
   const join = useJoinSplit();
@@ -29,7 +31,7 @@ export function SplitDetail() {
   if (query.isPending) {
     return (
       <div>
-        <AppBar title="반띵 상세" onBack={() => navigate(-1)} />
+        <AppBar title={t('detail.title')} onBack={() => navigate(-1)} />
         <LoadingState />
       </div>
     );
@@ -37,8 +39,8 @@ export function SplitDetail() {
   if (query.isError) {
     return (
       <div>
-        <AppBar title="반띵 상세" onBack={() => navigate(-1)} />
-        <ErrorState message="반띵을 불러오지 못했어요" onRetry={() => void query.refetch()} />
+        <AppBar title={t('detail.title')} onBack={() => navigate(-1)} />
+        <ErrorState message={t('splits.loadError')} onRetry={() => void query.refetch()} />
       </div>
     );
   }
@@ -52,7 +54,7 @@ export function SplitDetail() {
 
   return (
     <div className="flex h-screen flex-col">
-      <AppBar title="반띵 상세" onBack={() => navigate(-1)} />
+      <AppBar title={t('detail.title')} onBack={() => navigate(-1)} />
 
       <div className="flex-1 overflow-y-auto pb-6">
         <div className="aspect-video w-full bg-gray-100 dark:bg-gray-800">
@@ -73,19 +75,19 @@ export function SplitDetail() {
           </p>
 
           <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-900">
-            <p className="text-caption text-gray-500">1인당</p>
+            <p className="text-caption text-gray-500">{t('detail.perPerson')}</p>
             <p className="text-display text-brand dark:text-brand-dark-adj">
               {formatPrice(split.pricePerPerson)}
             </p>
             <div className="mt-3 space-y-1">
-              <InfoRow label="전체 가격" value={formatPrice(split.totalPrice)} />
-              <InfoRow label="전체 수량" value={`${split.totalQty}개`} />
-              <InfoRow label="나눌 인원" value={`${split.splitCount}명`} />
+              <InfoRow label={t('detail.totalPrice')} value={formatPrice(split.totalPrice)} />
+              <InfoRow label={t('detail.totalQty')} value={t('common.qty', { count: split.totalQty })} />
+              <InfoRow label={t('detail.splitCount')} value={t('common.people', { count: split.splitCount })} />
             </div>
           </div>
 
           <div>
-            <h2 className="text-h2 text-gray-900 dark:text-gray-50">위치</h2>
+            <h2 className="text-h2 text-gray-900 dark:text-gray-50">{t('detail.location')}</h2>
             <p className="mt-1 text-body text-gray-700 dark:text-gray-200">{split.address}</p>
             {/* 지도 미리보기는 Phase 1.5 (카카오맵) */}
           </div>
@@ -95,7 +97,7 @@ export function SplitDetail() {
       <div className="border-t border-gray-200 p-4 dark:border-gray-700">
         {!isOpen ? (
           <Button fullWidth disabled>
-            마감된 반띵
+            {t('detail.closed')}
           </Button>
         ) : isMine ? (
           <Button
@@ -104,11 +106,11 @@ export function SplitDetail() {
             loading={cancel.isPending}
             onClick={() => cancel.mutate(splitId)}
           >
-            취소하기
+            {t('detail.cancel')}
           </Button>
         ) : (
           <Button fullWidth loading={join.isPending} onClick={() => join.mutate(splitId)}>
-            반띵할게요
+            {t('common.join')}
           </Button>
         )}
       </div>

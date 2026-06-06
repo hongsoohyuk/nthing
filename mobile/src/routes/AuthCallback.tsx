@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { nthingApi } from '../shared/api/nthingApi';
 import { useAuthStore } from '../shared/stores/authStore';
 import { NAVER_STATE_KEY, APPLE_STATE_KEY } from '../features/auth/oauth';
@@ -34,6 +35,7 @@ async function exchange(
 export function AuthCallback() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const setAuth = useAuthStore((s) => s.setAuth);
   const ran = useRef(false);
   const [failed, setFailed] = useState(false);
@@ -67,7 +69,7 @@ export function AuthCallback() {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <p className="text-body text-gray-500">{failed ? '로그인에 실패했어요' : '로그인 중...'}</p>
+      <p className="text-body text-gray-500">{failed ? t('auth.callbackFailed') : t('auth.callbackLoading')}</p>
     </div>
   );
 }

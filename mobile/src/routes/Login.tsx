@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { startOAuth } from '../features/auth/oauth';
 import { isAppleNativeAvailable, loginWithAppleNative } from '../features/auth/appleNative';
 import { nthingApi } from '../shared/api/nthingApi';
@@ -16,11 +17,11 @@ function isAppleCancel(e: unknown): boolean {
 
 type LoginProps = { showDevLogin?: boolean };
 
-const PROVIDER_LABEL: Record<Provider, string> = {
-  kakao: '카카오로 시작하기',
-  naver: '네이버로 시작하기',
-  google: 'Google로 시작하기',
-  apple: 'Apple로 시작하기',
+const PROVIDER_KEY: Record<Provider, string> = {
+  kakao: 'login.kakao',
+  naver: 'login.naver',
+  google: 'login.google',
+  apple: 'login.apple',
 };
 
 const PROVIDER_CLASS: Record<Provider, string> = {
@@ -32,6 +33,7 @@ const PROVIDER_CLASS: Record<Provider, string> = {
 
 export function Login({ showDevLogin = import.meta.env.DEV }: LoginProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const setAuth = useAuthStore((s) => s.setAuth);
   const [busy, setBusy] = useState(false);
 
@@ -45,7 +47,7 @@ export function Login({ showDevLogin = import.meta.env.DEV }: LoginProps) {
         navigate('/home', { replace: true });
       } catch (e) {
         if (!isAppleCancel(e)) {
-          toast('Apple 로그인에 실패했어요. 설정 > Apple 계정 로그인을 확인해 주세요');
+          toast(t('login.appleError'));
         }
       } finally {
         setBusy(false);
@@ -70,12 +72,12 @@ export function Login({ showDevLogin = import.meta.env.DEV }: LoginProps) {
     <div className="flex min-h-screen flex-col justify-between px-6 pb-10 pt-24">
       <header className="space-y-3">
         <h1 className="text-display text-brand">Nthing</h1>
-        <p className="text-h2 text-gray-900">반띵하자</p>
-        <p className="text-body text-gray-500">근처에서 N분의 1, 같이 사요</p>
+        <p className="text-h2 text-gray-900">{t('login.tagline')}</p>
+        <p className="text-body text-gray-500">{t('login.subtitle')}</p>
       </header>
 
       <div className="space-y-3">
-        {(Object.keys(PROVIDER_LABEL) as Provider[]).map((provider) => (
+        {(Object.keys(PROVIDER_KEY) as Provider[]).map((provider) => (
           <button
             key={provider}
             type="button"
@@ -87,7 +89,7 @@ export function Login({ showDevLogin = import.meta.env.DEV }: LoginProps) {
               PROVIDER_CLASS[provider],
             )}
           >
-            {PROVIDER_LABEL[provider]}
+            {t(PROVIDER_KEY[provider])}
           </button>
         ))}
 
@@ -98,7 +100,7 @@ export function Login({ showDevLogin = import.meta.env.DEV }: LoginProps) {
             onClick={() => void onDevLogin()}
             className="flex h-11 w-full items-center justify-center rounded-md border border-dashed border-gray-300 text-caption text-gray-500 disabled:opacity-40"
           >
-            테스트 로그인 (개발용)
+            {t('login.devLogin')}
           </button>
         )}
       </div>

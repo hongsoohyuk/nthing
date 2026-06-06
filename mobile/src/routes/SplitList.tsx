@@ -1,5 +1,6 @@
 import { type UseQueryResult } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AppBar } from '../shared/components/AppBar';
 import { Button } from '../shared/components/Button';
 import { LoadingState } from '../shared/components/states/LoadingState';
@@ -19,20 +20,21 @@ function SplitListView({
   query: UseQueryResult<PageResponse<Split>>;
 }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   return (
     <div>
       <AppBar title={title} onBack={() => navigate(-1)} />
       {query.isPending ? (
         <LoadingState />
       ) : query.isError ? (
-        <ErrorState message="목록을 불러오지 못했어요" onRetry={() => void query.refetch()} />
+        <ErrorState message={t('list.loadError')} onRetry={() => void query.refetch()} />
       ) : query.data.content.length === 0 ? (
         <EmptyState
-          title="아직 반띵이 없어요"
-          subtitle="첫 반띵을 올려보세요"
+          title={t('splits.emptyTitle')}
+          subtitle={t('splits.emptySubtitle')}
           action={
             <Button size="md" onClick={() => navigate('/splits/new')}>
-              반띵 등록하기
+              {t('common.registerSplit')}
             </Button>
           }
         />
@@ -52,11 +54,13 @@ function SplitListView({
 }
 
 function MySplitList() {
-  return <SplitListView title="내 나눠사기" query={useMySplits()} />;
+  const { t } = useTranslation();
+  return <SplitListView title={t('profile.mySplits')} query={useMySplits()} />;
 }
 
 function ParticipatedSplitList() {
-  return <SplitListView title="참여한 나눠사기" query={useParticipatedSplits()} />;
+  const { t } = useTranslation();
+  return <SplitListView title={t('profile.participated')} query={useParticipatedSplits()} />;
 }
 
 export function SplitList({ variant }: SplitListProps) {

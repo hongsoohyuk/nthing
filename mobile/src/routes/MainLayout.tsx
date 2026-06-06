@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { BottomNav } from '../shared/components/BottomNav';
 import { Fab } from '../shared/components/Fab';
 import { useEnsureLocation } from '../features/location/useEnsureLocation';
@@ -25,6 +26,7 @@ function tabFromPath(pathname: string): Tab {
 export function MainLayout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { t } = useTranslation();
   const current = tabFromPath(pathname);
   const showFab = current === 'home' || current === 'map';
 
@@ -44,7 +46,7 @@ export function MainLayout() {
       </main>
       {showFab && (
         <Fab
-          label="반띵 등록하기"
+          label={t('common.registerSplit')}
           onClick={() => navigate('/splits/new')}
           className="absolute bottom-20 right-4"
         />
