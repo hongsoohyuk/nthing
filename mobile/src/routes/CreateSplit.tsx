@@ -1,25 +1,32 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Camera, Loader2 } from 'lucide-react';
 import { AppBar } from '../shared/components/AppBar';
 import { TextField } from '../shared/components/TextField';
 import { Button } from '../shared/components/Button';
+import { LocationPicker } from '../features/map/LocationPicker';
 import { useCreateSplit } from '../features/splits/queries';
-import { useLocationStore, DEFAULT_COORDS } from '../shared/stores/locationStore';
+import { useLocationStore, DEFAULT_COORDS, type Coords } from '../shared/stores/locationStore';
 import { formatPrice } from '../shared/lib/format';
 import { pickImage } from '../features/upload/imagePicker';
 import { uploadImage } from '../features/upload/uploadImage';
 
 export function CreateSplit() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const create = useCreateSplit();
-  const coords = useLocationStore((s) => s.current) ?? DEFAULT_COORDS;
+  const gpsCoords = useLocationStore((s) => s.current) ?? DEFAULT_COORDS;
 
   const [productName, setProductName] = useState('');
   const [totalPrice, setTotalPrice] = useState('');
   const [totalQty, setTotalQty] = useState('');
   const [splitCount, setSplitCount] = useState('');
-  const [address, setAddress] = useState('');
+  // 만날 위치: 검색해 고른 장소명 + 핀 좌표(드래그/탭으로 미세조정) + 상세 위치 자유 입력.
+  // 좌표는 핀이 정함(없으면 현재 GPS 폴백). address 는 "<장소명> · <상세위치>" 로 합쳐 전송.
+  const [placeName, setPlaceName] = useState('');
+  const [pinCoords, setPinCoords] = useState<Coords | null>(null);
+  const [detail, setDetail] = useState('');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -29,12 +36,17 @@ export function CreateSplit() {
   const countNum = Number(splitCount);
   const perPerson = priceNum > 0 && countNum >= 2 ? Math.floor(priceNum / countNum) : 0;
 
+  // 장소명 또는 상세 위치 중 하나라도 있으면 위치 입력으로 인정 (키 없을 때도 상세만으로 등록 가능)
+  const placeTrim = placeName.trim();
+  const detailTrim = detail.trim();
+  const address = [placeTrim, detailTrim].filter(Boolean).join(' · ');
+
   const canSubmit =
     productName.trim() !== '' &&
     priceNum >= 1 &&
     qtyNum >= 1 &&
     countNum >= 2 &&
-    address.trim() !== '' &&
+    address !== '' &&
     !uploading &&
     !create.isPending;
 
@@ -56,6 +68,7 @@ export function CreateSplit() {
   };
 
   const onSubmit = () => {
+    const coords = pinCoords ?? gpsCoords;
     create.mutate(
       {
         productName: productName.trim(),
@@ -64,7 +77,7 @@ export function CreateSplit() {
         splitCount: countNum,
         latitude: coords.lat,
         longitude: coords.lng,
-        address: address.trim(),
+        address,
         ...(imageUrl ? { imageUrl } : {}),
       },
       { onSuccess: (created) => navigate(`/splits/${created.id}`, { replace: true }) },
@@ -132,7 +145,21 @@ export function CreateSplit() {
             inputMode="numeric"
             supportingText="최소 2명"
           />
-          <TextField label="주소" value={address} onChange={setAddress} placeholder="만날 위치" />
+          <LocationPicker
+            initialCenter={gpsCoords}
+            placeName={placeName}
+            onPlaceSelect={({ placeName: name, coords }) => {
+              setPlaceName(name);
+              setPinCoords(coords);
+            }}
+            onCoordsChange={setPinCoords}
+          />
+          <TextField
+            label={t('create.detailLabel')}
+            value={detail}
+            onChange={setDetail}
+            placeholder={t('create.detailPlaceholder')}
+          />
 
           {/* 인당 가격 미리보기 — Card 대신 plain div (brand-surface 배경 충돌 회피) */}
           <div className="flex items-center justify-between rounded-lg bg-brand-surface p-4 dark:bg-brand-surface-dark">

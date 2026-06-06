@@ -72,7 +72,17 @@
     "fieldCountSupport": "至少2人",
     "fieldAddress": "地址",
     "fieldAddressPlaceholder": "见面地点",
-    "perPersonEstimate": "每人预计价格"
+    "perPersonEstimate": "每人预计价格",
+    "locationLabel": "见面地点",
+    "locationSearchLabel": "搜索地点",
+    "locationSearchAction": "搜索",
+    "locationSearchPlaceholder": "搜索地点（例：龙山IFC购物中心）",
+    "locationNoResult": "没有搜索结果",
+    "locationSearchError": "无法搜索地点",
+    "locationPinHint": "拖动图钉或点击地图以确定准确位置",
+    "locationUnavailable": "无法加载地图，请在下方输入详细位置",
+    "detailLabel": "详细位置",
+    "detailPlaceholder": "例：3楼 KFC前的快闪店"
   },
   "detail": {
     "title": "拼单详情",
