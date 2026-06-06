@@ -35,12 +35,13 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 11
+          version: 11.0.8
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # pnpm 11 은 Node 22.13+ 필요 (node:sqlite). 로컬과 동일하게 24 사용.
+          node-version: '24'
           cache: 'pnpm'
           cache-dependency-path: mobile/pnpm-lock.yaml
 
