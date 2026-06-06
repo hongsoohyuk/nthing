@@ -5,7 +5,8 @@
     "registerSplit": "发布拼单",
     "retry": "重试",
     "people": "{{count}}人",
-    "qty": "{{count}}个"
+    "qty": "{{count}}个",
+    "close": "关闭"
   },
   "aria": {
     "back": "返回",
@@ -115,5 +116,30 @@
   },
   "error": {
     "requestFailed": "请求失败 ({{status}})"
+  },
+  "safety": {
+    "menu": "更多",
+    "report": "举报",
+    "block": "屏蔽"
+  },
+  "report": {
+    "title": "举报",
+    "subtitle": "请选择举报原因",
+    "cancel": "取消",
+    "submit": "举报",
+    "done": "举报已提交",
+    "error": "举报失败，请重试",
+    "reason": {
+      "SPAM": "垃圾信息/广告",
+      "FRAUD": "涉嫌欺诈",
+      "INAPPROPRIATE": "不当内容",
+      "HARASSMENT": "辱骂/骚扰",
+      "OTHER": "其他"
+    }
+  },
+  "block": {
+    "action": "屏蔽",
+    "done": "已屏蔽 {{name}}",
+    "error": "屏蔽失败"
   }
 }

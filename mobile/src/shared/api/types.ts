@@ -110,6 +110,24 @@ export type PresignResponse = {
   expiresInSeconds: number;
 };
 
+// ── Report / Block (서버 ReportDto.kt 기준) ──
+export type ReportTargetType = 'SPLIT' | 'USER';
+
+export type ReportReason = 'SPAM' | 'FRAUD' | 'INAPPROPRIATE' | 'HARASSMENT' | 'OTHER';
+
+export type CreateReportRequest = {
+  targetType: ReportTargetType;
+  targetId: number;
+  reason: ReportReason;
+  detail?: string | null;
+};
+
+export type ReportResponse = { id: number };
+
+export type BlockResponse = { id: number; blockedUserId: number };
+
+export type BlockedUsersResponse = { blockedUserIds: number[] };
+
 // ── Device (서버 DeviceDto.kt 기준) ──
 export type DevicePlatform = 'IOS' | 'ANDROID';
 

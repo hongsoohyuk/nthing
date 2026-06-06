@@ -5,7 +5,8 @@
     "registerSplit": "シェアを登録",
     "retry": "再試行",
     "people": "{{count}}人",
-    "qty": "{{count}}個"
+    "qty": "{{count}}個",
+    "close": "閉じる"
   },
   "aria": {
     "back": "戻る",
@@ -115,5 +116,30 @@
   },
   "error": {
     "requestFailed": "リクエスト失敗 ({{status}})"
+  },
+  "safety": {
+    "menu": "その他",
+    "report": "報告する",
+    "block": "ブロックする"
+  },
+  "report": {
+    "title": "報告する",
+    "subtitle": "報告の理由を選んでください",
+    "cancel": "キャンセル",
+    "submit": "報告",
+    "done": "報告を受け付けました",
+    "error": "報告に失敗しました。もう一度お試しください",
+    "reason": {
+      "SPAM": "スパム/広告",
+      "FRAUD": "詐欺の疑い",
+      "INAPPROPRIATE": "不適切なコンテンツ",
+      "HARASSMENT": "暴言/嫌がらせ",
+      "OTHER": "その他"
+    }
+  },
+  "block": {
+    "action": "ブロック",
+    "done": "{{name}}さんをブロックしました",
+    "error": "ブロックに失敗しました"
   }
 }

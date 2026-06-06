@@ -5,19 +5,29 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 const join = vi.fn();
 const cancel = vi.fn();
+const block = vi.fn();
+const report = vi.fn();
 vi.mock('../features/splits/queries', () => ({
   useSplit: vi.fn(),
   useJoinSplit: vi.fn(),
   useCancelSplit: vi.fn(),
 }));
+vi.mock('../features/report/queries', () => ({
+  useBlockUser: vi.fn(),
+  useCreateReport: vi.fn(),
+}));
 
 import { useSplit, useJoinSplit, useCancelSplit } from '../features/splits/queries';
+import { useBlockUser, useCreateReport } from '../features/report/queries';
 import { useAuthStore } from '../shared/stores/authStore';
+import i18n from '../shared/i18n';
 import { SplitDetail } from './SplitDetail';
 
 const useSplitMock = useSplit as unknown as ReturnType<typeof vi.fn>;
 const useJoinMock = useJoinSplit as unknown as ReturnType<typeof vi.fn>;
 const useCancelMock = useCancelSplit as unknown as ReturnType<typeof vi.fn>;
+const useBlockMock = useBlockUser as unknown as ReturnType<typeof vi.fn>;
+const useReportMock = useCreateReport as unknown as ReturnType<typeof vi.fn>;
 
 const SPLIT = {
   id: 1,
@@ -50,11 +60,16 @@ function renderDetail() {
 }
 
 describe('SplitDetail', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await i18n.changeLanguage('ko');
     join.mockReset();
     cancel.mockReset();
+    block.mockReset();
+    report.mockReset();
     useJoinMock.mockReturnValue({ mutate: join, isPending: false });
     useCancelMock.mockReturnValue({ mutate: cancel, isPending: false });
+    useBlockMock.mockReturnValue({ mutate: block, isPending: false });
+    useReportMock.mockReturnValue({ mutate: report, isPending: false });
     useAuthStore.setState({ token: 'jwt', user: { id: 1, nickname: '나' }, isHydrated: true });
   });
 
@@ -89,5 +104,29 @@ describe('SplitDetail', () => {
     });
     renderDetail();
     expect(screen.getByRole('button', { name: '마감된 반띵' })).toBeDisabled();
+  });
+
+  it('타인 글 → 더보기 메뉴에 신고/차단 노출, 차단 클릭 시 block(authorId)', async () => {
+    useSplitMock.mockReturnValue({ isPending: false, isError: false, data: SPLIT });
+    renderDetail();
+    await userEvent.click(screen.getByRole('button', { name: '더보기' }));
+    expect(screen.getByRole('menuitem', { name: '신고하기' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('menuitem', { name: '차단하기' }));
+    expect(block).toHaveBeenCalledWith(99, expect.anything());
+  });
+
+  it('타인 글 → 신고하기 클릭 시 신고 시트가 열린다', async () => {
+    useSplitMock.mockReturnValue({ isPending: false, isError: false, data: SPLIT });
+    renderDetail();
+    await userEvent.click(screen.getByRole('button', { name: '더보기' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: '신고하기' }));
+    expect(screen.getByRole('radio', { name: '사기 의심' })).toBeInTheDocument();
+  });
+
+  it('본인 글 → 더보기(신고/차단) 메뉴 없음', () => {
+    useAuthStore.setState({ token: 'jwt', user: { id: 99, nickname: '판매자' }, isHydrated: true });
+    useSplitMock.mockReturnValue({ isPending: false, isError: false, data: SPLIT });
+    renderDetail();
+    expect(screen.queryByRole('button', { name: '더보기' })).not.toBeInTheDocument();
   });
 });

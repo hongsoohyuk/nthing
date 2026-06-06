@@ -5,7 +5,8 @@
     "registerSplit": "Post a split",
     "retry": "Try again",
     "people": "{{count}} people",
-    "qty": "{{count}} ea"
+    "qty": "{{count}} ea",
+    "close": "Close"
   },
   "aria": {
     "back": "Back",
@@ -115,5 +116,30 @@
   },
   "error": {
     "requestFailed": "Request failed ({{status}})"
+  },
+  "safety": {
+    "menu": "More",
+    "report": "Report",
+    "block": "Block"
+  },
+  "report": {
+    "title": "Report",
+    "subtitle": "Choose a reason",
+    "cancel": "Cancel",
+    "submit": "Report",
+    "done": "Your report has been submitted",
+    "error": "Failed to report. Please try again",
+    "reason": {
+      "SPAM": "Spam/Ads",
+      "FRAUD": "Suspected fraud",
+      "INAPPROPRIATE": "Inappropriate content",
+      "HARASSMENT": "Abuse/Harassment",
+      "OTHER": "Other"
+    }
+  },
+  "block": {
+    "action": "Block",
+    "done": "Blocked {{name}}",
+    "error": "Failed to block"
   }
 }
