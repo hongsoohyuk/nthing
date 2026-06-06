@@ -146,6 +146,7 @@ class SplitService(
             if (isAuthor) row.authorConfirmedAt = now else row.participantConfirmedAt = now
             if (row.authorConfirmedAt != null && row.participantConfirmedAt != null) {
                 row.outcome = ParticipantOutcome.COMPLETED
+                // 성사율은 '참여자↔주최자 쌍' 단위로 집계 — N명 split이면 주최자는 성사된 쌍마다 +1
                 split.author.completedCount += 1
                 row.user.completedCount += 1
             }
