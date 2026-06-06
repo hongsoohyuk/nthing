@@ -28,6 +28,17 @@ services:
     restart: always
     expose:
       - "8080"
+    # 모든 시크릿(DB_PASSWORD, JWT_SECRET, OAuth, AWS, FCM 등)은 infra/.env 한 파일로 주입된다.
+    # infra/.env 는 배포 시 ONEBITE_ENV_B64 GitHub Secret → base64 decode → /opt/onebite/infra/.env 로
+    # 생성된다 (.github/workflows/deploy.yml 참고).
+    #
+    # Phase 2 푸시(FCM) 자격증명:
+    #   infra/.env 에 FIREBASE_CREDENTIALS_BASE64=<base64 of service-account JSON> 한 줄을 추가하면
+    #   env_file 로 컨테이너에 자동 주입되어 FcmConfig 가 Firebase Admin SDK 를 활성화한다.
+    #   값 생성: macOS `base64 -i server/secrets/firebase-adminsdk.json`
+    #           Linux `base64 -w0 server/secrets/firebase-adminsdk.json`
+    #   (미설정 시 LoggingFcmSender 폴백 → 푸시만 비활성, 부팅은 정상)
+    #   파일 볼륨 마운트를 쓰려면 FIREBASE_CREDENTIALS_PATH 로 경로 지정도 지원(폴백).
     env_file:
       - ./infra/.env
     environment:
