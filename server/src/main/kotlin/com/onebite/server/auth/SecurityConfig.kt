@@ -35,6 +35,7 @@ class SecurityConfig(
                     .requestMatchers("/actuator/health").permitAll() // 헬스체크
                     .requestMatchers("/h2-console/**").permitAll() // 개발용 H2 콘솔
                     .requestMatchers("/error").permitAll()         // 에러 페이지 접근 허용
+                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/users/{id}/trust").permitAll() // 공개 신뢰 프로필
                     .anyRequest().authenticated()                  // 나머지는 JWT 필요
             }
             .exceptionHandling {
