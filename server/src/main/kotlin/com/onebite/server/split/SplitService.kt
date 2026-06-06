@@ -1,6 +1,7 @@
 package com.onebite.server.split
 
 import com.onebite.server.user.UserRepository
+import java.time.LocalDateTime
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -122,6 +123,42 @@ class SplitService(
         eventPublisher.publishEvent(SplitCancelledEvent(id))
         val participants = splitParticipantRepository.findBySplitRequestId(id)
         return SplitResponse.from(saved, participants)
+    }
+
+    @Transactional
+    fun confirmComplete(splitId: Long, userId: Long): SplitResponse {
+        val split = splitRepository.findById(splitId)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Split을 찾을 수 없습니다: $splitId") }
+        if (split.status != SplitStatus.MATCHED) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "매칭된 반띵만 거래완료할 수 있습니다")
+        }
+        val participants = splitParticipantRepository.findBySplitRequestId(splitId)
+        val isAuthor = split.author.id == userId
+        val isParticipant = participants.any { it.user.id == userId }
+        if (!isAuthor && !isParticipant) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "참여자만 거래완료할 수 있습니다")
+        }
+
+        val now = LocalDateTime.now()
+        val rows = if (isAuthor) participants else participants.filter { it.user.id == userId }
+        for (row in rows) {
+            if (row.outcome != ParticipantOutcome.JOINED) continue
+            if (isAuthor) row.authorConfirmedAt = now else row.participantConfirmedAt = now
+            if (row.authorConfirmedAt != null && row.participantConfirmedAt != null) {
+                row.outcome = ParticipantOutcome.COMPLETED
+                split.author.completedCount += 1
+                row.user.completedCount += 1
+            }
+            splitParticipantRepository.save(row)
+        }
+
+        val all = splitParticipantRepository.findBySplitRequestId(splitId)
+        if (all.isNotEmpty() && all.all { it.outcome == ParticipantOutcome.COMPLETED }) {
+            split.status = SplitStatus.COMPLETED
+            splitRepository.save(split)
+            eventPublisher.publishEvent(SplitCompletedEvent(splitId))
+        }
+        return SplitResponse.from(split, all)
     }
 
     private fun toResponse(entity: SplitRequest): SplitResponse {
