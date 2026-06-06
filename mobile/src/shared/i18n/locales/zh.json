@@ -5,7 +5,8 @@
     "registerSplit": "发布拼单",
     "retry": "重试",
     "people": "{{count}}人",
-    "qty": "{{count}}个"
+    "qty": "{{count}}个",
+    "close": "关闭"
   },
   "aria": {
     "back": "返回",

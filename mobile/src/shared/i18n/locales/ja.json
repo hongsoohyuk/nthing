@@ -5,7 +5,8 @@
     "registerSplit": "シェアを登録",
     "retry": "再試行",
     "people": "{{count}}人",
-    "qty": "{{count}}個"
+    "qty": "{{count}}個",
+    "close": "閉じる"
   },
   "aria": {
     "back": "戻る",

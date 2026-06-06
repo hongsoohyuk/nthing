@@ -5,7 +5,8 @@
     "registerSplit": "반띵 등록하기",
     "retry": "다시 시도",
     "people": "{{count}}명",
-    "qty": "{{count}}개"
+    "qty": "{{count}}개",
+    "close": "닫기"
   },
   "aria": {
     "back": "뒤로가기",

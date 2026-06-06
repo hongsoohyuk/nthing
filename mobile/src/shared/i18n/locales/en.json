@@ -5,7 +5,8 @@
     "registerSplit": "Post a split",
     "retry": "Try again",
     "people": "{{count}} people",
-    "qty": "{{count}} ea"
+    "qty": "{{count}} ea",
+    "close": "Close"
   },
   "aria": {
     "back": "Back",

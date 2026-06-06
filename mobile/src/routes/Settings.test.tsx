@@ -63,11 +63,11 @@ describe('Settings — native path', () => {
     await i18n.changeLanguage('ko');
     document.documentElement.classList.remove('dark');
     useThemeStore.setState({ mode: 'system' });
-    vi.mocked(Capacitor).isNativePlatform = (() => true) as typeof Capacitor.isNativePlatform;
+    (Capacitor as { isNativePlatform: () => boolean }).isNativePlatform = () => true;
   });
 
   afterEach(() => {
-    vi.mocked(Capacitor).isNativePlatform = (() => false) as typeof Capacitor.isNativePlatform;
+    (Capacitor as { isNativePlatform: () => boolean }).isNativePlatform = () => false;
     vi.mocked(setNearbyAlerts).mockClear();
   });
 
