@@ -126,4 +126,14 @@ class SplitOutcomeServiceTest {
         assertEquals(SplitStatus.WAITING, splitRepository.findById(id).get().status)
         assertEquals(ParticipantOutcome.LATE_CANCELLED, participantRepository.findBySplitRequestId(id).first().outcome)
     }
+
+    @Test
+    fun `매칭전 참여자 이탈은 페널티 없음 WAITING 유지`() {
+        val s = splitService.create(CreateSplitDto("두쫀쿠", 30000, 6, 3, null, 37.5665, 126.9780, "서울"), author.id)
+        splitService.join(s.id, joiner.id)   // splitCount 3 → 참여자 1명 → 아직 WAITING
+        splitService.leave(s.id, joiner.id)
+        assertEquals(0, userRepository.findById(joiner.id).get().lateCancelCount)
+        assertEquals(SplitStatus.WAITING, splitRepository.findById(s.id).get().status)
+        assertEquals(ParticipantOutcome.LATE_CANCELLED, participantRepository.findBySplitRequestId(s.id).first().outcome)
+    }
 }

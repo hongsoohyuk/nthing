@@ -151,13 +151,13 @@ class SplitService(
         val wasMatched = split.status == SplitStatus.MATCHED
         row.outcome = ParticipantOutcome.LATE_CANCELLED
         if (wasMatched) {
-            // 매칭 후 이탈만 페널티 (매칭 전 단순 참여취소는 무해)
+            // 매칭 후 이탈만 페널티 + 슬롯 재오픈 + 알림 (매칭 전 단순 참여취소는 무해·무알림)
             row.user.lateCancelCount += 1
-            split.status = SplitStatus.WAITING   // 슬롯 재오픈
+            split.status = SplitStatus.WAITING
             splitRepository.save(split)
+            eventPublisher.publishEvent(SplitCancelledEvent(splitId))
         }
         splitParticipantRepository.save(row)
-        eventPublisher.publishEvent(SplitCancelledEvent(splitId))
         return SplitResponse.from(split, splitParticipantRepository.findBySplitRequestId(splitId))
     }
 
