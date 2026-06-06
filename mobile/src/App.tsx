@@ -20,6 +20,7 @@ import { CreateSplit } from './routes/CreateSplit';
 import { SplitDetail } from './routes/SplitDetail';
 import { SplitList } from './routes/SplitList';
 import { Catalog } from './routes/Catalog';
+import { Settings } from './routes/Settings';
 
 function App() {
   const [ready, setReady] = useState(false);
@@ -62,6 +63,14 @@ function App() {
           </Route>
 
           {/* 인증 필요한 풀스크린 (셸 없음, 자체 AppBar + back) */}
+          <Route
+            path="/settings"
+            element={
+              <RequireAuth>
+                <Settings />
+              </RequireAuth>
+            }
+          />
           <Route
             path="/splits/new"
             element={
