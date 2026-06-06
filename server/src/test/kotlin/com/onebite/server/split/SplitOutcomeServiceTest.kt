@@ -90,4 +90,15 @@ class SplitOutcomeServiceTest {
         assertEquals(0, userRepository.findById(author.id).get().brokenCount)
         assertEquals(ParticipantOutcome.DISPUTED, participantRepository.findBySplitRequestId(id).first().outcome)
     }
+
+    @Test
+    fun `참여자끼리 신고는 거부`() {
+        val s = splitService.create(CreateSplitDto("두쫀쿠", 30000, 6, 3, null, 37.5665, 126.9780, "서울"), author.id)
+        val joiner2 = userRepository.save(User(provider = AuthProvider.KAKAO, providerId = "j2${System.nanoTime()}", nickname = "참여자2"))
+        splitService.join(s.id, joiner.id)
+        splitService.join(s.id, joiner2.id)   // splitCount 3 → 참여자 2명 → MATCHED
+        assertFailsWith<ResponseStatusException> {
+            splitService.reportBroken(s.id, reporterId = joiner.id, targetUserId = joiner2.id, reasonTag = "안나옴")
+        }
+    }
 }

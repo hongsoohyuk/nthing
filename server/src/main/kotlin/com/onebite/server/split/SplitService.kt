@@ -178,9 +178,12 @@ class SplitService(
         if (reporterId == targetUserId) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "본인을 신고할 수 없습니다")
         }
-        // reporter↔target 은 주최자-참여자 쌍이어야 함 (한 명은 author, 다른 한 명은 participant)
-        val participantUserId = listOf(reporterId, targetUserId).firstOrNull { it != authorId }
-            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "신고 대상이 올바르지 않습니다")
+        // 신고는 주최자-참여자 쌍 간에만 (정확히 한쪽이 author) — splitCount>=3에서 참여자끼리 오집계 방지
+        val oneIsAuthor = (reporterId == authorId) xor (targetUserId == authorId)
+        if (!oneIsAuthor) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "신고는 주최자-참여자 쌍 간에만 가능합니다")
+        }
+        val participantUserId = listOf(reporterId, targetUserId).first { it != authorId }
         val row = participants.firstOrNull { it.user.id == participantUserId }
             ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 참여 기록이 없습니다")
         if (row.outcome != ParticipantOutcome.JOINED) {
