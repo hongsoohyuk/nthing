@@ -136,4 +136,21 @@ class SplitOutcomeServiceTest {
         assertEquals(SplitStatus.WAITING, splitRepository.findById(s.id).get().status)
         assertEquals(ParticipantOutcome.LATE_CANCELLED, participantRepository.findBySplitRequestId(s.id).first().outcome)
     }
+
+    @Test
+    fun `이탈 후 새 참여자로 채우면 정상 완료된다`() {
+        val s = splitService.create(dto(), author.id)
+        splitService.join(s.id, joiner.id)            // MATCHED
+        splitService.leave(s.id, joiner.id)           // WAITING 재오픈, joiner row LATE_CANCELLED
+        val userC = userRepository.save(User(provider = AuthProvider.KAKAO, providerId = "uc${System.nanoTime()}", nickname = "유저C"))
+        splitService.join(s.id, userC.id)             // 다시 MATCHED
+        assertEquals(SplitStatus.MATCHED, splitRepository.findById(s.id).get().status)
+        splitService.confirmComplete(s.id, author.id)
+        val resp = splitService.confirmComplete(s.id, userC.id)
+        assertEquals(SplitStatus.COMPLETED, splitRepository.findById(s.id).get().status)
+        assertEquals(2, resp.currentParticipants)     // author + userC (이탈한 joiner 제외)
+        assertEquals(1, userRepository.findById(author.id).get().completedCount)
+        assertEquals(1, userRepository.findById(userC.id).get().completedCount)
+        assertEquals(0, userRepository.findById(joiner.id).get().completedCount)
+    }
 }

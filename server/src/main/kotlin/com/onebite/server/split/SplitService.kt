@@ -90,7 +90,8 @@ class SplitService(
 
         splitParticipantRepository.save(SplitParticipant(splitRequest = split, user = user))
 
-        val participantCount = splitParticipantRepository.countBySplitRequestId(splitId)
+        // 매칭 정원은 활성(JOINED) 참여자만 카운트 — 이탈(LATE_CANCELLED)한 과거 행은 슬롯을 차지하지 않음
+        val participantCount = splitParticipantRepository.countBySplitRequestIdAndOutcome(splitId, ParticipantOutcome.JOINED)
         var matched = false
         if (participantCount >= split.splitCount - 1) {
             split.status = SplitStatus.MATCHED
@@ -190,7 +191,9 @@ class SplitService(
         }
 
         val all = splitParticipantRepository.findBySplitRequestId(splitId)
-        if (all.isNotEmpty() && all.all { it.outcome == ParticipantOutcome.COMPLETED }) {
+        // 이탈(LATE_CANCELLED)한 행은 완료 판정에서 제외 — 재충원된 split이 정상 COMPLETED 되도록
+        val live = all.filter { it.outcome != ParticipantOutcome.LATE_CANCELLED }
+        if (live.isNotEmpty() && live.all { it.outcome == ParticipantOutcome.COMPLETED }) {
             split.status = SplitStatus.COMPLETED
             splitRepository.save(split)
             eventPublisher.publishEvent(SplitCompletedEvent(splitId))
