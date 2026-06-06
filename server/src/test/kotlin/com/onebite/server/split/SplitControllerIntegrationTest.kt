@@ -44,15 +44,27 @@ class SplitControllerIntegrationTest {
         tokenB = jwtProvider.generateToken(userB.id)
     }
 
-    private fun createSplitDto() = CreateSplitDto(
-        productName = "두쫀쿠 4개입",
+    private fun createSplitDto(
+        productName: String = "두쫀쿠 4개입",
+        category: SplitCategory = SplitCategory.OTHER
+    ) = CreateSplitDto(
+        productName = productName,
         totalPrice = 20000,
         totalQty = 4,
         splitCount = 2,
         latitude = 37.5665,
         longitude = 126.9780,
-        address = "서울시 중구"
+        address = "서울시 중구",
+        category = category
     )
+
+    private fun postSplit(dto: CreateSplitDto) {
+        mockMvc.post("/api/splits") {
+            header("Authorization", "Bearer $tokenA")
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(dto)
+        }.andExpect { status { isCreated() } }
+    }
 
     @Test
     fun `GET splits 비인증 조회 가능`() {
@@ -163,6 +175,80 @@ class SplitControllerIntegrationTest {
     @Test
     fun `GET splits my 인증 필요`() {
         mockMvc.get("/api/splits/my").andExpect { status { isUnauthorized() } }
+    }
+
+    @Test
+    fun `POST splits 카테고리 저장 및 응답`() {
+        mockMvc.post("/api/splits") {
+            header("Authorization", "Bearer $tokenA")
+            contentType = MediaType.APPLICATION_JSON
+            content = objectMapper.writeValueAsString(createSplitDto(category = SplitCategory.FOOD))
+        }.andExpect {
+            status { isCreated() }
+            jsonPath("$.category") { value("FOOD") }
+        }
+    }
+
+    @Test
+    fun `POST splits 카테고리 미지정 시 OTHER 기본값`() {
+        mockMvc.post("/api/splits") {
+            header("Authorization", "Bearer $tokenA")
+            contentType = MediaType.APPLICATION_JSON
+            // category 필드 없이 전송
+            content = """{"productName":"휴지 30롤","totalPrice":18000,"totalQty":30,"splitCount":2,"latitude":37.5,"longitude":127.0,"address":"서울"}"""
+        }.andExpect {
+            status { isCreated() }
+            jsonPath("$.category") { value("OTHER") }
+        }
+    }
+
+    @Test
+    fun `GET splits category 필터`() {
+        postSplit(createSplitDto(productName = "두쫀쿠 4개입", category = SplitCategory.FOOD))
+        postSplit(createSplitDto(productName = "휴지 30롤", category = SplitCategory.HOUSEHOLD))
+        postSplit(createSplitDto(productName = "원두 1kg", category = SplitCategory.BEVERAGE))
+
+        mockMvc.get("/api/splits?category=HOUSEHOLD").andExpect {
+            status { isOk() }
+            jsonPath("$.totalElements") { value(1) }
+            jsonPath("$.content[0].productName") { value("휴지 30롤") }
+            jsonPath("$.content[0].category") { value("HOUSEHOLD") }
+        }
+    }
+
+    @Test
+    fun `GET splits q 키워드 검색`() {
+        postSplit(createSplitDto(productName = "두쫀쿠 4개입", category = SplitCategory.FOOD))
+        postSplit(createSplitDto(productName = "초코 두쫀쿠 6개입", category = SplitCategory.FOOD))
+        postSplit(createSplitDto(productName = "휴지 30롤", category = SplitCategory.HOUSEHOLD))
+
+        mockMvc.get("/api/splits?q=두쫀쿠").andExpect {
+            status { isOk() }
+            jsonPath("$.totalElements") { value(2) }
+        }
+    }
+
+    @Test
+    fun `GET splits category 와 q 동시 필터`() {
+        postSplit(createSplitDto(productName = "두쫀쿠 4개입", category = SplitCategory.FOOD))
+        postSplit(createSplitDto(productName = "두쫀쿠 베이킹세트", category = SplitCategory.HOUSEHOLD))
+
+        mockMvc.get("/api/splits?category=FOOD&q=두쫀쿠").andExpect {
+            status { isOk() }
+            jsonPath("$.totalElements") { value(1) }
+            jsonPath("$.content[0].category") { value("FOOD") }
+        }
+    }
+
+    @Test
+    fun `GET splits 필터 없으면 전체 반환`() {
+        postSplit(createSplitDto(productName = "두쫀쿠 4개입", category = SplitCategory.FOOD))
+        postSplit(createSplitDto(productName = "휴지 30롤", category = SplitCategory.HOUSEHOLD))
+
+        mockMvc.get("/api/splits").andExpect {
+            status { isOk() }
+            jsonPath("$.totalElements") { value(2) }
+        }
     }
 
     @Test

@@ -22,7 +22,9 @@ data class CreateSplitDto(
     val imageUrl: String? = null,
     val latitude: Double,
     val longitude: Double,
-    val address: String
+    val address: String,
+
+    val category: SplitCategory = SplitCategory.OTHER
 )
 
 // ── Author DTO: 작성자 정보 ──
@@ -62,6 +64,7 @@ data class SplitResponse(
     val longitude: Double,
     val address: String,
     val status: SplitStatus,
+    val category: SplitCategory,
     val author: AuthorDto,
     val createdAt: String,
     val participants: List<ParticipantDto> = emptyList(),
@@ -86,6 +89,7 @@ data class SplitResponse(
             longitude = entity.longitude,
             address = entity.address,
             status = entity.status,
+            category = entity.category,
             author = AuthorDto.from(entity.author),
             createdAt = entity.createdAt.toString(),
             participants = participants.map {

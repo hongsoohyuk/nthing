@@ -17,6 +17,7 @@ const SPLIT: Split = {
   longitude: 126.978,
   address: '서울 강남구 역삼동',
   status: 'WAITING',
+  category: 'FOOD',
   author: { id: 99, nickname: '판매자', profileImageUrl: null },
   createdAt: '2026-05-27T10:00:00',
   participants: [],

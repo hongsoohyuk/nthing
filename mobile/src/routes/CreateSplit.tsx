@@ -1,20 +1,29 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Camera, Loader2 } from 'lucide-react';
 import { AppBar } from '../shared/components/AppBar';
 import { TextField } from '../shared/components/TextField';
+import { Chip } from '../shared/components/Badge';
 import { Button } from '../shared/components/Button';
 import { useCreateSplit } from '../features/splits/queries';
 import { useLocationStore, DEFAULT_COORDS } from '../shared/stores/locationStore';
 import { formatPrice } from '../shared/lib/format';
 import { pickImage } from '../features/upload/imagePicker';
 import { uploadImage } from '../features/upload/uploadImage';
+import {
+  SPLIT_CATEGORIES,
+  CATEGORY_LABEL_KEY,
+  type SplitCategory,
+} from '../shared/api/types';
 
 export function CreateSplit() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const create = useCreateSplit();
   const coords = useLocationStore((s) => s.current) ?? DEFAULT_COORDS;
 
+  const [category, setCategory] = useState<SplitCategory>('OTHER');
   const [productName, setProductName] = useState('');
   const [totalPrice, setTotalPrice] = useState('');
   const [totalQty, setTotalQty] = useState('');
@@ -62,6 +71,7 @@ export function CreateSplit() {
         totalPrice: priceNum,
         totalQty: qtyNum,
         splitCount: countNum,
+        category,
         latitude: coords.lat,
         longitude: coords.lng,
         address: address.trim(),
@@ -110,6 +120,19 @@ export function CreateSplit() {
             onChange={setProductName}
             placeholder="예: 두쫀쿠 4개입"
           />
+
+          {/* 카테고리 선택 (기본 기타) */}
+          <div className="flex flex-col gap-2">
+            <span className="text-caption text-gray-500 dark:text-gray-400">카테고리</span>
+            <div className="flex flex-wrap gap-2">
+              {SPLIT_CATEGORIES.map((c) => (
+                <Chip key={c} active={category === c} onClick={() => setCategory(c)}>
+                  {t(CATEGORY_LABEL_KEY[c])}
+                </Chip>
+              ))}
+            </div>
+          </div>
+
           <TextField
             label="전체 가격"
             value={totalPrice}
