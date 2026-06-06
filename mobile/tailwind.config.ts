@@ -3,6 +3,11 @@ import type { Config } from 'tailwindcss';
 export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   darkMode: 'class',
+  // 터치 기기에서 탭 후 hover: 스타일이 들러붙는 현상 방지.
+  // hover 를 실제로 지원하는 기기(@media (hover: hover))에서만 hover: 유틸 적용.
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   theme: {
     extend: {
       colors: {

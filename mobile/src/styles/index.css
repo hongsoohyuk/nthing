@@ -13,4 +13,80 @@
   body {
     @apply font-sans text-gray-900 bg-white antialiased;
   }
+
+  /* ── 모바일 웹뷰 공통 처리 ─────────────────────────────────────── */
+
+  /* 탭 시 깜빡이는 회색/파란 하이라이트 박스 제거 (iOS/Android 공통) */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* 가로 회전 시 폰트가 멋대로 커지는 것 방지 + 폼 컨트롤/스크롤바 테마 매칭 */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    color-scheme: light dark;
+  }
+
+  /* 스크롤 끝에서 튕기는 bounce + Android 당겨서 새로고침(pull-to-refresh) 차단.
+     상하단 고정 UI(AppBar/BottomNav)가 있는 앱 레이아웃이라 전역 차단이 안전. */
+  html,
+  body {
+    overscroll-behavior: none;
+  }
+
+  /* 버튼/인터랙티브 요소: 더블탭 줌·300ms 지연 제거 + 길게 눌렀을 때
+     텍스트 선택/콜아웃 메뉴가 뜨지 않게 (네이티브 버튼 느낌) */
+  button,
+  a,
+  [role='button'] {
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* 이미지 길게 누르면 뜨는 '이미지 저장/공유' 콜아웃 + 드래그 고스트 방지 */
+  img {
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+
+  /* 입력·편집 가능한 텍스트는 선택/복사 가능하도록 다시 허용 */
+  input,
+  textarea,
+  [contenteditable='true'] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  /* 다크모드에서 브라우저 자동완성(autofill) 시 노란 배경/검은 글씨로
+     깨지는 것 보정 — 글자색만 테마에 맞추고 배경 덮어쓰기를 지연시킴 */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: theme('colors.gray.900');
+    transition: background-color 9999s ease-in-out 0s;
+  }
+  .dark input:-webkit-autofill,
+  .dark input:-webkit-autofill:hover,
+  .dark input:-webkit-autofill:focus {
+    -webkit-text-fill-color: theme('colors.gray.100');
+  }
+}
+
+/*
+  iOS 입력 포커스 자동 줌 차단의 핵심:
+  입력 폰트가 16px 미만이면 iOS가 포커스 시 화면을 확대한다.
+  디자인 본문은 15px(text-body)이지만 '입력 요소'만 16px로 올려 줌을 막는다.
+
+  @layer 밖(unlayered)에 둔 이유: TextField가 input에 text-body(15px) 유틸리티를
+  쓰는데, @layer utilities가 @layer base를 이기므로 base에 두면 다시 15px로 덮인다.
+  레이어 미지정 규칙은 모든 @layer보다 우선하므로 유틸리티를 확실히 이긴다.
+*/
+input,
+textarea,
+select {
+  font-size: 16px;
 }

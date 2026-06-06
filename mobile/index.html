@@ -3,11 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!--
+      maximum-scale=1.0, user-scalable=no:
+        - iOS 입력 포커스 시 자동 줌 + 핀치줌으로 앱이 멈춰버리는 현상 차단.
+          (네이티브 앱 셸이므로 웹 a11y 핀치줌은 포기. 본문 폰트는 충분히 큼)
+      viewport-fit=cover: 노치/홈인디케이터 영역까지 그려서 safe-area-inset 사용 가능.
+    -->
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
-    <title>mobile</title>
+    <meta name="color-scheme" content="light dark" />
+    <title>Nthing</title>
   </head>
   <body>
     <div id="root"></div>
