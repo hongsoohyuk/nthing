@@ -1,4 +1,4 @@
--- V4: 거래 결과 추적 + 반띵 성사율 카운터 (H2·PostgreSQL 공용)
+-- V5: 거래 결과 추적 + 반띵 성사율 카운터 (H2·PostgreSQL 공용)
 
 ALTER TABLE split_participants ADD COLUMN outcome VARCHAR(30) NOT NULL DEFAULT 'JOINED';
 ALTER TABLE split_participants ADD COLUMN author_confirmed_at TIMESTAMP;
