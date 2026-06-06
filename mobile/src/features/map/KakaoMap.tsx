@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { MapPin } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { loadKakaoMaps } from './kakaoLoader';
 import { type Coords } from '../../shared/stores/locationStore';
 
@@ -12,6 +13,7 @@ type KakaoMapProps = {
 };
 
 export function KakaoMap({ center, markers, onMarkerClick }: KakaoMapProps) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -46,7 +48,7 @@ export function KakaoMap({ center, markers, onMarkerClick }: KakaoMapProps) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
         <MapPin className="size-10 text-gray-300" aria-hidden />
-        <p className="text-body text-gray-500 dark:text-gray-400">지도를 불러올 수 없어요</p>
+        <p className="text-body text-gray-500 dark:text-gray-400">{t('map.loadError')}</p>
         <p className="text-caption text-gray-400">카카오맵 키 설정 후 다시 시도해 주세요</p>
       </div>
     );

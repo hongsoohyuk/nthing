@@ -1,5 +1,10 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
+import i18n from '../i18n';
 import { formatPrice, formatDistance, formatRelativeTime } from './format';
+
+beforeAll(async () => {
+  await i18n.changeLanguage('ko');
+});
 
 describe('formatPrice', () => {
   it('천 단위 콤마 + 원화 기호', () => {

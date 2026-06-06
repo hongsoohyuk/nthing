@@ -1,3 +1,5 @@
+import i18n from '../i18n';
+
 // 가격: ₩10,000 (ICU 비의존 — 수동 천단위 콤마)
 export function formatPrice(value: number): string {
   return `₩${value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
@@ -14,12 +16,12 @@ export function formatDistance(km: number | null | undefined): string {
 export function formatRelativeTime(iso: string, now: Date = new Date()): string {
   const then = new Date(iso);
   const min = Math.floor((now.getTime() - then.getTime()) / 60000);
-  if (min < 1) return '방금 전';
-  if (min < 60) return `${min}분 전`;
+  if (min < 1) return i18n.t('time.justNow');
+  if (min < 60) return i18n.t('time.minutesAgo', { count: min });
   const hour = Math.floor(min / 60);
-  if (hour < 24) return `${hour}시간 전`;
+  if (hour < 24) return i18n.t('time.hoursAgo', { count: hour });
   const day = Math.floor(hour / 24);
-  if (day < 7) return `${day}일 전`;
+  if (day < 7) return i18n.t('time.daysAgo', { count: day });
   const y = then.getFullYear();
   const m = String(then.getMonth() + 1).padStart(2, '0');
   const d = String(then.getDate()).padStart(2, '0');
