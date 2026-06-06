@@ -36,7 +36,16 @@
   "home": {
     "title": "近くのシェア",
     "filterAll": "すべて",
-    "filterRecruiting": "募集中"
+    "filterRecruiting": "募集中",
+    "searchPlaceholder": "商品名で検索"
+  },
+  "category": {
+    "all": "すべて",
+    "food": "食品",
+    "beverage": "飲料",
+    "household": "生活用品",
+    "beauty": "美容",
+    "other": "その他"
   },
   "map": {
     "title": "地図",

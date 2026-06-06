@@ -74,7 +74,10 @@ describe('themeStore', () => {
       expect(document.documentElement.classList.contains('dark')).toBe(false);
 
       matches = true;
-      captured?.({ matches: true } as MediaQueryListEvent); // applyClass('system') 가 prefersDark 재평가
+      // 클로저 내 대입으로 TS 가 captured 를 never 로 좁히는 문제 → 호출부에서 캐스팅
+      (captured as ((e: MediaQueryListEvent) => void) | null)?.({
+        matches: true,
+      } as MediaQueryListEvent); // applyClass('system') 가 prefersDark 재평가
       expect(document.documentElement.classList.contains('dark')).toBe(true);
     } finally {
       useThemeStore.getState().setMode('light'); // 리스너 해제 → 다른 테스트 누수 방지

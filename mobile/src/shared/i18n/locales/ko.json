@@ -36,7 +36,16 @@
   "home": {
     "title": "근처 반띵",
     "filterAll": "전체",
-    "filterRecruiting": "모집중"
+    "filterRecruiting": "모집중",
+    "searchPlaceholder": "상품명 검색"
+  },
+  "category": {
+    "all": "전체",
+    "food": "식품",
+    "beverage": "음료",
+    "household": "생활용품",
+    "beauty": "뷰티",
+    "other": "기타"
   },
   "map": {
     "title": "지도",

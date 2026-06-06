@@ -36,7 +36,16 @@
   "home": {
     "title": "附近拼单",
     "filterAll": "全部",
-    "filterRecruiting": "招募中"
+    "filterRecruiting": "招募中",
+    "searchPlaceholder": "按名称搜索"
+  },
+  "category": {
+    "all": "全部",
+    "food": "食品",
+    "beverage": "饮料",
+    "household": "生活用品",
+    "beauty": "美妆",
+    "other": "其他"
   },
   "map": {
     "title": "地图",

@@ -61,6 +61,8 @@ export const nthingApi = {
         lat: params.lat,
         lng: params.lng,
         radiusKm: params.radiusKm,
+        category: params.category,
+        q: params.q,
         page: params.page,
         size: params.size,
       })}`,

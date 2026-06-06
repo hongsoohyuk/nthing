@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import '../shared/i18n'; // i18n 초기화 (카테고리 칩 라벨 t() 동작)
 
 const mutate = vi.fn();
 vi.mock('../features/splits/queries', () => ({ useCreateSplit: vi.fn() }));
@@ -65,10 +66,19 @@ describe('CreateSplit', () => {
       totalPrice: 20000,
       totalQty: 4,
       splitCount: 2,
+      category: 'OTHER',
       latitude: 37.5665,
       longitude: 126.978,
       address: '역삼동 GS25',
     });
+  });
+
+  it('카테고리 칩 선택 시 payload 에 반영 (기본 OTHER → FOOD)', async () => {
+    renderCreate();
+    await fillRequired();
+    await userEvent.click(screen.getByRole('button', { name: '식품' }));
+    await userEvent.click(screen.getByRole('button', { name: '내 반띵 올리기' }));
+    expect(mutate.mock.calls[0][0]).toMatchObject({ category: 'FOOD' });
   });
 
   it('사진 추가 → 업로드 성공 시 imageUrl 이 payload 에 포함', async () => {

@@ -36,7 +36,16 @@
   "home": {
     "title": "Nearby splits",
     "filterAll": "All",
-    "filterRecruiting": "Open"
+    "filterRecruiting": "Open",
+    "searchPlaceholder": "Search by name"
+  },
+  "category": {
+    "all": "All",
+    "food": "Food",
+    "beverage": "Beverage",
+    "household": "Household",
+    "beauty": "Beauty",
+    "other": "Other"
   },
   "map": {
     "title": "Map",

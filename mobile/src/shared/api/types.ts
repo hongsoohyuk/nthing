@@ -35,6 +35,27 @@ export class ApiError extends Error {
 // ── Split 도메인 (서버 SplitDto.kt 기준) ──
 export type SplitStatus = 'WAITING' | 'MATCHED' | 'COMPLETED' | 'CANCELLED';
 
+// 서버 SplitCategory.kt 기준 (기본값 OTHER)
+export type SplitCategory = 'FOOD' | 'BEVERAGE' | 'HOUSEHOLD' | 'BEAUTY' | 'OTHER';
+
+// 선택 가능한 카테고리 목록 (등록/필터 UI 공용)
+export const SPLIT_CATEGORIES: SplitCategory[] = [
+  'FOOD',
+  'BEVERAGE',
+  'HOUSEHOLD',
+  'BEAUTY',
+  'OTHER',
+];
+
+// 카테고리 → i18n 키 (라벨은 4개 로케일 ko/en/ja/zh 공통)
+export const CATEGORY_LABEL_KEY: Record<SplitCategory, string> = {
+  FOOD: 'category.food',
+  BEVERAGE: 'category.beverage',
+  HOUSEHOLD: 'category.household',
+  BEAUTY: 'category.beauty',
+  OTHER: 'category.other',
+};
+
 export type Author = {
   id: number;
   nickname: string;
@@ -61,6 +82,7 @@ export type Split = {
   longitude: number;
   address: string;
   status: SplitStatus;
+  category: SplitCategory;
   author: Author;
   createdAt: string;
   participants: Participant[];
@@ -86,6 +108,7 @@ export type CreateSplitRequest = {
   latitude: number;
   longitude: number;
   address: string;
+  category?: SplitCategory;
 };
 
 export type GetSplitsParams = {
@@ -93,6 +116,8 @@ export type GetSplitsParams = {
   lat?: number;
   lng?: number;
   radiusKm?: number;
+  category?: SplitCategory;
+  q?: string;
   page?: number;
   size?: number;
 };
