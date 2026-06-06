@@ -1,0 +1,121 @@
+{
+  "common": {
+    "guest": "Guest",
+    "join": "Join in",
+    "registerSplit": "Post a split",
+    "retry": "Try again",
+    "people": "{{count}} people",
+    "qty": "{{count}} ea",
+    "close": "Close"
+  },
+  "aria": {
+    "back": "Back",
+    "settings": "Settings"
+  },
+  "nav": {
+    "home": "Home",
+    "map": "Map",
+    "profile": "Me"
+  },
+  "login": {
+    "tagline": "Let's split it",
+    "subtitle": "Split it nearby, buy together",
+    "kakao": "Continue with Kakao",
+    "naver": "Continue with Naver",
+    "google": "Continue with Google",
+    "apple": "Continue with Apple",
+    "devLogin": "Test login (dev)",
+    "appleError": "Apple sign-in failed. Check Settings > Apple Account sign-in."
+  },
+  "splits": {
+    "loadError": "Couldn't load splits",
+    "emptyTitle": "No splits yet",
+    "emptySubtitle": "Post the first split",
+    "recruitCount": "{{count}} needed",
+    "perPersonShort": "{{price}} each"
+  },
+  "home": {
+    "title": "Nearby splits",
+    "filterAll": "All",
+    "filterRecruiting": "Open"
+  },
+  "map": {
+    "title": "Map",
+    "loadError": "Couldn't load the map",
+    "loadKeyHint": "Set up the Kakao Map key and try again"
+  },
+  "profile": {
+    "title": "My splits",
+    "mySplits": "My splits",
+    "participated": "Joined splits",
+    "nearbyAlerts": "Nearby alerts",
+    "logout": "Log out"
+  },
+  "settings": {
+    "title": "Settings",
+    "languageSection": "Language",
+    "themeSection": "Theme",
+    "notificationsSection": "Notifications",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System"
+  },
+  "create": {
+    "title": "Post my split",
+    "photoAlt": "Attached photo",
+    "uploading": "Uploading…",
+    "addPhoto": "Add photo",
+    "uploadError": "Photo upload failed. Please try again.",
+    "fieldName": "Product name",
+    "fieldNamePlaceholder": "e.g. Choco cookies, pack of 4",
+    "fieldPrice": "Total price",
+    "fieldQty": "Total quantity",
+    "fieldCount": "People to split with",
+    "fieldCountSupport": "At least 2",
+    "fieldAddress": "Address",
+    "fieldAddressPlaceholder": "Meeting spot",
+    "perPersonEstimate": "Estimated price each"
+  },
+  "detail": {
+    "title": "Split details",
+    "perPerson": "Each",
+    "totalPrice": "Total price",
+    "totalQty": "Total quantity",
+    "splitCount": "People to split with",
+    "location": "Location",
+    "closed": "Split closed",
+    "cancel": "Cancel"
+  },
+  "list": {
+    "loadError": "Couldn't load the list"
+  },
+  "states": {
+    "loading": "Loading…"
+  },
+  "status": {
+    "waiting": "Open",
+    "matched": "Matched",
+    "completed": "Done",
+    "cancelled": "Cancelled",
+    "urgent": "Closing soon"
+  },
+  "push": {
+    "primingTitle": "Get nearby split alerts?",
+    "primingBody": "We'll notify you when a new split appears nearby or someone joins yours.",
+    "primingAccept": "Get alerts",
+    "primingLater": "Later"
+  },
+  "auth": {
+    "callbackFailed": "Sign-in failed",
+    "callbackLoading": "Signing in..."
+  },
+  "time": {
+    "justNow": "just now",
+    "minutesAgo": "{{count}}m ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago"
+  },
+  "error": {
+    "requestFailed": "Request failed ({{status}})"
+  }
+}

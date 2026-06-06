@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AppBar } from '../shared/components/AppBar';
 import { Button } from '../shared/components/Button';
 import { LoadingState } from '../shared/components/states/LoadingState';
@@ -12,6 +13,7 @@ import { useLocationStore, DEFAULT_COORDS } from '../shared/stores/locationStore
 
 export function Map() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const coords = useLocationStore((s) => s.current) ?? DEFAULT_COORDS;
   const query = useSplits({ lat: coords.lat, lng: coords.lng, radiusKm: 3 });
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -24,12 +26,12 @@ export function Map() {
 
   return (
     <div className="flex h-full flex-col">
-      <AppBar title="지도" />
+      <AppBar title={t('map.title')} />
       <div className="relative flex-1">
         {query.isPending ? (
           <LoadingState />
         ) : query.isError ? (
-          <ErrorState message="반띵을 불러오지 못했어요" onRetry={() => void query.refetch()} />
+          <ErrorState message={t('splits.loadError')} onRetry={() => void query.refetch()} />
         ) : (
           <KakaoMap center={coords} markers={markers} onMarkerClick={setSelectedId} />
         )}
@@ -40,7 +42,7 @@ export function Map() {
           <div className="flex flex-col gap-3">
             <SplitCard split={selected} />
             <Button fullWidth onClick={() => navigate(`/splits/${selected.id}`)}>
-              반띵할게요
+              {t('common.join')}
             </Button>
           </div>
         )}

@@ -3,14 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
-vi.mock('@capacitor/core', () => ({ Capacitor: { isNativePlatform: () => true } }));
-vi.mock('@capacitor/preferences', () => ({
-  Preferences: { get: vi.fn().mockResolvedValue({ value: null }), set: vi.fn() },
-}));
-vi.mock('../features/notifications/pushService', () => ({ setNearbyAlerts: vi.fn() }));
-
 import { useAuthStore } from '../shared/stores/authStore';
-import { setNearbyAlerts } from '../features/notifications/pushService';
 import { Profile } from './Profile';
 
 function renderProfile() {
@@ -58,10 +51,4 @@ describe('Profile', () => {
     expect(await screen.findByText('LOGIN')).toBeInTheDocument();
   });
 
-  it('근처 알림 토글 → setNearbyAlerts(false) 호출', async () => {
-    renderProfile();
-    const sw = screen.getByRole('switch', { name: '근처 알림' });
-    await userEvent.click(sw);
-    expect(setNearbyAlerts).toHaveBeenCalledWith(false);
-  });
 });

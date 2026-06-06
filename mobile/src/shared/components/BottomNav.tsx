@@ -1,4 +1,5 @@
 import { Home, Map, User, type LucideIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/cn';
 
 type Tab = 'home' | 'map' | 'profile';
@@ -8,16 +9,17 @@ type BottomNavProps = {
   onSelect: (tab: Tab) => void;
 };
 
-const tabs: Array<{ key: Tab; icon: LucideIcon; label: string }> = [
-  { key: 'home', icon: Home, label: '홈' },
-  { key: 'map', icon: Map, label: '지도' },
-  { key: 'profile', icon: User, label: '나' },
+const tabs: Array<{ key: Tab; icon: LucideIcon; labelKey: string }> = [
+  { key: 'home', icon: Home, labelKey: 'nav.home' },
+  { key: 'map', icon: Map, labelKey: 'nav.map' },
+  { key: 'profile', icon: User, labelKey: 'nav.profile' },
 ];
 
 export function BottomNav({ current, onSelect }: BottomNavProps) {
+  const { t } = useTranslation();
   return (
     <nav className="flex min-h-16 items-stretch border-t border-gray-200 bg-white pb-[env(safe-area-inset-bottom)] dark:border-gray-700 dark:bg-gray-950">
-      {tabs.map(({ key, icon: Icon, label }) => {
+      {tabs.map(({ key, icon: Icon, labelKey }) => {
         const isActive = key === current;
         return (
           <button
@@ -39,7 +41,7 @@ export function BottomNav({ current, onSelect }: BottomNavProps) {
                 isActive ? 'font-semibold text-brand dark:text-brand-dark-adj' : 'text-gray-400',
               )}
             >
-              {label}
+              {t(labelKey)}
             </span>
           </button>
         );
