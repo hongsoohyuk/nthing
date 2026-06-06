@@ -8,16 +8,14 @@ import { usePushPriming } from '../features/notifications/usePushPriming';
 import { PushPrimingSheet } from '../features/notifications/PushPrimingSheet';
 import { syncDeviceLocation } from '../features/notifications/pushService';
 
-type Tab = 'home' | 'map' | 'profile';
+type Tab = 'home' | 'profile';
 
 const PATH_BY_TAB: Record<Tab, string> = {
   home: '/home',
-  map: '/map',
   profile: '/profile',
 };
 
 function tabFromPath(pathname: string): Tab {
-  if (pathname.startsWith('/map')) return 'map';
   if (pathname.startsWith('/profile')) return 'profile';
   return 'home';
 }
@@ -26,7 +24,7 @@ export function MainLayout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const current = tabFromPath(pathname);
-  const showFab = current === 'home' || current === 'map';
+  const showFab = current === 'home';
 
   useEnsureLocation();
   const priming = usePushPriming();

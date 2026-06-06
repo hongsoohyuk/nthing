@@ -33,7 +33,7 @@ export function Catalog() {
   const [dark, setDark] = useState(false);
   const [textValue, setTextValue] = useState('');
   const [chipActive, setChipActive] = useState<string | null>('전체');
-  const [tab, setTab] = useState<'home' | 'map' | 'profile'>('home');
+  const [tab, setTab] = useState<'home' | 'profile'>('home');
 
   const toggleDark = () => {
     const next = !dark;

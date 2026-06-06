@@ -14,7 +14,6 @@ import { Login } from './routes/Login';
 import { AuthCallback } from './routes/AuthCallback';
 import { MainLayout } from './routes/MainLayout';
 import { Home } from './routes/Home';
-import { Map } from './routes/Map';
 import { Profile } from './routes/Profile';
 import { CreateSplit } from './routes/CreateSplit';
 import { SplitDetail } from './routes/SplitDetail';
@@ -49,7 +48,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
 
-          {/* 인증된 3탭 — MainLayout(Outlet + BottomNav + FAB) 아래 중첩 */}
+          {/* 인증된 2탭 — MainLayout(Outlet + BottomNav + FAB) 아래 중첩 */}
           <Route
             element={
               <RequireAuth>
@@ -58,7 +57,6 @@ function App() {
             }
           >
             <Route path="/home" element={<Home />} />
-            <Route path="/map" element={<Map />} />
             <Route path="/profile" element={<Profile />} />
           </Route>
 

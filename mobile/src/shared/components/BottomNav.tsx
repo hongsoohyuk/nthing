@@ -1,7 +1,7 @@
-import { Home, Map, User, type LucideIcon } from 'lucide-react';
+import { Home, User, type LucideIcon } from 'lucide-react';
 import { cn } from '../lib/cn';
 
-type Tab = 'home' | 'map' | 'profile';
+type Tab = 'home' | 'profile';
 
 type BottomNavProps = {
   current: Tab;
@@ -10,7 +10,6 @@ type BottomNavProps = {
 
 const tabs: Array<{ key: Tab; icon: LucideIcon; label: string }> = [
   { key: 'home', icon: Home, label: '홈' },
-  { key: 'map', icon: Map, label: '지도' },
   { key: 'profile', icon: User, label: '나' },
 ];
 
