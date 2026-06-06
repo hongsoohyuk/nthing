@@ -74,7 +74,8 @@ describe('themeStore', () => {
       expect(document.documentElement.classList.contains('dark')).toBe(false);
 
       matches = true;
-      captured?.({ matches: true } as MediaQueryListEvent); // applyClass('system') 가 prefersDark 재평가
+      const handler = captured as ((e: MediaQueryListEvent) => void) | null;
+      handler?.({ matches: true } as MediaQueryListEvent); // applyClass('system') 가 prefersDark 재평가
       expect(document.documentElement.classList.contains('dark')).toBe(true);
     } finally {
       useThemeStore.getState().setMode('light'); // 리스너 해제 → 다른 테스트 누수 방지

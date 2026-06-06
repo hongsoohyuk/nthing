@@ -10,7 +10,7 @@ import { useThemeStore } from '../shared/stores/themeStore';
 import { setNearbyAlerts } from '../features/notifications/pushService';
 
 vi.mock('@capacitor/core', () => ({
-  Capacitor: { isNativePlatform: () => false, getPlatform: () => 'web' },
+  Capacitor: { isNativePlatform: vi.fn(() => false), getPlatform: () => 'web' },
 }));
 vi.mock('@capacitor/preferences', () => ({
   Preferences: {
@@ -63,11 +63,11 @@ describe('Settings — native path', () => {
     await i18n.changeLanguage('ko');
     document.documentElement.classList.remove('dark');
     useThemeStore.setState({ mode: 'system' });
-    vi.mocked(Capacitor).isNativePlatform = (() => true) as typeof Capacitor.isNativePlatform;
+    vi.mocked(Capacitor.isNativePlatform).mockReturnValue(true);
   });
 
   afterEach(() => {
-    vi.mocked(Capacitor).isNativePlatform = (() => false) as typeof Capacitor.isNativePlatform;
+    vi.mocked(Capacitor.isNativePlatform).mockReturnValue(false);
     vi.mocked(setNearbyAlerts).mockClear();
   });
 
