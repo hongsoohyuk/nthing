@@ -16,9 +16,11 @@ import logoConcept4a from '../assets/brand/logo-concept-4a-ligature.svg';
 import logoConcept4b from '../assets/brand/logo-concept-4b-chip.svg';
 import logoConcept4c from '../assets/brand/logo-concept-4c-smile.svg';
 import logoConcept4d from '../assets/brand/logo-concept-4d-coin.svg';
+import logoConcept5 from '../assets/brand/logo-concept-5-overline-n.svg';
+import logoConcept5b from '../assets/brand/logo-concept-5b-overline-n-chip.svg';
 
 // 히어로/푸시 카드에 쓰는 로고. 기본은 채택안(1번).
-// dev 빌드에서만 ?logo=2|3|4|4a|4b|4c|4d 쿼리로 다른 시안을 라이브 비교할 수 있다.
+// dev 빌드에서만 ?logo=2|3|4|4a..4d|5|5b 쿼리로 다른 시안을 라이브 비교할 수 있다.
 const LOGO_CONCEPTS = {
   '1': logoConcept1,
   '2': logoConcept2,
@@ -28,6 +30,8 @@ const LOGO_CONCEPTS = {
   '4b': logoConcept4b,
   '4c': logoConcept4c,
   '4d': logoConcept4d,
+  '5': logoConcept5,
+  '5b': logoConcept5b,
 } as const;
 
 function resolveLogoMark(): string {

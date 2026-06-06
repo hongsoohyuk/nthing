@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Nthing 로고 시안 5b — 가로선 N 그린칩">
+  <title>Overline N on green chip (app icon)</title>
+  <rect width="64" height="64" rx="16" fill="#16A34A" />
+  <g fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 17 L46 17" />
+    <path d="M19 46 L19 26 L45 46 L45 26" />
+  </g>
+</svg>
