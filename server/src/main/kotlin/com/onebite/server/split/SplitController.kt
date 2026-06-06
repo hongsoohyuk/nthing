@@ -11,23 +11,25 @@ import org.springframework.web.bind.annotation.*
 class SplitController(
     private val splitService: SplitService
 ) {
-    // GET /api/splits?page=0&size=20&lat=37.5&lng=126.9&radiusKm=3&status=WAITING
+    // GET /api/splits?page=0&size=20&lat=37.5&lng=126.9&radiusKm=3&status=WAITING&category=FOOD&q=두쫀쿠
+    // category: 상품 카테고리 필터(FOOD/BEVERAGE/HOUSEHOLD/BEAUTY/OTHER), q: 상품명 키워드(부분일치).
+    // 둘 다 선택 사항이며, 없으면 기존 동작 유지. lat/lng 있으면 근처(WAITING) 조회에 필터 적용.
     @GetMapping
     fun getAll(
         @RequestParam status: SplitStatus? = null,
         @RequestParam lat: Double? = null,
         @RequestParam lng: Double? = null,
         @RequestParam radiusKm: Double? = null,
+        @RequestParam category: SplitCategory? = null,
+        @RequestParam q: String? = null,
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int
     ): PageResponse<SplitResponse> {
         val pageable = PageRequest.of(page, size)
         val result = if (lat != null && lng != null)
-            splitService.findNearby(lat, lng, radiusKm ?: 3.0, pageable)
-        else if (status != null)
-            splitService.findByStatus(status, pageable)
+            splitService.findNearby(lat, lng, radiusKm ?: 3.0, category, q, pageable)
         else
-            splitService.findAll(pageable)
+            splitService.search(status, category, q, pageable)
         return PageResponse.from(result)
     }
 

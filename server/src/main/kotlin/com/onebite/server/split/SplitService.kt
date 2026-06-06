@@ -34,6 +34,7 @@ class SplitService(
             latitude = dto.latitude,
             longitude = dto.longitude,
             address = dto.address,
+            category = dto.category,
         )
         val saved = splitRepository.save(entity)
         eventPublisher.publishEvent(SplitCreatedEvent(saved.id))
@@ -42,6 +43,20 @@ class SplitService(
 
     fun findAll(pageable: Pageable): Page<SplitResponse> =
         splitRepository.findAll(pageable).map { toResponse(it) }
+
+    // 위치 무관 검색/필터: status/category/q 모두 선택. null/blank 면 해당 필터 비활성.
+    fun search(
+        status: SplitStatus?,
+        category: SplitCategory?,
+        q: String?,
+        pageable: Pageable
+    ): Page<SplitResponse> =
+        splitRepository.search(
+            status = status?.name ?: "",
+            category = category?.name ?: "",
+            q = q?.trim() ?: "",
+            pageable = pageable,
+        ).map { toResponse(it) }
 
     fun findById(id: Long): SplitResponse {
         val entity = splitRepository.findById(id)
@@ -58,8 +73,17 @@ class SplitService(
     fun findByParticipantUserId(userId: Long, pageable: Pageable): Page<SplitResponse> =
         splitRepository.findByParticipantUserId(userId, pageable).map { toResponse(it) }
 
-    fun findNearby(lat: Double, lng: Double, radiusKm: Double = 3.0, pageable: Pageable): Page<SplitResponse> {
-        val page = splitLocationQuery.findNearby(lat, lng, radiusKm, pageable)
+    fun findNearby(
+        lat: Double,
+        lng: Double,
+        radiusKm: Double = 3.0,
+        category: SplitCategory? = null,
+        q: String? = null,
+        pageable: Pageable
+    ): Page<SplitResponse> {
+        val page = splitLocationQuery.findNearby(
+            lat, lng, radiusKm, category?.name ?: "", q?.trim() ?: "", pageable
+        )
         val responses = page.content.map { entity ->
             val distance = haversineDistance(lat, lng, entity.latitude, entity.longitude)
             val participants = splitParticipantRepository.findBySplitRequestId(entity.id)

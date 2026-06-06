@@ -37,7 +37,16 @@
   "home": {
     "title": "近くのシェア",
     "filterAll": "すべて",
-    "filterRecruiting": "募集中"
+    "filterRecruiting": "募集中",
+    "searchPlaceholder": "商品名で検索"
+  },
+  "category": {
+    "all": "すべて",
+    "food": "食品",
+    "beverage": "飲料",
+    "household": "生活用品",
+    "beauty": "美容",
+    "other": "その他"
   },
   "map": {
     "title": "地図",
@@ -74,7 +83,17 @@
     "fieldCountSupport": "最低2人",
     "fieldAddress": "住所",
     "fieldAddressPlaceholder": "待ち合わせ場所",
-    "perPersonEstimate": "1人あたりの予想金額"
+    "perPersonEstimate": "1人あたりの予想金額",
+    "locationLabel": "待ち合わせ場所",
+    "locationSearchLabel": "場所を検索",
+    "locationSearchAction": "検索",
+    "locationSearchPlaceholder": "場所を検索（例: 龍山アイパークモール）",
+    "locationNoResult": "検索結果がありません",
+    "locationSearchError": "場所を検索できませんでした",
+    "locationPinHint": "ピンをドラッグするか地図をタップして正確な位置を合わせてください",
+    "locationUnavailable": "地図を読み込めません。下の詳細位置を入力してください",
+    "detailLabel": "詳細位置",
+    "detailPlaceholder": "例: 3階 KFC前のポップアップ"
   },
   "detail": {
     "title": "シェアの詳細",
@@ -117,5 +136,30 @@
   },
   "error": {
     "requestFailed": "リクエスト失敗 ({{status}})"
+  },
+  "safety": {
+    "menu": "その他",
+    "report": "報告する",
+    "block": "ブロックする"
+  },
+  "report": {
+    "title": "報告する",
+    "subtitle": "報告の理由を選んでください",
+    "cancel": "キャンセル",
+    "submit": "報告",
+    "done": "報告を受け付けました",
+    "error": "報告に失敗しました。もう一度お試しください",
+    "reason": {
+      "SPAM": "スパム/広告",
+      "FRAUD": "詐欺の疑い",
+      "INAPPROPRIATE": "不適切なコンテンツ",
+      "HARASSMENT": "暴言/嫌がらせ",
+      "OTHER": "その他"
+    }
+  },
+  "block": {
+    "action": "ブロック",
+    "done": "{{name}}さんをブロックしました",
+    "error": "ブロックに失敗しました"
   }
 }

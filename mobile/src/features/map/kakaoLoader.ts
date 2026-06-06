@@ -1,8 +1,31 @@
 import { env } from '../../shared/lib/env';
 
-export type KakaoLatLng = object;
+export type KakaoLatLng = { getLat: () => number; getLng: () => number };
 export type KakaoMapInstance = { setCenter: (latlng: KakaoLatLng) => void };
-export type KakaoMarker = object;
+export type KakaoMarker = {
+  setPosition: (latlng: KakaoLatLng) => void;
+  setMap: (map: KakaoMapInstance | null) => void;
+  getPosition: () => KakaoLatLng;
+};
+export type KakaoMouseEvent = { latLng: KakaoLatLng };
+
+// services 라이브러리(키워드 장소 검색) 결과 1건
+export type KakaoPlace = {
+  id: string;
+  place_name: string;
+  address_name: string;
+  road_address_name: string;
+  x: string; // 경도(lng)
+  y: string; // 위도(lat)
+};
+export type KakaoPlacesStatus = 'OK' | 'ZERO_RESULT' | 'ERROR';
+export type KakaoPlacesService = {
+  keywordSearch: (
+    keyword: string,
+    callback: (data: KakaoPlace[], status: KakaoPlacesStatus) => void,
+  ) => void;
+};
+
 export type KakaoMaps = {
   load: (cb: () => void) => void;
   Map: new (
@@ -10,8 +33,22 @@ export type KakaoMaps = {
     options: { center: KakaoLatLng; level: number },
   ) => KakaoMapInstance;
   LatLng: new (lat: number, lng: number) => KakaoLatLng;
-  Marker: new (options: { position: KakaoLatLng; map?: KakaoMapInstance }) => KakaoMarker;
-  event: { addListener: (target: object, type: string, handler: () => void) => void };
+  Marker: new (options: {
+    position: KakaoLatLng;
+    map?: KakaoMapInstance;
+    draggable?: boolean;
+  }) => KakaoMarker;
+  event: {
+    addListener: (
+      target: object,
+      type: string,
+      handler: (e?: KakaoMouseEvent) => void,
+    ) => void;
+  };
+  services: {
+    Places: new () => KakaoPlacesService;
+    Status: { OK: 'OK'; ZERO_RESULT: 'ZERO_RESULT'; ERROR: 'ERROR' };
+  };
 };
 
 declare global {

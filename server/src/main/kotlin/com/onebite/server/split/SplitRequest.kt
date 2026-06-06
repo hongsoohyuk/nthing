@@ -29,6 +29,9 @@ class SplitRequest(
     @Enumerated(EnumType.STRING)
     var status: SplitStatus = SplitStatus.WAITING,
 
+    @Enumerated(EnumType.STRING)
+    val category: SplitCategory = SplitCategory.OTHER,
+
     val createdAt: LocalDateTime = LocalDateTime.now()
 )
 
@@ -37,4 +40,13 @@ enum class SplitStatus {
     MATCHED,     // 매칭됨
     COMPLETED,   // 거래 완료
     CANCELLED    // 취소
+}
+
+// 상품 카테고리 (한국 커머스 기준). 기본값 OTHER.
+enum class SplitCategory {
+    FOOD,        // 식품 (두쫀쿠, 과자, 냉동식품 등)
+    BEVERAGE,    // 음료 (원두, 생수, 음료 묶음 등)
+    HOUSEHOLD,   // 생활용품 (휴지, 세제, 주방용품 등)
+    BEAUTY,      // 뷰티 (화장품, 위생용품 등)
+    OTHER        // 기타
 }

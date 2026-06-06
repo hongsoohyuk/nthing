@@ -37,7 +37,16 @@
   "home": {
     "title": "Nearby splits",
     "filterAll": "All",
-    "filterRecruiting": "Open"
+    "filterRecruiting": "Open",
+    "searchPlaceholder": "Search by name"
+  },
+  "category": {
+    "all": "All",
+    "food": "Food",
+    "beverage": "Beverage",
+    "household": "Household",
+    "beauty": "Beauty",
+    "other": "Other"
   },
   "map": {
     "title": "Map",
@@ -74,7 +83,17 @@
     "fieldCountSupport": "At least 2",
     "fieldAddress": "Address",
     "fieldAddressPlaceholder": "Meeting spot",
-    "perPersonEstimate": "Estimated price each"
+    "perPersonEstimate": "Estimated price each",
+    "locationLabel": "Meeting place",
+    "locationSearchLabel": "Search place",
+    "locationSearchAction": "Search",
+    "locationSearchPlaceholder": "Search a place (e.g. IFC Mall)",
+    "locationNoResult": "No results found",
+    "locationSearchError": "Couldn't search places",
+    "locationPinHint": "Drag the pin or tap the map to set the exact spot",
+    "locationUnavailable": "Couldn't load the map. Please enter the detail below",
+    "detailLabel": "Detail location",
+    "detailPlaceholder": "e.g. 3F, pop-up in front of KFC"
   },
   "detail": {
     "title": "Split details",
@@ -117,5 +136,30 @@
   },
   "error": {
     "requestFailed": "Request failed ({{status}})"
+  },
+  "safety": {
+    "menu": "More",
+    "report": "Report",
+    "block": "Block"
+  },
+  "report": {
+    "title": "Report",
+    "subtitle": "Choose a reason",
+    "cancel": "Cancel",
+    "submit": "Report",
+    "done": "Your report has been submitted",
+    "error": "Failed to report. Please try again",
+    "reason": {
+      "SPAM": "Spam/Ads",
+      "FRAUD": "Suspected fraud",
+      "INAPPROPRIATE": "Inappropriate content",
+      "HARASSMENT": "Abuse/Harassment",
+      "OTHER": "Other"
+    }
+  },
+  "block": {
+    "action": "Block",
+    "done": "Blocked {{name}}",
+    "error": "Failed to block"
   }
 }

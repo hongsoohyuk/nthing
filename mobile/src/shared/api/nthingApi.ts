@@ -1,6 +1,9 @@
 import { apiFetch } from './http';
 import {
   type AuthResponse,
+  type BlockedUsersResponse,
+  type BlockResponse,
+  type CreateReportRequest,
   type CreateSplitRequest,
   type DeviceResponse,
   type GetSplitsParams,
@@ -9,6 +12,7 @@ import {
   type PresignRequest,
   type PresignResponse,
   type RegisterDeviceRequest,
+  type ReportResponse,
   type Split,
   type UpdateMeRequest,
 } from './types';
@@ -61,6 +65,8 @@ export const nthingApi = {
         lat: params.lat,
         lng: params.lng,
         radiusKm: params.radiusKm,
+        category: params.category,
+        q: params.q,
         page: params.page,
         size: params.size,
       })}`,
@@ -91,4 +97,16 @@ export const nthingApi = {
 
   unregisterDevice: (fcmToken: string) =>
     apiFetch<void>('/devices/unregister', { method: 'POST', body: { fcmToken } }),
+
+  // ── reports / blocks (Phase 2 trust & safety) ──
+  createReport: (req: CreateReportRequest) =>
+    apiFetch<ReportResponse>('/reports', { method: 'POST', body: req }),
+
+  blockUser: (userId: number) =>
+    apiFetch<BlockResponse>('/blocks', { method: 'POST', body: { userId } }),
+
+  unblockUser: (userId: number) =>
+    apiFetch<void>(`/blocks/${userId}`, { method: 'DELETE' }),
+
+  getBlockedUsers: () => apiFetch<BlockedUsersResponse>('/blocks'),
 };

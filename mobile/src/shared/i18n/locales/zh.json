@@ -37,7 +37,16 @@
   "home": {
     "title": "附近拼单",
     "filterAll": "全部",
-    "filterRecruiting": "招募中"
+    "filterRecruiting": "招募中",
+    "searchPlaceholder": "按名称搜索"
+  },
+  "category": {
+    "all": "全部",
+    "food": "食品",
+    "beverage": "饮料",
+    "household": "生活用品",
+    "beauty": "美妆",
+    "other": "其他"
   },
   "map": {
     "title": "地图",
@@ -74,7 +83,17 @@
     "fieldCountSupport": "至少2人",
     "fieldAddress": "地址",
     "fieldAddressPlaceholder": "见面地点",
-    "perPersonEstimate": "每人预计价格"
+    "perPersonEstimate": "每人预计价格",
+    "locationLabel": "见面地点",
+    "locationSearchLabel": "搜索地点",
+    "locationSearchAction": "搜索",
+    "locationSearchPlaceholder": "搜索地点（例：龙山IFC购物中心）",
+    "locationNoResult": "没有搜索结果",
+    "locationSearchError": "无法搜索地点",
+    "locationPinHint": "拖动图钉或点击地图以确定准确位置",
+    "locationUnavailable": "无法加载地图，请在下方输入详细位置",
+    "detailLabel": "详细位置",
+    "detailPlaceholder": "例：3楼 KFC前的快闪店"
   },
   "detail": {
     "title": "拼单详情",
@@ -117,5 +136,30 @@
   },
   "error": {
     "requestFailed": "请求失败 ({{status}})"
+  },
+  "safety": {
+    "menu": "更多",
+    "report": "举报",
+    "block": "屏蔽"
+  },
+  "report": {
+    "title": "举报",
+    "subtitle": "请选择举报原因",
+    "cancel": "取消",
+    "submit": "举报",
+    "done": "举报已提交",
+    "error": "举报失败，请重试",
+    "reason": {
+      "SPAM": "垃圾信息/广告",
+      "FRAUD": "涉嫌欺诈",
+      "INAPPROPRIATE": "不当内容",
+      "HARASSMENT": "辱骂/骚扰",
+      "OTHER": "其他"
+    }
+  },
+  "block": {
+    "action": "屏蔽",
+    "done": "已屏蔽 {{name}}",
+    "error": "屏蔽失败"
   }
 }
