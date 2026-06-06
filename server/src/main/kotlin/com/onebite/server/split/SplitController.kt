@@ -81,4 +81,29 @@ class SplitController(
         val userId = authentication.principal as Long
         return splitService.cancel(id, userId)
     }
+
+    // POST /api/splits/{id}/complete — 거래완료 양방확인
+    @PostMapping("/{id}/complete")
+    fun complete(@PathVariable id: Long, authentication: Authentication): SplitResponse {
+        val userId = authentication.principal as Long
+        return splitService.confirmComplete(id, userId)
+    }
+
+    // POST /api/splits/{id}/report-broken — 상대 약속불이행 신고
+    @PostMapping("/{id}/report-broken")
+    fun reportBroken(
+        @PathVariable id: Long,
+        @Valid @RequestBody dto: ReportBrokenDto,
+        authentication: Authentication,
+    ): SplitResponse {
+        val userId = authentication.principal as Long
+        return splitService.reportBroken(id, userId, dto.targetUserId!!, dto.reasonTag)
+    }
+
+    // POST /api/splits/{id}/leave — 참여자 이탈
+    @PostMapping("/{id}/leave")
+    fun leave(@PathVariable id: Long, authentication: Authentication): SplitResponse {
+        val userId = authentication.principal as Long
+        return splitService.leave(id, userId)
+    }
 }

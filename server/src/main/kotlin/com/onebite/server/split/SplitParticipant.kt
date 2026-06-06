@@ -21,5 +21,12 @@ class SplitParticipant(
     @JoinColumn(name = "user_id", nullable = false)
     val user: User,
 
-    val joinedAt: LocalDateTime = LocalDateTime.now()
+    val joinedAt: LocalDateTime = LocalDateTime.now(),
+
+    @Enumerated(EnumType.STRING)
+    var outcome: ParticipantOutcome = ParticipantOutcome.JOINED,
+
+    var authorConfirmedAt: LocalDateTime? = null,
+    var participantConfirmedAt: LocalDateTime? = null,
+    var brokenReasonTag: String? = null,
 )
