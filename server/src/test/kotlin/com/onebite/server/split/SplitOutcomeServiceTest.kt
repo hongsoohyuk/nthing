@@ -63,4 +63,31 @@ class SplitOutcomeServiceTest {
         val stranger = userRepository.save(User(provider = AuthProvider.KAKAO, providerId = "st${System.nanoTime()}", nickname = "외부인"))
         assertFailsWith<ResponseStatusException> { splitService.confirmComplete(id, stranger.id) }
     }
+
+    @Test
+    fun `참여자가 주최자 불이행 신고하면 주최자 brokenCount 증가`() {
+        val id = matchedSplit()
+        splitService.reportBroken(id, reporterId = joiner.id, targetUserId = author.id, reasonTag = "안나옴")
+        assertEquals(1, userRepository.findById(author.id).get().brokenCount)
+        val row = participantRepository.findBySplitRequestId(id).first()
+        assertEquals(ParticipantOutcome.AUTHOR_BROKEN, row.outcome)
+        assertEquals("안나옴", row.brokenReasonTag)
+    }
+
+    @Test
+    fun `주최자가 참여자 불이행 신고하면 참여자 brokenCount 증가`() {
+        val id = matchedSplit()
+        splitService.reportBroken(id, reporterId = author.id, targetUserId = joiner.id, reasonTag = "연락두절")
+        assertEquals(1, userRepository.findById(joiner.id).get().brokenCount)
+        assertEquals(ParticipantOutcome.PARTICIPANT_BROKEN, participantRepository.findBySplitRequestId(id).first().outcome)
+    }
+
+    @Test
+    fun `상대가 이미 완료확인했으면 불이행 신고는 DISPUTED 카운터 변화 없음`() {
+        val id = matchedSplit()
+        splitService.confirmComplete(id, author.id)  // 주최자는 본인이 나왔다고 확인
+        splitService.reportBroken(id, reporterId = joiner.id, targetUserId = author.id, reasonTag = "안나옴")
+        assertEquals(0, userRepository.findById(author.id).get().brokenCount)
+        assertEquals(ParticipantOutcome.DISPUTED, participantRepository.findBySplitRequestId(id).first().outcome)
+    }
 }

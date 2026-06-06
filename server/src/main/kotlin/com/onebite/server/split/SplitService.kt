@@ -162,6 +162,49 @@ class SplitService(
         return SplitResponse.from(split, all)
     }
 
+    @Transactional
+    fun reportBroken(splitId: Long, reporterId: Long, targetUserId: Long, reasonTag: String?): SplitResponse {
+        val split = splitRepository.findById(splitId)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Split을 찾을 수 없습니다: $splitId") }
+        if (split.status != SplitStatus.MATCHED) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "매칭된 반띵만 신고할 수 있습니다")
+        }
+        val participants = splitParticipantRepository.findBySplitRequestId(splitId)
+        val authorId = split.author.id
+        val memberIds = participants.map { it.user.id }.toSet() + authorId
+        if (reporterId !in memberIds || targetUserId !in memberIds) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "거래 당사자만 신고할 수 있습니다")
+        }
+        if (reporterId == targetUserId) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "본인을 신고할 수 없습니다")
+        }
+        // reporter↔target 은 주최자-참여자 쌍이어야 함 (한 명은 author, 다른 한 명은 participant)
+        val participantUserId = listOf(reporterId, targetUserId).firstOrNull { it != authorId }
+            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "신고 대상이 올바르지 않습니다")
+        val row = participants.firstOrNull { it.user.id == participantUserId }
+            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "해당 참여 기록이 없습니다")
+        if (row.outcome != ParticipantOutcome.JOINED) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 처리된 거래입니다")
+        }
+
+        val targetIsAuthor = targetUserId == authorId
+        // 피신고자(=불이행 주장 대상)가 이미 "본인은 나왔다" 확인했으면 모순 → DISPUTED
+        val targetAlreadyConfirmed =
+            if (targetIsAuthor) row.authorConfirmedAt != null else row.participantConfirmedAt != null
+        row.brokenReasonTag = reasonTag
+        if (targetAlreadyConfirmed) {
+            row.outcome = ParticipantOutcome.DISPUTED
+        } else if (targetIsAuthor) {
+            row.outcome = ParticipantOutcome.AUTHOR_BROKEN
+            split.author.brokenCount += 1
+        } else {
+            row.outcome = ParticipantOutcome.PARTICIPANT_BROKEN
+            row.user.brokenCount += 1
+        }
+        splitParticipantRepository.save(row)
+        return SplitResponse.from(split, splitParticipantRepository.findBySplitRequestId(splitId))
+    }
+
     private fun toResponse(entity: SplitRequest): SplitResponse {
         val participants = splitParticipantRepository.findBySplitRequestId(entity.id)
         return SplitResponse.from(entity, participants)
