@@ -36,7 +36,7 @@ export function Home() {
 
   return (
     <div>
-      <AppBar title="근처 반띵" />
+      <AppBar title={t('home.title')} />
 
       <div className="px-4 pb-3">
         <div className="relative">

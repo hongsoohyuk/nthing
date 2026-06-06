@@ -40,7 +40,7 @@ export function SplitDetail() {
   if (query.isPending) {
     return (
       <div>
-        <AppBar title="반띵 상세" onBack={() => navigate(-1)} />
+        <AppBar title={t('detail.title')} onBack={() => navigate(-1)} />
         <LoadingState />
       </div>
     );
@@ -48,7 +48,7 @@ export function SplitDetail() {
   if (query.isError) {
     return (
       <div>
-        <AppBar title="반띵 상세" onBack={() => navigate(-1)} />
+        <AppBar title={t('detail.title')} onBack={() => navigate(-1)} />
         <ErrorState message="반띵을 불러오지 못했어요" onRetry={() => void query.refetch()} />
       </div>
     );
@@ -78,7 +78,7 @@ export function SplitDetail() {
   return (
     <div className="flex h-screen flex-col">
       <AppBar
-        title="반띵 상세"
+        title={t('detail.title')}
         onBack={() => navigate(-1)}
         actions={
           showSafetyMenu ? (

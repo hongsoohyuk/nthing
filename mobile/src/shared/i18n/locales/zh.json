@@ -50,7 +50,8 @@
   },
   "map": {
     "title": "地图",
-    "loadError": "无法加载地图"
+    "loadError": "无法加载地图",
+    "loadKeyHint": "请设置 Kakao 地图密钥后重试"
   },
   "profile": {
     "title": "我的拼单",

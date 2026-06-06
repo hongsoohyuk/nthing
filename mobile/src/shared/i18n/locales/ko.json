@@ -50,7 +50,8 @@
   },
   "map": {
     "title": "지도",
-    "loadError": "지도를 불러올 수 없어요"
+    "loadError": "지도를 불러올 수 없어요",
+    "loadKeyHint": "카카오맵 키 설정 후 다시 시도해 주세요"
   },
   "profile": {
     "title": "나의 반띵",

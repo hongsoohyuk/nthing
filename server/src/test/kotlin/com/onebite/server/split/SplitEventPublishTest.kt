@@ -49,4 +49,13 @@ class SplitEventPublishTest {
         splitService.cancel(split.id, author.id)
         assertEquals(1, events.stream(SplitCancelledEvent::class.java).count())
     }
+
+    @Test
+    fun `양쪽 완료확인은 SplitCompletedEvent 발행`() {
+        val split = splitService.create(dto(), author.id)
+        splitService.join(split.id, joiner.id)
+        splitService.confirmComplete(split.id, author.id)
+        splitService.confirmComplete(split.id, joiner.id)
+        assertEquals(1, events.stream(SplitCompletedEvent::class.java).count())
+    }
 }

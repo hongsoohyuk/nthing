@@ -48,7 +48,8 @@ describe('themeStore', () => {
   });
 
   it('system 모드에서 OS 변경 이벤트가 클래스를 갱신', () => {
-    let captured: ((e: MediaQueryListEvent) => void) | null = null;
+    // 등록된 리스너를 배열에 모아 null-narrowing 없이 호출한다.
+    const listeners: Array<(e: MediaQueryListEvent) => void> = [];
     let matches = false;
     const original = window.matchMedia;
     window.matchMedia = ((q: string) =>
@@ -59,10 +60,10 @@ describe('themeStore', () => {
         media: q,
         onchange: null,
         addEventListener: (_: string, cb: (e: MediaQueryListEvent) => void) => {
-          captured = cb;
+          listeners.push(cb);
         },
         removeEventListener: () => {
-          captured = null;
+          listeners.length = 0;
         },
         addListener: () => {},
         removeListener: () => {},
@@ -74,8 +75,8 @@ describe('themeStore', () => {
       expect(document.documentElement.classList.contains('dark')).toBe(false);
 
       matches = true;
-      const handler = captured as ((e: MediaQueryListEvent) => void) | null;
-      handler?.({ matches: true } as MediaQueryListEvent); // applyClass('system') 가 prefersDark 재평가
+      // applyClass('system') 가 prefersDark 를 재평가하도록 OS 변경 이벤트 발화
+      listeners.forEach((cb) => cb({ matches: true } as MediaQueryListEvent));
       expect(document.documentElement.classList.contains('dark')).toBe(true);
     } finally {
       useThemeStore.getState().setMode('light'); // 리스너 해제 → 다른 테스트 누수 방지

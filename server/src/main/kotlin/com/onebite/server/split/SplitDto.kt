@@ -76,33 +76,39 @@ data class SplitResponse(
             entity: SplitRequest,
             participants: List<SplitParticipant> = emptyList(),
             distanceKm: Double? = null
-        ) = SplitResponse(
-            id = entity.id,
-            productName = entity.productName,
-            totalPrice = entity.totalPrice,
-            totalQty = entity.totalQty,
-            splitCount = entity.splitCount,
-            pricePerPerson = entity.totalPrice / entity.splitCount,
-            qtyPerPerson = entity.totalQty / entity.splitCount,
-            imageUrl = entity.imageUrl,
-            latitude = entity.latitude,
-            longitude = entity.longitude,
-            address = entity.address,
-            status = entity.status,
-            category = entity.category,
-            author = AuthorDto.from(entity.author),
-            createdAt = entity.createdAt.toString(),
-            participants = participants.map {
-                ParticipantDto(
-                    userId = it.user.id,
-                    nickname = it.user.nickname,
-                    profileImageUrl = it.user.profileImageUrl,
-                    joinedAt = it.joinedAt.toString()
-                )
-            },
-            currentParticipants = participants.size + 1,
-            distanceKm = distanceKm?.let { Math.round(it * 100) / 100.0 }
-        )
+        ): SplitResponse {
+            // 이탈(LATE_CANCELLED) 등 비활성 행은 참여자 목록·정원 카운트에서 제외
+            val liveParticipants = participants.filter {
+                it.outcome == ParticipantOutcome.JOINED || it.outcome == ParticipantOutcome.COMPLETED
+            }
+            return SplitResponse(
+                id = entity.id,
+                productName = entity.productName,
+                totalPrice = entity.totalPrice,
+                totalQty = entity.totalQty,
+                splitCount = entity.splitCount,
+                pricePerPerson = entity.totalPrice / entity.splitCount,
+                qtyPerPerson = entity.totalQty / entity.splitCount,
+                imageUrl = entity.imageUrl,
+                latitude = entity.latitude,
+                longitude = entity.longitude,
+                address = entity.address,
+                status = entity.status,
+                category = entity.category,
+                author = AuthorDto.from(entity.author),
+                createdAt = entity.createdAt.toString(),
+                participants = liveParticipants.map {
+                    ParticipantDto(
+                        userId = it.user.id,
+                        nickname = it.user.nickname,
+                        profileImageUrl = it.user.profileImageUrl,
+                        joinedAt = it.joinedAt.toString()
+                    )
+                },
+                currentParticipants = liveParticipants.size + 1,
+                distanceKm = distanceKm?.let { Math.round(it * 100) / 100.0 }
+            )
+        }
     }
 }
 
