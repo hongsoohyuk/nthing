@@ -8,7 +8,25 @@ import { toast } from '../shared/stores/toastStore';
 import { type Provider } from '../shared/api/types';
 import { cn } from '../shared/lib/cn';
 import pushData from '../features/auth/mockPushSamples.json';
-import logoMark from '../assets/brand/logo-concept-1-perforated-n.svg';
+import logoConcept1 from '../assets/brand/logo-concept-1-perforated-n.svg';
+import logoConcept2 from '../assets/brand/logo-concept-2-n-pie.svg';
+import logoConcept3 from '../assets/brand/logo-concept-3-split-parcel.svg';
+import logoConcept4 from '../assets/brand/logo-concept-4-fraction.svg';
+
+// 히어로/푸시 카드에 쓰는 로고. 기본은 채택안(1번).
+// dev 빌드에서만 ?logo=2|3|4 쿼리로 다른 시안을 라이브 비교할 수 있다.
+const LOGO_CONCEPTS = {
+  '1': logoConcept1,
+  '2': logoConcept2,
+  '3': logoConcept3,
+  '4': logoConcept4,
+} as const;
+
+function resolveLogoMark(): string {
+  if (!import.meta.env.DEV || typeof window === 'undefined') return LOGO_CONCEPTS['1'];
+  const pick = new URLSearchParams(window.location.search).get('logo');
+  return LOGO_CONCEPTS[(pick ?? '1') as keyof typeof LOGO_CONCEPTS] ?? LOGO_CONCEPTS['1'];
+}
 
 // 사용자가 시트를 직접 닫은 경우(취소)는 토스트를 띄우지 않는다.
 function isAppleCancel(e: unknown): boolean {
@@ -74,7 +92,7 @@ function PinIcon({ className }: { className?: string }) {
 }
 
 /** 근처 반띵 푸시 알림 미리보기 — 3초마다 순환(reduced-motion이면 정지). */
-function PushDeck({ reduced }: { reduced: boolean }) {
+function PushDeck({ reduced, logoMark }: { reduced: boolean; logoMark: string }) {
   const [active, setActive] = useState(0);
   const n = SAMPLES.length;
 
@@ -175,6 +193,7 @@ export function Login({ showDevLogin = import.meta.env.DEV }: LoginProps) {
   const setAuth = useAuthStore((s) => s.setAuth);
   const [busy, setBusy] = useState(false);
   const reduced = usePrefersReducedMotion();
+  const logoMark = useMemo(() => resolveLogoMark(), []);
 
   const rise = (delay: number): CSSProperties =>
     reduced ? {} : { animation: `nthRise .6s cubic-bezier(.22,1,.36,1) both`, animationDelay: `${delay}ms` };
@@ -262,7 +281,7 @@ export function Login({ showDevLogin = import.meta.env.DEV }: LoginProps) {
         </div>
 
         <div style={rise(260)} className="w-full">
-          <PushDeck reduced={reduced} />
+          <PushDeck reduced={reduced} logoMark={logoMark} />
         </div>
       </div>
 
