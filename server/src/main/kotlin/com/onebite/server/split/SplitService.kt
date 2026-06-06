@@ -114,15 +114,51 @@ class SplitService(
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "작성자만 취소할 수 있습니다")
         }
 
-        if (entity.status != SplitStatus.WAITING) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "WAITING 상태의 Split만 취소할 수 있습니다")
+        when (entity.status) {
+            SplitStatus.WAITING -> {
+                entity.status = SplitStatus.CANCELLED
+            }
+            SplitStatus.MATCHED -> {
+                // 매칭 후 취소 = 악성. 주최자 lateCancel + 미처리 참여행 LATE_CANCELLED
+                entity.status = SplitStatus.CANCELLED
+                entity.author.lateCancelCount += 1
+                splitParticipantRepository.findBySplitRequestId(id).forEach { row ->
+                    if (row.outcome == ParticipantOutcome.JOINED) {
+                        row.outcome = ParticipantOutcome.LATE_CANCELLED
+                        splitParticipantRepository.save(row)
+                    }
+                }
+            }
+            else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 종료된 반띵입니다")
         }
-
-        entity.status = SplitStatus.CANCELLED
         val saved = splitRepository.save(entity)
         eventPublisher.publishEvent(SplitCancelledEvent(id))
         val participants = splitParticipantRepository.findBySplitRequestId(id)
         return SplitResponse.from(saved, participants)
+    }
+
+    @Transactional
+    fun leave(splitId: Long, userId: Long): SplitResponse {
+        val split = splitRepository.findById(splitId)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Split을 찾을 수 없습니다: $splitId") }
+        if (split.status != SplitStatus.MATCHED && split.status != SplitStatus.WAITING) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "진행 중인 반띵만 이탈할 수 있습니다")
+        }
+        val row = splitParticipantRepository.findBySplitRequestId(splitId)
+            .firstOrNull { it.user.id == userId && it.outcome == ParticipantOutcome.JOINED }
+            ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "참여 중이 아닙니다")
+
+        val wasMatched = split.status == SplitStatus.MATCHED
+        row.outcome = ParticipantOutcome.LATE_CANCELLED
+        if (wasMatched) {
+            // 매칭 후 이탈만 페널티 (매칭 전 단순 참여취소는 무해)
+            row.user.lateCancelCount += 1
+            split.status = SplitStatus.WAITING   // 슬롯 재오픈
+            splitRepository.save(split)
+        }
+        splitParticipantRepository.save(row)
+        eventPublisher.publishEvent(SplitCancelledEvent(splitId))
+        return SplitResponse.from(split, splitParticipantRepository.findBySplitRequestId(splitId))
     }
 
     @Transactional

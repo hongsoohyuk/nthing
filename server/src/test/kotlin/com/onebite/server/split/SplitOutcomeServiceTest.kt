@@ -101,4 +101,29 @@ class SplitOutcomeServiceTest {
             splitService.reportBroken(s.id, reporterId = joiner.id, targetUserId = joiner2.id, reasonTag = "안나옴")
         }
     }
+
+    @Test
+    fun `매칭후 주최자 취소하면 lateCancel 증가 + 참여행 LATE_CANCELLED`() {
+        val id = matchedSplit()
+        splitService.cancel(id, author.id)
+        assertEquals(1, userRepository.findById(author.id).get().lateCancelCount)
+        assertEquals(SplitStatus.CANCELLED, splitRepository.findById(id).get().status)
+        assertEquals(ParticipantOutcome.LATE_CANCELLED, participantRepository.findBySplitRequestId(id).first().outcome)
+    }
+
+    @Test
+    fun `WAITING 주최자 취소는 lateCancel 없음`() {
+        val s = splitService.create(dto(), author.id)
+        splitService.cancel(s.id, author.id)
+        assertEquals(0, userRepository.findById(author.id).get().lateCancelCount)
+    }
+
+    @Test
+    fun `매칭후 참여자 이탈하면 본인 lateCancel + split WAITING 복귀`() {
+        val id = matchedSplit()
+        splitService.leave(id, joiner.id)
+        assertEquals(1, userRepository.findById(joiner.id).get().lateCancelCount)
+        assertEquals(SplitStatus.WAITING, splitRepository.findById(id).get().status)
+        assertEquals(ParticipantOutcome.LATE_CANCELLED, participantRepository.findBySplitRequestId(id).first().outcome)
+    }
 }
