@@ -16,7 +16,8 @@ class TrustProfileService(
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다: $userId") }
 
         val promiseCount = user.completedCount + user.brokenCount + user.lateCancelCount
-        val isNewcomer = promiseCount < coldStartThreshold
+        // promiseCount == 0 → 데이터 없음 → 임계치 설정과 무관하게 신규 처리 (0 나눗셈 방지)
+        val isNewcomer = promiseCount == 0 || promiseCount < coldStartThreshold
         val successRate = if (isNewcomer) null
             else (user.completedCount.toDouble() / promiseCount * 100).roundToInt()
 

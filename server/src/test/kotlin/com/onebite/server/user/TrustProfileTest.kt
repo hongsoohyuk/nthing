@@ -64,6 +64,23 @@ class TrustProfileTest {
     }
 
     @Test
+    fun `약속 0회는 신규 0나눗셈 없음`() {
+        val u = newUser(c = 0, b = 0, lc = 0)
+        val p = trustProfileService.getProfile(u.id)
+        assertTrue(p.isNewcomer)
+        assertNull(p.successRate)
+        assertEquals(0, p.promiseCount)
+    }
+
+    @Test
+    fun `약속 정확히 5회면 신규 아님`() {
+        val u = newUser(c = 5, b = 0, lc = 0)
+        val p = trustProfileService.getProfile(u.id)
+        assertFalse(p.isNewcomer)
+        assertEquals(100, p.successRate)
+    }
+
+    @Test
     fun `GET trust 비인증 공개 조회`() {
         val u = newUser(c = 10, b = 0, lc = 0)
         mockMvc.get("/api/users/${u.id}/trust").andExpect { status { isOk() } }
