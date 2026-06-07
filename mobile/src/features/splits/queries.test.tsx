@@ -12,11 +12,23 @@ vi.mock('../../shared/api/nthingApi', () => ({
     createSplit: vi.fn(),
     joinSplit: vi.fn(),
     cancelSplit: vi.fn(),
+    completeSplit: vi.fn(),
+    reportBroken: vi.fn(),
+    leaveSplit: vi.fn(),
   },
 }));
 
 import { nthingApi } from '../../shared/api/nthingApi';
-import { splitKeys, useSplits, useSplit, useCreateSplit, useJoinSplit } from './queries';
+import {
+  splitKeys,
+  useSplits,
+  useSplit,
+  useCreateSplit,
+  useJoinSplit,
+  useCompleteSplit,
+  useReportBroken,
+  useLeaveSplit,
+} from './queries';
 
 const api = nthingApi as unknown as Record<string, ReturnType<typeof vi.fn>>;
 
@@ -99,5 +111,36 @@ describe('mutations invalidate', () => {
     result.current.mutate(4);
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(setSpy).toHaveBeenCalledWith(splitKeys.detail(4), { id: 4, status: 'MATCHED' });
+  });
+
+  it('useCompleteSplit 성공 시 상세 캐시 갱신', async () => {
+    api.completeSplit.mockResolvedValue({ id: 4, status: 'COMPLETED' });
+    const { qc, wrapper } = makeWrapper();
+    const setSpy = vi.spyOn(qc, 'setQueryData');
+    const { result } = renderHook(() => useCompleteSplit(), { wrapper });
+    result.current.mutate(4);
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(api.completeSplit).toHaveBeenCalledWith(4);
+    expect(setSpy).toHaveBeenCalledWith(splitKeys.detail(4), { id: 4, status: 'COMPLETED' });
+  });
+
+  it('useReportBroken 은 {id, req} 로 reportBroken 호출', async () => {
+    api.reportBroken.mockResolvedValue({ id: 4, status: 'MATCHED' });
+    const { wrapper } = makeWrapper();
+    const { result } = renderHook(() => useReportBroken(), { wrapper });
+    result.current.mutate({ id: 4, req: { targetUserId: 9, reasonTag: 'NO_SHOW' } });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(api.reportBroken).toHaveBeenCalledWith(4, { targetUserId: 9, reasonTag: 'NO_SHOW' });
+  });
+
+  it('useLeaveSplit 성공 시 상세 캐시 갱신', async () => {
+    api.leaveSplit.mockResolvedValue({ id: 4, status: 'WAITING' });
+    const { qc, wrapper } = makeWrapper();
+    const setSpy = vi.spyOn(qc, 'setQueryData');
+    const { result } = renderHook(() => useLeaveSplit(), { wrapper });
+    result.current.mutate(4);
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(api.leaveSplit).toHaveBeenCalledWith(4);
+    expect(setSpy).toHaveBeenCalledWith(splitKeys.detail(4), { id: 4, status: 'WAITING' });
   });
 });

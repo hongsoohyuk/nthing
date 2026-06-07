@@ -158,9 +158,9 @@ npx cap sync && npx cap open android  # Android Studio
 - [~] 위치 기반 트리거 알림 ("근처 N미터 내 새 반띵") — 코드 완성 (DeviceLocationQuery 전략 패턴)
 - [ ] 인앱 채팅
 - [ ] PG 에스크로 연동 (안전거래)
-- [ ] 거래 완료 인증
-- [ ] 신고/차단
-- [ ] 상품 카테고리 & 검색
+- [x] 거래 완료 인증 (2026-06-07) — 서버 라이프사이클(`/complete` 양방 확인 → COMPLETED, `/report-broken` 노쇼/불이행, `/leave` 매칭후 이탈) + 공개 신뢰 프로필(`GET /users/{id}/trust`, 성사율·newcomer)는 trust-safety-server 에서 완성. 이번에 **모바일 연동 완료**: `nthingApi`(complete/reportBroken/leave/getTrustProfile) + 쿼리 훅 + SplitDetail 라이프사이클 액션바(거래완료/안나왔어요/참여취소) + `NoShowSheet`(상대·사유 선택) + `TrustBadge`(4개 로케일 i18n 재계산). 206 테스트 green
+- [x] 신고/차단 — 서버 report 도메인(신고+차단) + 모바일 `features/report`(ReportSheet, 차단 메뉴)
+- [x] 상품 카테고리 & 검색 — Split category enum(V7) + `GET /splits?category=&q=` + 모바일 Home 필터 칩/검색
 
 ### Phase 3 - 성장
 - [ ] 백그라운드 위치 추적 (지나가다가 알림)

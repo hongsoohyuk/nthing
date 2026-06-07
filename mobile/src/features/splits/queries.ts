@@ -4,6 +4,7 @@ import {
   type CreateSplitRequest,
   type GetSplitsParams,
   type PageResponse,
+  type ReportBrokenRequest,
   type Split,
 } from '../../shared/api/types';
 
@@ -70,6 +71,43 @@ export function useCancelSplit() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: number) => nthingApi.cancelSplit(id),
+    onSuccess: (updated) => {
+      qc.setQueryData(splitKeys.detail(updated.id), updated);
+      void qc.invalidateQueries({ queryKey: splitKeys.all });
+    },
+  });
+}
+
+// 거래완료 확인 — 양방 확인 시 서버가 COMPLETED 로 전환한 split 을 돌려줌
+export function useCompleteSplit() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => nthingApi.completeSplit(id),
+    onSuccess: (updated) => {
+      qc.setQueryData(splitKeys.detail(updated.id), updated);
+      void qc.invalidateQueries({ queryKey: splitKeys.all });
+    },
+  });
+}
+
+// 노쇼/불이행 신고
+export function useReportBroken() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, req }: { id: number; req: ReportBrokenRequest }) =>
+      nthingApi.reportBroken(id, req),
+    onSuccess: (updated) => {
+      qc.setQueryData(splitKeys.detail(updated.id), updated);
+      void qc.invalidateQueries({ queryKey: splitKeys.all });
+    },
+  });
+}
+
+// 매칭 후 이탈 (참여자)
+export function useLeaveSplit() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => nthingApi.leaveSplit(id),
     onSuccess: (updated) => {
       qc.setQueryData(splitKeys.detail(updated.id), updated);
       void qc.invalidateQueries({ queryKey: splitKeys.all });

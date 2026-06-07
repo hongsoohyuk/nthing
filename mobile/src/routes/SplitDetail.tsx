@@ -7,7 +7,15 @@ import { Button } from '../shared/components/Button';
 import { StatusBadge } from '../shared/components/Badge';
 import { LoadingState } from '../shared/components/states/LoadingState';
 import { ErrorState } from '../shared/components/states/ErrorState';
-import { useSplit, useJoinSplit, useCancelSplit } from '../features/splits/queries';
+import {
+  useSplit,
+  useJoinSplit,
+  useCancelSplit,
+  useCompleteSplit,
+  useLeaveSplit,
+} from '../features/splits/queries';
+import { NoShowSheet, type NoShowCounterpart } from '../features/splits/NoShowSheet';
+import { TrustBadge } from '../features/trust/TrustBadge';
 import { ReportSheet } from '../features/report/ReportSheet';
 import { useBlockUser } from '../features/report/queries';
 import { useAuthStore } from '../shared/stores/authStore';
@@ -33,9 +41,12 @@ export function SplitDetail() {
   const query = useSplit(splitId);
   const join = useJoinSplit();
   const cancel = useCancelSplit();
+  const complete = useCompleteSplit();
+  const leave = useLeaveSplit();
   const block = useBlockUser();
   const [menuOpen, setMenuOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [noShowOpen, setNoShowOpen] = useState(false);
 
   if (query.isPending) {
     return (
@@ -56,10 +67,37 @@ export function SplitDetail() {
 
   const split = query.data;
   const isMine = split.author.id === userId;
+  const isParticipant = split.participants.some((p) => p.userId === userId);
+  const isMember = isMine || isParticipant;
   const isOpen = split.status === 'WAITING';
+  const isMatched = split.status === 'MATCHED';
   const meta = [formatDistance(split.distanceKm), formatRelativeTime(split.createdAt)]
     .filter(Boolean)
     .join(' · ');
+
+  // 노쇼 신고 상대: 주최자면 참여자들, 참여자면 주최자
+  const counterparts: NoShowCounterpart[] = isMine
+    ? split.participants.map((p) => ({ userId: p.userId, nickname: p.nickname }))
+    : [{ userId: split.author.id, nickname: split.author.nickname }];
+
+  function handleComplete() {
+    complete.mutate(splitId, {
+      onSuccess: (updated) =>
+        toast(
+          updated.status === 'COMPLETED'
+            ? t('detail.completeDoneToast')
+            : t('detail.completeConfirmedToast'),
+        ),
+      onError: () => toast(t('detail.lifecycleError')),
+    });
+  }
+
+  function handleLeave() {
+    leave.mutate(splitId, {
+      onSuccess: () => toast(t('detail.leaveDoneToast')),
+      onError: () => toast(t('detail.lifecycleError')),
+    });
+  }
 
   function handleBlock() {
     setMenuOpen(false);
@@ -145,10 +183,13 @@ export function SplitDetail() {
             <StatusBadge status={split.status} />
           </div>
 
-          <p className="text-caption text-gray-500">
-            {split.author.nickname}
-            {meta && ` · ${meta}`}
-          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-caption text-gray-500">
+              {split.author.nickname}
+              {meta && ` · ${meta}`}
+            </p>
+            <TrustBadge userId={split.author.id} />
+          </div>
 
           <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-900">
             <p className="text-caption text-gray-500">1인당</p>
@@ -170,23 +211,65 @@ export function SplitDetail() {
         </div>
       </div>
 
-      <div className="border-t border-gray-200 p-4 dark:border-gray-700">
-        {!isOpen ? (
+      <div className="flex flex-col gap-2 border-t border-gray-200 p-4 dark:border-gray-700">
+        {isOpen ? (
+          isMine ? (
+            <Button
+              fullWidth
+              variant="secondary"
+              loading={cancel.isPending}
+              onClick={() => cancel.mutate(splitId)}
+            >
+              {t('detail.cancel')}
+            </Button>
+          ) : isParticipant ? (
+            <Button fullWidth variant="secondary" loading={leave.isPending} onClick={handleLeave}>
+              {t('detail.leave')}
+            </Button>
+          ) : (
+            <Button fullWidth loading={join.isPending} onClick={() => join.mutate(splitId)}>
+              {t('common.join')}
+            </Button>
+          )
+        ) : isMatched ? (
+          isMember ? (
+            <>
+              <Button fullWidth loading={complete.isPending} onClick={handleComplete}>
+                {t('detail.complete')}
+              </Button>
+              <div className="flex gap-2">
+                <Button
+                  fullWidth
+                  variant="secondary"
+                  disabled={counterparts.length === 0}
+                  onClick={() => setNoShowOpen(true)}
+                >
+                  {t('detail.noShow')}
+                </Button>
+                {isParticipant && (
+                  <Button
+                    fullWidth
+                    variant="secondary"
+                    loading={leave.isPending}
+                    onClick={handleLeave}
+                  >
+                    {t('detail.leave')}
+                  </Button>
+                )}
+              </div>
+            </>
+          ) : (
+            <Button fullWidth disabled>
+              {t('detail.closed')}
+            </Button>
+          )
+        ) : split.status === 'COMPLETED' ? (
           <Button fullWidth disabled>
-            마감된 반띵
-          </Button>
-        ) : isMine ? (
-          <Button
-            fullWidth
-            variant="secondary"
-            loading={cancel.isPending}
-            onClick={() => cancel.mutate(splitId)}
-          >
-            취소하기
+            {t('detail.completedDone')}
           </Button>
         ) : (
-          <Button fullWidth loading={join.isPending} onClick={() => join.mutate(splitId)}>
-            반띵할게요
+          <Button fullWidth disabled>
+            {t('detail.cancelledDone')}
           </Button>
         )}
       </div>
@@ -196,6 +279,13 @@ export function SplitDetail() {
         onClose={() => setReportOpen(false)}
         targetType="SPLIT"
         targetId={split.id}
+      />
+
+      <NoShowSheet
+        open={noShowOpen}
+        onClose={() => setNoShowOpen(false)}
+        splitId={split.id}
+        counterparts={counterparts}
       />
     </div>
   );

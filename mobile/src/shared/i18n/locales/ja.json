@@ -103,7 +103,36 @@
     "splitCount": "分け合う人数",
     "location": "場所",
     "closed": "締め切ったシェア",
-    "cancel": "キャンセル"
+    "cancel": "キャンセル",
+    "leave": "参加をやめる",
+    "complete": "取引完了",
+    "noShow": "来ませんでした",
+    "completedDone": "取引完了",
+    "cancelledDone": "キャンセルされたシェア",
+    "completeConfirmedToast": "完了を確認しました。相手も確認すると完了します。",
+    "completeDoneToast": "取引が完了しました。いいシェアでした！",
+    "leaveDoneToast": "参加をやめました",
+    "lifecycleError": "処理できませんでした。もう一度お試しください。"
+  },
+  "trust": {
+    "newcomer": "🌱 新規",
+    "great": "約束をよく守ります",
+    "good": "約束を守るほうです",
+    "poor": "最近約束を守れていません",
+    "successRate": "成立率 {{rate}}%"
+  },
+  "noShow": {
+    "title": "来なかった相手を報告",
+    "subtitle": "約束した取引が成立しませんでしたか？",
+    "pickTarget": "誰が約束を守りませんでしたか？",
+    "cancel": "キャンセル",
+    "submit": "報告",
+    "done": "報告を受け付けました",
+    "error": "報告に失敗しました。もう一度お試しください。",
+    "reason": {
+      "NO_SHOW": "待ち合わせ場所に来なかった",
+      "UNREACHABLE": "連絡が取れない"
+    }
   },
   "list": {
     "loadError": "リストを読み込めませんでした"

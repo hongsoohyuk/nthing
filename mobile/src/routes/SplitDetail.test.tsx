@@ -5,19 +5,36 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 
 const join = vi.fn();
 const cancel = vi.fn();
+const complete = vi.fn();
+const leave = vi.fn();
+const reportBroken = vi.fn();
 const block = vi.fn();
 const report = vi.fn();
 vi.mock('../features/splits/queries', () => ({
   useSplit: vi.fn(),
   useJoinSplit: vi.fn(),
   useCancelSplit: vi.fn(),
+  useCompleteSplit: vi.fn(),
+  useLeaveSplit: vi.fn(),
+  useReportBroken: vi.fn(),
 }));
 vi.mock('../features/report/queries', () => ({
   useBlockUser: vi.fn(),
   useCreateReport: vi.fn(),
 }));
+// 신뢰 배지는 별도 단위 테스트로 검증 — 여기선 렌더만 무력화 (QueryClient 불필요)
+vi.mock('../features/trust/TrustBadge', () => ({
+  TrustBadge: () => null,
+}));
 
-import { useSplit, useJoinSplit, useCancelSplit } from '../features/splits/queries';
+import {
+  useSplit,
+  useJoinSplit,
+  useCancelSplit,
+  useCompleteSplit,
+  useLeaveSplit,
+  useReportBroken,
+} from '../features/splits/queries';
 import { useBlockUser, useCreateReport } from '../features/report/queries';
 import { useAuthStore } from '../shared/stores/authStore';
 import i18n from '../shared/i18n';
@@ -26,6 +43,9 @@ import { SplitDetail } from './SplitDetail';
 const useSplitMock = useSplit as unknown as ReturnType<typeof vi.fn>;
 const useJoinMock = useJoinSplit as unknown as ReturnType<typeof vi.fn>;
 const useCancelMock = useCancelSplit as unknown as ReturnType<typeof vi.fn>;
+const useCompleteMock = useCompleteSplit as unknown as ReturnType<typeof vi.fn>;
+const useLeaveMock = useLeaveSplit as unknown as ReturnType<typeof vi.fn>;
+const useReportBrokenMock = useReportBroken as unknown as ReturnType<typeof vi.fn>;
 const useBlockMock = useBlockUser as unknown as ReturnType<typeof vi.fn>;
 const useReportMock = useCreateReport as unknown as ReturnType<typeof vi.fn>;
 
@@ -42,6 +62,7 @@ const SPLIT = {
   longitude: 127,
   address: '역삼동 GS25',
   status: 'WAITING',
+  category: 'FOOD',
   author: { id: 99, nickname: '판매자', profileImageUrl: null },
   createdAt: '2026-05-27T10:00:00',
   participants: [],
@@ -64,10 +85,16 @@ describe('SplitDetail', () => {
     await i18n.changeLanguage('ko');
     join.mockReset();
     cancel.mockReset();
+    complete.mockReset();
+    leave.mockReset();
+    reportBroken.mockReset();
     block.mockReset();
     report.mockReset();
     useJoinMock.mockReturnValue({ mutate: join, isPending: false });
     useCancelMock.mockReturnValue({ mutate: cancel, isPending: false });
+    useCompleteMock.mockReturnValue({ mutate: complete, isPending: false });
+    useLeaveMock.mockReturnValue({ mutate: leave, isPending: false });
+    useReportBrokenMock.mockReturnValue({ mutate: reportBroken, isPending: false });
     useBlockMock.mockReturnValue({ mutate: block, isPending: false });
     useReportMock.mockReturnValue({ mutate: report, isPending: false });
     useAuthStore.setState({ token: 'jwt', user: { id: 1, nickname: '나' }, isHydrated: true });
@@ -96,14 +123,100 @@ describe('SplitDetail', () => {
     expect(cancel).toHaveBeenCalledWith(1);
   });
 
-  it('마감 상태(COMPLETED) → 비활성 마감된 반띵', () => {
+  it('완료 상태(COMPLETED) → 비활성 거래 완료됨', () => {
     useSplitMock.mockReturnValue({
       isPending: false,
       isError: false,
       data: { ...SPLIT, status: 'COMPLETED' },
     });
     renderDetail();
+    expect(screen.getByRole('button', { name: '거래 완료됨' })).toBeDisabled();
+  });
+
+  it('취소 상태(CANCELLED) → 비활성 취소된 반띵', () => {
+    useSplitMock.mockReturnValue({
+      isPending: false,
+      isError: false,
+      data: { ...SPLIT, status: 'CANCELLED' },
+    });
+    renderDetail();
+    expect(screen.getByRole('button', { name: '취소된 반띵' })).toBeDisabled();
+  });
+
+  it('MATCHED + 주최자 → 거래완료 클릭 시 complete(id)', async () => {
+    useAuthStore.setState({ token: 'jwt', user: { id: 99, nickname: '판매자' }, isHydrated: true });
+    useSplitMock.mockReturnValue({
+      isPending: false,
+      isError: false,
+      data: {
+        ...SPLIT,
+        status: 'MATCHED',
+        participants: [
+          { userId: 1, nickname: '참가자', profileImageUrl: null, joinedAt: '2026-05-27T11:00:00' },
+        ],
+        currentParticipants: 2,
+      },
+    });
+    renderDetail();
+    await userEvent.click(screen.getByRole('button', { name: '거래완료' }));
+    expect(complete).toHaveBeenCalledWith(1, expect.anything());
+  });
+
+  it('MATCHED + 참여자 → 거래완료/안나왔어요/참여취소 모두 노출', () => {
+    useAuthStore.setState({ token: 'jwt', user: { id: 1, nickname: '나' }, isHydrated: true });
+    useSplitMock.mockReturnValue({
+      isPending: false,
+      isError: false,
+      data: {
+        ...SPLIT,
+        status: 'MATCHED',
+        participants: [
+          { userId: 1, nickname: '나', profileImageUrl: null, joinedAt: '2026-05-27T11:00:00' },
+        ],
+        currentParticipants: 2,
+      },
+    });
+    renderDetail();
+    expect(screen.getByRole('button', { name: '거래완료' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '안 나왔어요' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '참여 취소' })).toBeInTheDocument();
+  });
+
+  it('MATCHED + 비참여자 → 마감된 반띵 비활성', () => {
+    useAuthStore.setState({ token: 'jwt', user: { id: 7, nickname: '구경꾼' }, isHydrated: true });
+    useSplitMock.mockReturnValue({
+      isPending: false,
+      isError: false,
+      data: {
+        ...SPLIT,
+        status: 'MATCHED',
+        participants: [
+          { userId: 1, nickname: '나', profileImageUrl: null, joinedAt: '2026-05-27T11:00:00' },
+        ],
+        currentParticipants: 2,
+      },
+    });
+    renderDetail();
     expect(screen.getByRole('button', { name: '마감된 반띵' })).toBeDisabled();
+  });
+
+  it('MATCHED + 참여자 → 안 나왔어요 클릭 시 노쇼 시트가 열린다', async () => {
+    useAuthStore.setState({ token: 'jwt', user: { id: 1, nickname: '나' }, isHydrated: true });
+    useSplitMock.mockReturnValue({
+      isPending: false,
+      isError: false,
+      data: {
+        ...SPLIT,
+        status: 'MATCHED',
+        participants: [
+          { userId: 1, nickname: '나', profileImageUrl: null, joinedAt: '2026-05-27T11:00:00' },
+        ],
+        currentParticipants: 2,
+      },
+    });
+    renderDetail();
+    await userEvent.click(screen.getByRole('button', { name: '안 나왔어요' }));
+    expect(screen.getByRole('radio', { name: '약속 장소에 안 나왔어요' })).toBeInTheDocument();
   });
 
   it('타인 글 → 더보기 메뉴에 신고/차단 노출, 차단 클릭 시 block(authorId)', async () => {

@@ -103,7 +103,36 @@
     "splitCount": "People to split with",
     "location": "Location",
     "closed": "Split closed",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "leave": "Leave split",
+    "complete": "Mark as done",
+    "noShow": "They didn't show",
+    "completedDone": "Trade completed",
+    "cancelledDone": "Split cancelled",
+    "completeConfirmedToast": "You confirmed. It completes once the other side confirms too.",
+    "completeDoneToast": "Trade completed. Nice split!",
+    "leaveDoneToast": "You left the split",
+    "lifecycleError": "Something went wrong. Please try again."
+  },
+  "trust": {
+    "newcomer": "🌱 New",
+    "great": "Keeps promises well",
+    "good": "Usually keeps promises",
+    "poor": "Has missed promises recently",
+    "successRate": "{{rate}}% success"
+  },
+  "noShow": {
+    "title": "Report a no-show",
+    "subtitle": "Did the agreed trade fall through?",
+    "pickTarget": "Who broke the promise?",
+    "cancel": "Cancel",
+    "submit": "Report",
+    "done": "Your report has been received",
+    "error": "Couldn't submit the report. Please try again.",
+    "reason": {
+      "NO_SHOW": "Didn't show up at the spot",
+      "UNREACHABLE": "Couldn't reach them"
+    }
   },
   "list": {
     "loadError": "Couldn't load the list"

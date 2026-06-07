@@ -12,8 +12,10 @@ import {
   type PresignRequest,
   type PresignResponse,
   type RegisterDeviceRequest,
+  type ReportBrokenRequest,
   type ReportResponse,
   type Split,
+  type TrustProfile,
   type UpdateMeRequest,
 } from './types';
 
@@ -81,6 +83,21 @@ export const nthingApi = {
 
   cancelSplit: (id: number) => apiFetch<Split>(`/splits/${id}/cancel`, { method: 'PATCH' }),
 
+  // ── 거래 라이프사이클 (Phase 2 trust & safety) ──
+  // 거래완료 확인(양방 확인 시 COMPLETED 전환). 멱등 — 재호출해도 안전.
+  completeSplit: (id: number) => apiFetch<Split>(`/splits/${id}/complete`, { method: 'POST' }),
+
+  // 노쇼/불이행 신고 (매칭된 거래 당사자만, 주최자↔참여자 쌍)
+  reportBroken: (id: number, req: ReportBrokenRequest) =>
+    apiFetch<Split>(`/splits/${id}/report-broken`, { method: 'POST', body: req }),
+
+  // 매칭 후 이탈 (참여자). 매칭 후 이탈은 페널티 + 슬롯 재오픈.
+  leaveSplit: (id: number) => apiFetch<Split>(`/splits/${id}/leave`, { method: 'POST' }),
+
+  // 공개 신뢰 프로필 — 참여/수락 전 상대 확인용 (비인증 허용)
+  getTrustProfile: (userId: number) =>
+    apiFetch<TrustProfile>(`/users/${userId}/trust`, { auth: false }),
+
   getMySplits: (page = 0, size = 20) =>
     apiFetch<PageResponse<Split>>(`/splits/my${toQuery({ page, size })}`),
 
@@ -105,8 +122,7 @@ export const nthingApi = {
   blockUser: (userId: number) =>
     apiFetch<BlockResponse>('/blocks', { method: 'POST', body: { userId } }),
 
-  unblockUser: (userId: number) =>
-    apiFetch<void>(`/blocks/${userId}`, { method: 'DELETE' }),
+  unblockUser: (userId: number) => apiFetch<void>(`/blocks/${userId}`, { method: 'DELETE' }),
 
   getBlockedUsers: () => apiFetch<BlockedUsersResponse>('/blocks'),
 };

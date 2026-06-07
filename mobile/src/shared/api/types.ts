@@ -135,6 +135,29 @@ export type PresignResponse = {
   expiresInSeconds: number;
 };
 
+// ── Trade lifecycle: no-show report (서버 SplitOutcomeDto.ReportBrokenDto 기준) ──
+// reasonTag 는 서버에 그대로 저장되는 관리자용 안정 코드 (로케일 무관).
+export type BrokenReasonTag = 'NO_SHOW' | 'UNREACHABLE';
+
+export type ReportBrokenRequest = {
+  targetUserId: number;
+  reasonTag?: BrokenReasonTag | null;
+};
+
+// ── 공개 신뢰 프로필 (서버 TrustProfileDto.kt 기준) ──
+export type TrustProfile = {
+  userId: number;
+  nickname: string;
+  profileImageUrl: string | null;
+  isNewcomer: boolean;
+  successRate: number | null; // 성사율(%), 신규면 null
+  promiseCount: number;
+  completedCount: number;
+  brokenCount: number;
+  lateCancelCount: number;
+  toneLabel: string; // 서버 한국어 카피 (모바일은 i18n 재계산 사용, 폴백용)
+};
+
 // ── Report / Block (서버 ReportDto.kt 기준) ──
 export type ReportTargetType = 'SPLIT' | 'USER';
 

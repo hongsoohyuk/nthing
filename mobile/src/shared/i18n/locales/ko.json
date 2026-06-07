@@ -103,7 +103,36 @@
     "splitCount": "나눌 인원",
     "location": "위치",
     "closed": "마감된 반띵",
-    "cancel": "취소하기"
+    "cancel": "취소하기",
+    "leave": "참여 취소",
+    "complete": "거래완료",
+    "noShow": "안 나왔어요",
+    "completedDone": "거래 완료됨",
+    "cancelledDone": "취소된 반띵",
+    "completeConfirmedToast": "거래완료를 확인했어요. 상대방도 확인하면 완료돼요",
+    "completeDoneToast": "거래가 완료됐어요. 좋은 반띵이었어요!",
+    "leaveDoneToast": "참여를 취소했어요",
+    "lifecycleError": "처리하지 못했어요. 다시 시도해 주세요"
+  },
+  "trust": {
+    "newcomer": "🌱 신규",
+    "great": "약속을 잘 지켜요",
+    "good": "약속을 잘 지키는 편이에요",
+    "poor": "최근 약속을 자주 못 지켰어요",
+    "successRate": "성사율 {{rate}}%"
+  },
+  "noShow": {
+    "title": "안 나온 상대 신고",
+    "subtitle": "약속한 거래가 이뤄지지 않았나요?",
+    "pickTarget": "누가 약속을 안 지켰나요?",
+    "cancel": "취소",
+    "submit": "신고",
+    "done": "신고가 접수되었어요",
+    "error": "신고에 실패했어요. 다시 시도해 주세요",
+    "reason": {
+      "NO_SHOW": "약속 장소에 안 나왔어요",
+      "UNREACHABLE": "연락이 안 돼요"
+    }
   },
   "list": {
     "loadError": "목록을 불러오지 못했어요"

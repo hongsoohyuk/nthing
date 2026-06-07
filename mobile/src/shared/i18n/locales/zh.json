@@ -103,7 +103,36 @@
     "splitCount": "拼单人数",
     "location": "位置",
     "closed": "已结束的拼单",
-    "cancel": "取消"
+    "cancel": "取消",
+    "leave": "取消参与",
+    "complete": "交易完成",
+    "noShow": "对方没来",
+    "completedDone": "交易已完成",
+    "cancelledDone": "已取消的拼单",
+    "completeConfirmedToast": "已确认完成。对方也确认后即完成。",
+    "completeDoneToast": "交易已完成，拼得愉快！",
+    "leaveDoneToast": "已取消参与",
+    "lifecycleError": "处理失败，请重试。"
+  },
+  "trust": {
+    "newcomer": "🌱 新人",
+    "great": "很守约",
+    "good": "比较守约",
+    "poor": "最近常常失约",
+    "successRate": "成交率 {{rate}}%"
+  },
+  "noShow": {
+    "title": "举报失约对方",
+    "subtitle": "约定的交易没有完成吗？",
+    "pickTarget": "谁没有守约？",
+    "cancel": "取消",
+    "submit": "举报",
+    "done": "举报已受理",
+    "error": "举报失败，请重试。",
+    "reason": {
+      "NO_SHOW": "没有到约定地点",
+      "UNREACHABLE": "联系不上"
+    }
   },
   "list": {
     "loadError": "无法加载列表"

@@ -134,6 +134,29 @@ describe('nthingApi splits/uploads', () => {
     expect(mockFetch).toHaveBeenCalledWith('/splits/3/cancel', { method: 'PATCH' });
   });
 
+  it('completeSplit 는 POST /splits/{id}/complete', async () => {
+    await nthingApi.completeSplit(3);
+    expect(mockFetch).toHaveBeenCalledWith('/splits/3/complete', { method: 'POST' });
+  });
+
+  it('reportBroken 는 POST /splits/{id}/report-broken (body)', async () => {
+    await nthingApi.reportBroken(3, { targetUserId: 9, reasonTag: 'NO_SHOW' });
+    expect(mockFetch).toHaveBeenCalledWith('/splits/3/report-broken', {
+      method: 'POST',
+      body: { targetUserId: 9, reasonTag: 'NO_SHOW' },
+    });
+  });
+
+  it('leaveSplit 는 POST /splits/{id}/leave', async () => {
+    await nthingApi.leaveSplit(3);
+    expect(mockFetch).toHaveBeenCalledWith('/splits/3/leave', { method: 'POST' });
+  });
+
+  it('getTrustProfile 는 GET /users/{id}/trust (비인증)', async () => {
+    await nthingApi.getTrustProfile(9);
+    expect(mockFetch).toHaveBeenCalledWith('/users/9/trust', { auth: false });
+  });
+
   it('getMySplits 는 GET /splits/my?page&size', async () => {
     await nthingApi.getMySplits();
     expect(mockFetch).toHaveBeenCalledWith('/splits/my?page=0&size=20');
